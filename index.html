@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BOOKStore</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b1220;
+      color: #e8edf6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      background: #121a2a;
+      padding: 15px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .books {
+      display: grid;
+      gap: 20px;
+      padding: 20px;
+      justify-content: center;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
+    .book {
+      background: #1c2940;
+      padding: 10px;
+      border-radius: 12px;
+      text-align: center;
+    }
+    .book img {
+      width: 100%;
+      height: auto;
+      max-width: 178px;
+      border-radius: 8px;
+    }
+    .price {
+      margin: 8px 0;
+      font-weight: bold;
+    }
+    .price .old {
+      text-decoration: line-through;
+      color: #ccc;
+      margin-right: 6px;
+    }
+    .price .new {
+      font-weight: bold;
+      color: limegreen;
+    }
+    .author {
+      font-style: none;
+      font-size: 14px;
+      margin-bottom: 5px;
+      color: #aaa;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    footer {
+      background: #121a2a;
+      padding: 8px;
+      text-align: center;
+      font-size: 14px;
+      color: #7a8aa0;
+      flex-shrink: 0;
+    }
+    #loginPopup {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+    }
+    #loginBox {
+      background: #1c2940;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      position: relative;
+      width: 100%;
+      max-width: 350px;
+    }
+    #loginBox input {
+      width: 90%;
+      max-width: 280px;
+      margin: 8px 0;
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+    }
+    #closeLogin {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: red;
+      border: none;
+      color: white;
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      cursor: pointer;
+    }
+    #paymentGateway {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+    }
+    #gatewayBox {
+      background: #fff;
+      color: #000;
+      padding: 20px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 320px;
+      text-align: center;
+    }
+    .wallets img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin: 8px;
+      cursor: pointer;
+    }
+    #previewOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      display: none;
+      flex-direction: column;
+    }
+    #previewHeader {
+      background: #121a2a;
+      padding: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    #pdfFrame {
+      flex: 1;
+      width: 100%;
+      border: none;
+    }
+    #greeting {
+      text-align: center;
+      padding: 10px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    #fakeAddBtn {
+      display: none;
+      margin: 10px auto;
+      background: #28a745;
+    }
+    @media (max-width: 600px) {
+      header {
+        font-size: 20px;
+      }
+      .books {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (min-width: 1024px) {
+      .books {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>📚 BOOKStore</header>
+
+  <div id="greeting"></div>
+  <button id="fakeAddBtn">+ Add New Book</button>
+
+  <!-- Login -->
+  <div id="loginPopup">
+    <div id="loginBox">
+      <button id="closeLogin">x</button>
+      <h2>Login</h2>
+      <input type="text" id="username" placeholder="Enter Username"><br>
+      <button id="loginBtn">Submit</button>
+    </div>
+  </div>
+
+  <!-- Books -->
+  <div class="books">
+    <div class="book">
+      <img src="RD.jpg" onerror="this.onerror=null;this.src='error.jpg';">
+      <h3>RD Sharma (2023)</h3>
+      <div class="author">Author: RD Sharma</div>
+      <div class="price" style="color:limegreen;">Free</div>
+      <button onclick="previewPDF('https://drive.google.com/file/d/1sKoawaJf2PUk8dWSFvrcoGjC_0V0k8GS/preview')">Preview</button>
+    </div>
+    <div class="book" id="unbarbaadBook">
+      <img src="unbarbaad.jpg"  onerror="this.onerror=null;this.src='error.jpg';">
+      <h3>Unbarbaad</h3>
+      <div class="author">Author: Shobit Nirwan</div>
+      <div class="price"><span class="old">₹100</span><span class="new">₹50</span> (50% off)</div>
+      <button id="buyUnbarbaad">Buy Now</button>
+    </div>
+  </div>
+  <!-- Preview -->
+  <div id="previewOverlay">
+    <div id="previewHeader">
+      <span style="font-weight:bold;">PDF Preview</span>
+      <div>
+        <button onclick="openFullscreen()">Fullscreen</button>
+        <button onclick="closePreview()">Close</button>
+      </div>
+    </div>
+    <iframe id="pdfFrame" sandbox="allow-scripts allow-same-origin"></iframe>
+  </div>
+
+  <!-- Payment -->
+  <div id="paymentGateway">
+    <div id="gatewayBox">
+      <h2>Safe and Secure Payment</h2>
+      <p>Pay Now</p>
+      <input type="text" placeholder="Card Number"><br>
+      <input type="text" placeholder="Expiry Date (MM/YY)"><br>
+      <input type="password" placeholder="CVV"><br>
+      <button onclick="processPayment()">Pay ₹50</button>
+      <div class="wallets">
+        <img src="data:image/png;base64,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" alt="Phonepe">
+        <img src="data:image/png;base64,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" alt="Paytm">
+        <img src="data:image/png;base64,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" alt="Google Pay">
+      </div>
+    </div>
+  </div>
+
+  <footer>Made by Bhavesh</footer>
+
+  <script>
+    const allowedUsers = ["BhaveshTop","Mayank","Rehan","Ashu","Devyank","Parth"];
+    const loginPopup = document.getElementById("loginPopup");
+    const loginBtn = document.getElementById("loginBtn");
+    const closeLogin = document.getElementById("closeLogin");
+    const usernameInput = document.getElementById("username");
+    const greeting = document.getElementById("greeting");
+    const fakeAddBtn = document.getElementById("fakeAddBtn");
+    const paymentGateway = document.getElementById("paymentGateway");
+    const buyUnbarbaadBtn = document.getElementById("buyUnbarbaad");
+    const previewOverlay = document.getElementById("previewOverlay");
+    const pdfFrame = document.getElementById("pdfFrame");
+
+    if(localStorage.getItem("username")) initUser(localStorage.getItem("username"));
+
+    loginBtn.onclick = () => {
+      const user = usernameInput.value.trim();
+      if(user && allowedUsers.includes(user)) {
+        localStorage.setItem("username", user);
+        initUser(user);
+      } else {
+        alert("Access Denied!");
+      }
+    };
+    closeLogin.onclick = () => loginPopup.style.display = "none";
+
+    function initUser(user){
+      loginPopup.style.display = "none";
+      if(user === "BhaveshTop"){
+        greeting.textContent = "Hello Owner";
+        fakeAddBtn.style.display = "block";
+      } else {
+        greeting.textContent = "Hello " + user;
+      }
+    }
+
+    function previewPDF(file) {
+      pdfFrame.src = file + "#toolbar=0&navpanes=0&scrollbar=0";
+      previewOverlay.style.display = "flex";
+    }
+    function closePreview() {
+      previewOverlay.style.display = "none";
+      pdfFrame.src = "";
+    }
+    function openFullscreen() {
+      if (pdfFrame.requestFullscreen) pdfFrame.requestFullscreen();
+    }
+
+    if(localStorage.getItem("unbarbaadPurchased")) {
+      buyUnbarbaadBtn.textContent = "Preview";
+      buyUnbarbaadBtn.onclick = () => previewPDF("https://drive.google.com/file/d/1KVuKBojVZLSi-dnjfVM1BkOp93w_1o4l/preview");
+    } else {
+      buyUnbarbaadBtn.onclick = () => paymentGateway.style.display = "flex";
+    }
+
+    function processPayment() {
+      document.getElementById("gatewayBox").innerHTML = "<h2>Processing...</h2><p>Chal rehne de Tu toh Dost hai!!</p>";
+      setTimeout(()=>{
+        paymentGateway.style.display = "none";
+        localStorage.setItem("unbarbaadPurchased", true);
+        buyUnbarbaadBtn.textContent = "Preview";
+        buyUnbarbaadBtn.onclick = () => previewPDF("https://drive.google.com/file/d/1KVuKBojVZLSi-dnjfVM1BkOp93w_1o4l/preview");
+      }, 3000);
+    }
+
+    // Disable right-click
+    document.addEventListener("contextmenu", e => e.preventDefault());
+
+    // Block common shortcut keys
+    document.addEventListener("keydown", e => {
+      if ( 
+        (e.ctrlKey && ["s","u","p"].includes(e.key.toLowerCase())) ||
+        (e.ctrlKey && e.shiftKey && ["i","j","c"].includes(e.key.toLowerCase())) ||
+        (e.key === "PrintScreen")
+      ) {
+        e.preventDefault();
+        alert("Export/Download is disabled!");
+      }
+    });
+  </script>
+</body>
+</html>
