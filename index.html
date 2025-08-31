@@ -21,6 +21,20 @@
       font-size: 24px;
       font-weight: bold;
     }
+    #searchBar {
+      display: flex;
+      justify-content: center;
+      padding: 10px;
+      background: #1c2940;
+    }
+    #searchInput {
+      width: 90%;
+      max-width: 400px;
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+      font-size: 16px;
+    }
     .books {
       display: grid;
       gap: 20px;
@@ -52,6 +66,12 @@
     .price .new {
       font-weight: bold;
       color: limegreen;
+    }
+    .year {
+      font-style: none;
+      font-size: 14px;
+      margin-bottom: 5px;
+      color: #aaa;
     }
     .author {
       font-style: none;
@@ -189,7 +209,7 @@
 </head>
 <body>
   <header>📚 BOOKStore</header>
-
+<!-- Search Bar --> <div id="searchBar"> <input type="text" id="searchInput" placeholder="Search by Title, Author, or Year..." onkeyup="searchBooks()"> </div>
   <div id="greeting"></div>
   <button id="fakeAddBtn">+ Add New Book</button>
 
@@ -207,14 +227,24 @@
    <div class="books">
     <div class="book">
       <img src="mathsmid.png" onerror="this.onerror=null;this.src='error.jpg';">
-      <h3>MID Term Class X Question Paper (Mathematics Standard) (2024)</h3>
+      <h3>MID Term Class X Question Paper (Mathematics Standard)</h3>
+     <div class="year">Year: 2024</div>
       <div class="author">Author: CBSE</div>
       <div class="price" style="color:limegreen;">Free</div>
       <button onclick="previewPDF('https://drive.google.com/file/d/19zIn9iG86zBYXOQfvH_WQnBzfoTwofmF/preview')">Preview</button>
     </div>
+        <div class="book">
+      <img src="scimid.png" onerror="this.onerror=null;this.src='error.jpg';">
+      <h3>MID Term Class X Question Paper (Science)</h3>
+      <div class="year">Year: 2024</div>
+      <div class="author">Author: CBSE</div>
+      <div class="price" style="color:limegreen;">Free</div>
+      <button onclick="previewPDF('https://drive.google.com/file/d/1ARkhttrCmdtsKaeOo_L0BSPSNJ9R9WNZ/preview')">Preview</button>
+    </div>
     <div class="book">
       <img src="RD.jpg" onerror="this.onerror=null;this.src='error.jpg';">
-      <h3>RD Sharma (2023)</h3>
+      <h3>RD Sharma</h3>
+      <div class="year">Edition: 2023-2024</div>
       <div class="author">Author: RD Sharma</div>
       <div class="price" style="color:limegreen;">Free</div>
       <button onclick="previewPDF('https://drive.google.com/file/d/1sKoawaJf2PUk8dWSFvrcoGjC_0V0k8GS/preview')">Preview</button>
@@ -337,6 +367,7 @@
         alert("Export/Download is disabled!");
       }
     });
+    function searchBooks() { let input = document.getElementById('searchInput').value.toLowerCase(); let books = document.getElementsByClassName('book'); for (let i = 0; i < books.length; i++) { let title = books[i].getElementsByTagName("h3")[0].innerText.toLowerCase(); let author = books[i].getElementsByClassName("author")[0]?.innerText.toLowerCase() || ""; let year = books[i].getElementsByClassName("year")[0]?.innerText.toLowerCase() || ""; if (title.includes(input) || author.includes(input) || year.includes(input)) { books[i].style.display = "block"; } else { books[i].style.display = "none"; } } }
   </script>
 </body>
 </html>
