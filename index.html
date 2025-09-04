@@ -137,6 +137,59 @@
       height: 25px;
       cursor: pointer;
     }
+    /* Banner Carousel */
+    .banner-container {
+      position: relative;
+      overflow: hidden;
+      margin: 20px auto;
+      width: 95%;
+      border-radius: 20px;
+    }
+    .banner-slide {
+      display: flex;
+      transition: transform 0.8s ease-in-out;
+    }
+    .banner-item {
+      min-width: 100%;
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .banner-item img {
+      width: 100%;
+      height: auto;
+      border-radius: 20px;
+      object-fit: cover;
+    }
+    /* Desktop ratio 5:1 */
+    @media (min-width: 768px) {
+      .banner-container {
+        aspect-ratio: 5/1;
+      }
+      .banner-item:nth-child(1) img {
+        content: url('clippromo.png');
+      }
+      .banner-item:nth-child(2) img {
+        content: url('unpromo.png');
+      }
+    }
+ /* Mobile ratio 9:5 (cropped) */
+    @media (max-width: 767px) {
+      .banner-container {
+        aspect-ratio: 9/5;
+      }
+      .banner-item img {
+        object-fit: cover;
+        object-position: center;
+      }
+      .banner-item:nth-child(1) img {
+        content: url('clippromomobile.png');
+      }
+      .banner-item:nth-child(2) img {
+        content: url('unpromomobile.png');
+      }
+      
+    }
     #paymentGateway {
       position: fixed;
       inset: 0;
@@ -206,6 +259,24 @@
         grid-template-columns: repeat(5, 1fr);
       }
     }
+     /* Dots */
+    .dots {
+      text-align: center;
+      margin-top: 10px;
+    }
+    .dot {
+      height: 12px;
+      width: 12px;
+      margin: 0 5px;
+      background-color: #bbb;
+      border-radius: 50%;
+      display: inline-block;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .dot.active {
+      background-color: #fff;
+    }
   </style>
 </head>
 <body>
@@ -213,6 +284,21 @@
 <!-- Search Bar --> <div id="searchBar"> <input type="text" id="searchInput" placeholder="Search by Title, Author, or Year..." onkeyup="searchBooks()"> </div>
   <div id="greeting"></div>
   <button id="fakeAddBtn">+ Add New Book</button>
+ <!-- Moving Banners -->
+  <div class="banner-container" id="bannerContainer">
+    <div class="banner-slide" id="bannerSlide">
+      <div class="banner-item">
+        <a href="cliip.html"><img src="clippromo.png" alt="Promotion"></a>
+      </div>
+      <div class="banner-item">
+        <img src="unpromo.png" alt="Un Banner">
+      </div>
+    </div>
+  </div>
+  <div class="dots">
+    <span class="dot active" onclick="setSlide(0)"></span>
+    <span class="dot" onclick="setSlide(1)"></span>
+  </div>
 
   <!-- Login -->
   <div id="loginPopup">
@@ -258,6 +344,7 @@
       <button id="buyUnbarbaad">Buy Now</button>
     </div>
   </div>
+  
   <!-- Preview -->
   <div id="previewOverlay">
     <div id="previewHeader">
@@ -324,7 +411,56 @@
         greeting.textContent = "Hello " + user;
       }
     }
+ // Simple Auto Carousel
+    let index = 0;
+    const slides = document.getElementById("bannerSlide");
+    const totalSlides = slides.children.length;
+function updateDots() {
+      dots.forEach((dot, i) => {
+        dot.classList.toggle("active", i === index);
+      });
+    }
+    function showSlide() {
+      index = (index + 1) % totalSlides;
+      slides.style.transform = `translateX(-${index * 100}%)`;
+    }
+   
+  function setSlide(n) {
+      index = n;
+      slides.style.transform = `translateX(-${index * 100}%)`;
+      updateDots();
+    }
+     setInterval(showSlide, 4000);
+     // Swipe support for mobile
+    let startX = 0;
+    let endX = 0;
+    const bannerContainer = document.getElementById("bannerContainer");
 
+    bannerContainer.addEventListener("touchstart", (e) => {
+      startX = e.touches[0].clientX;
+    });
+
+    bannerContainer.addEventListener("touchend", (e) => {
+      endX = e.changedTouches[0].clientX;
+      handleSwipe();
+    });
+
+    function handleSwipe() {
+      const diff = endX - startX;
+      if (Math.abs(diff) > 50) { // swipe threshold
+        if (diff > 0) {
+          index = (index - 1 + totalSlides) % totalSlides; // swipe right
+        } else {
+          index = (index + 1) % totalSlides; // swipe left
+        }
+        slides.style.transform = `translateX(-${index * 100}%)`;
+        updateDots();
+      }
+    }
+
+     function toggleMenu(){
+      document.getElementById("sidebar")?.classList.toggle("active");
+    }
     function previewPDF(file) {
       pdfFrame.src = file + "#toolbar=0&navpanes=0&scrollbar=0";
       previewOverlay.style.display = "flex";
