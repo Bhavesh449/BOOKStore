@@ -346,8 +346,51 @@
     }
     .dot.active {
       background-color: #fff;
-    }
-  </style>
+    }.folders{
+display:grid;
+gap:70px;
+grid-template-columns:1fr;
+padding:20px;
+margin-right: 40px;
+}
+@media(min-width:880px){
+.folders{grid-template-columns:repeat(2,1fr)}
+}
+
+
+.card{
+background:#1c2940;
+padding:20px;
+border-radius:18px;
+box-shadow:0 6px 20px rgba(0,0,0,0.5);
+display:flex; flex-direction:column; align-items:center; gap:14px;
+cursor:pointer;
+width:100%;
+text-decoration:none;
+color:#fff;
+}
+
+
+.cover{width:140px; height:140px; background:#1c2940; border-radius:6px; display:flex; align-items:center; justify-content:center; overflow:hidden}
+.cover img{max-width:100%; max-height:100%; object-fit:contain}
+
+
+h3{margin:0; font-size:20px; text-align:center}
+.meta{color:#9aa6b3; font-size:14px; text-align:center}
+
+
+.made{margin:20px; text-align:center; color:#9aa6b3;}
+</style>
+<!-- PushAlert -->
+<script type="text/javascript">
+        (function(d, t) {
+                var g = d.createElement(t),
+                s = d.getElementsByTagName(t)[0];
+                g.src = "https://cdn.pushalert.co/integrate_748dfaaf318d2eac9c680d4baa512c1d.js";
+                s.parentNode.insertBefore(g, s);
+        }(document, "script"));
+</script>
+<!-- End PushAlert -->
 </head>
 <body>
    <header>
@@ -459,7 +502,19 @@
       </div>
     </div>
   </div>
-
+  <h2 style="text-align:center; margin-top:20px;">My Collection</h2>
+<div class="folders">
+<a href="cbse.html" class="card">
+<div class="cover"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/CBSE_new_logo.svg/1200px-CBSE_new_logo.svg.png" alt="cbse"></div>
+<h3>CBSE Class X Syllabus</h3>
+<div class="meta">Click to view</div>
+</a>
+<a href="cbse.html" class="card">
+<div class="cover"><img src="cbse.png" alt="cbse"></div>
+<h3>CBSE Class X Syllabus</h3>
+<div class="meta">Click to view</div>
+</a>
+</div>
   <footer>Made by Bhavesh</footer>
 
   <script>
@@ -588,7 +643,6 @@ function updateDots() {
         buyUnbarbaadBtn.onclick = () => previewPDF("https://drive.google.com/file/d/1KVuKBojVZLSi-dnjfVM1BkOp93w_1o4l/preview");
       }, 3000);
     }
-
     // Disable right-click
     document.addEventListener("contextmenu", e => e.preventDefault());
 
