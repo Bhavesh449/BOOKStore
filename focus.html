@@ -34,9 +34,12 @@
     .hamburger span {
       display: block;
       height: 4px;
-      background: white;
+      background: rgb(17, 16, 16);
       border-radius: 2px;
       transition: 0.3s;
+    }
+    body.dark .hamburger span {
+      background: #ffffff;
     }
     /* Change to "X" when active */
     .hamburger.active span:nth-child(1) {
@@ -72,6 +75,7 @@
       font-size: 18px;
       border-bottom: 1px solid #333;
     }
+    
     .menu a:hover {
       color: rgb(0, 68, 255);
     }
@@ -220,6 +224,7 @@
       background: #121212;
       color: #bbb;
     }
+    
   </style>
 </head>
 <body>
