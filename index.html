@@ -347,41 +347,71 @@
     .dot.active {
       background-color: #fff;
     }.folders{
-display:grid;
-gap:70px;
-grid-template-columns:1fr;
-padding:20px;
-margin-right: 40px;
-}
-@media(min-width:880px){
-.folders{grid-template-columns:repeat(2,1fr)}
+  display: grid;
+  gap: 20px;
+  /* auto-fit + minmax will make items take full row on small screens
+     and create columns as space allows (desktop will show 2+ columns) */
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  padding: 20px;
+  margin: 0 auto;
+  max-width: 1200px;
+  box-sizing: border-box;
 }
 
-
+/* ensure cards always fill their grid cell */
 .card{
-background:#1c2940;
-padding:20px;
-border-radius:18px;
-box-shadow:0 6px 20px rgba(0,0,0,0.5);
-display:flex; flex-direction:column; align-items:center; gap:14px;
-cursor:pointer;
-width:100%;
-text-decoration:none;
-color:#fff;
+  background: #1c2940;
+  padding: 20px;
+  border-radius: 18px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  text-decoration: none;
+  color: #fff;
 }
 
+/* responsive image containers */
+.cover,
+.oswaal {
+  width: 100%;
+  max-width: 340px; /* reasonable max on wide screens */
+  height: 140px;
+  background: #1c2940;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
 
-.cover{width:140px; height:140px; background:#1c2940; border-radius:6px; display:flex; align-items:center; justify-content:center; overflow:hidden}
-.cover img{max-width:100%; max-height:100%; object-fit:contain}
+/* make images fluid and preserve aspect */
+.cover img,
+.oswaal img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
 
+/* tighten layout on very small screens */
+@media (max-width: 420px) {
+  .folders {
+    grid-template-columns: 1fr; /* force single column for very small devices */
+    padding: 12px;
+    gap: 12px;
+  }
+  .cover,
+  .oswaal {
+    max-width: 220px;
+    height: 120px;
+  }
+}
 
-h3{margin:0; font-size:20px; text-align:center}
-.meta{color:#9aa6b3; font-size:14px; text-align:center}
-
-
-.made{margin:20px; text-align:center; color:#9aa6b3;}
-</style>
-
+    </style>
 </head>
 <body>
    <header>
@@ -498,6 +528,11 @@ h3{margin:0; font-size:20px; text-align:center}
 <a href="cbse.html" class="card">
 <div class="cover"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/CBSE_new_logo.svg/1200px-CBSE_new_logo.svg.png" alt="cbse"></div>
 <h3>CBSE Class X Syllabus</h3>
+<div class="meta">Click to view</div>
+</a>
+<a href="oswaal.html" class="card">
+<div class="oswaal"><img src="https://ebooks.oswaalbooks.com/assets/oswaal/oswaal-logo-6a3ed60b95cde852ea818d666fb67d06.png" alt="oswaal"></div>
+<h3>Oswaal</h3>
 <div class="meta">Click to view</div>
 </a>
 </div>
@@ -647,4 +682,3 @@ function updateDots() {
   </script>
 </body>
 </html>
-
