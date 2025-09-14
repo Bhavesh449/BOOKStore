@@ -306,9 +306,24 @@
       border: none;
     }
     #greeting {
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       padding: 10px;
       font-size: 18px;
+      font-weight: bold;
+    }
+    /* small tick image next to Admin greeting */
+    #greeting img {
+      width: 30px;
+      height: 30px;
+      object-fit: contain;
+      display: inline-block;
+    }
+    /* color the Admin tag red */
+    #greeting .Admin {
+      color: rgb(255, 0, 0);
       font-weight: bold;
     }
     #fakeAddBtn {
@@ -567,10 +582,12 @@
     function initUser(user){
       loginPopup.style.display = "none";
       if(user === "BhaveshTop"){
-        greeting.textContent = "Hello, Bhavesh (Owner)";
+        // show tick.png aligned with the greeting for the Admin
+        greeting.innerHTML = '<span>Welcome, Bhavesh (Admin)</span><img src="https://static.vecteezy.com/system/resources/thumbnails/034/211/380/small_2x/blue-checkmark-validation-social-media-png.png" alt="Admin tick">';
+        greeting.innerHTML = '<span>Welcome, Bhavesh <span class="Admin">(Admin)</span></span><img src="https://static.vecteezy.com/system/resources/thumbnails/034/211/380/small_2x/blue-checkmark-validation-social-media-png.png" alt="Admin tick">';
         fakeAddBtn.style.display = "block";
       } else {
-        greeting.textContent = "Hello " + user;
+        greeting.innerHTML = '<span>Welcome ' + user + '</span>';
       }
     }
     const hamburger = document.getElementById("hamburger");
