@@ -227,6 +227,14 @@
 <h1 style="text-align:center; margin-top:10px;">Oswaal Books</h1>
   <!-- Books -->
    <div class="books">
+      <div class="book">
+      <img src="https://m.media-amazon.com/images/I/81qjdddpOIL._UF1000,1000_QL80_.jpg">
+      <h3> CBSE Question Bank Class 10 English</h3>
+     <div class="year">Year: 2024-25</div>
+      <div class="author">Author: Oswaal</div>
+      <div class="price" style="color:limegreen;">Free</div>
+      <button onclick="previewPDF('https://drive.google.com/file/d/1GPV2pSd3FC0K0-Kef_srwy7ejF52vnhT/preview')">Preview</button>
+    </div>
     <div class="book">
       <img src="https://m.media-amazon.com/images/I/81xGUIMu8CL._UF1000,1000_QL80_.jpg" onerror="this.onerror=null;this.src='error.jpg';">
       <h3> CBSE Question Bank Class 10 Science</h3>
@@ -306,4 +314,5 @@ closeBtn.addEventListener("click", () => {
     function searchBooks() { let input = document.getElementById('searchInput').value.toLowerCase(); let books = document.getElementsByClassName('book'); for (let i = 0; i < books.length; i++) { let title = books[i].getElementsByTagName("h3")[0].innerText.toLowerCase(); let author = books[i].getElementsByClassName("author")[0]?.innerText.toLowerCase() || ""; let year = books[i].getElementsByClassName("year")[0]?.innerText.toLowerCase() || ""; if (title.includes(input) || author.includes(input) || year.includes(input)) { books[i].style.display = "block"; } else { books[i].style.display = "none"; } } }
   </script>
 </body>
+
 </html>
