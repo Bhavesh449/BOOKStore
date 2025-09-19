@@ -245,9 +245,12 @@
         aspect-ratio: 5/1;
       }
       .banner-item:nth-child(1) img {
-        content: url('PWNSAT.png');
+        content: url('channel.png');
       }
       .banner-item:nth-child(2) img {
+        content: url('PWNSAT.png');
+      }
+      .banner-item:nth-child(3) img {
         content: url('unpromo.png');
       }
     }
@@ -261,9 +264,12 @@
         object-position: center;
       }
       .banner-item:nth-child(1) img {
-        content: url('PWNSATmobile.png');
+        content: url('channelmobile.png');
       }
       .banner-item:nth-child(2) img {
+        content: url('PWNSATmobile.png');
+      }
+      .banner-item:nth-child(3) img {
         content: url('unpromomobile.png');
       }
       
@@ -461,6 +467,9 @@
   <div class="banner-container" id="bannerContainer">
     <div class="banner-slide" id="bannerSlide">
       <div class="banner-item">
+        <a href="https://www.youtube.com/@Next-ToppersEdits"><img src="channel.png" alt="Channel-Promotion"></a>
+      </div>
+      <div class="banner-item">
         <a href="https://www.pw.live/scholarship/vidyapeeth/nsat"><img src="PWNSAT.png" alt="PWNSAT"></a>
       </div>
       <div class="banner-item">
@@ -471,6 +480,7 @@
   <div class="dots">
     <span class="dot active" onclick="setSlide(0)"></span>
     <span class="dot" onclick="setSlide(1)"></span>
+    <span class="dot" onclick="setSlide(2)"></span>
   </div>
 
   <!-- Login -->
