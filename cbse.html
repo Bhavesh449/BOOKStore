@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BOOKStore - CBSE Syllabus</title>
+  <link rel="icon" type="image/png" href="https://png.pngtree.com/png-vector/20240515/ourmid/pngtree-open-book-logo-png-image_12467719.png">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b1220;
+      color: #e8edf6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      background: #121a2a;
+      padding: 15px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+     /* logo image in header */
+    #logo {
+      height: 66px;
+      max-width: 90%;
+      object-fit: contain;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    /* Hamburger Button */
+    .hamburger {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      cursor: pointer;
+      width: 30px;
+      height: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .hamburger span {
+      display: block;
+      height: 4px;
+      background: white;
+      border-radius: 2px;
+      transition: 0.3s;
+    }
+    /* Change to "X" when active */
+    .hamburger.active span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+    .hamburger.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(6px, -6px);
+    }
+    
+    /* Menu */
+    .menu {
+      position: fixed;
+      top: 0;
+      right: -220px;
+      width: 200px;
+      height: 100%;
+      background: #1c2940;
+      padding: 60px 20px;
+      transition: right 0.3s ease;
+      z-index: 1000;
+    }
+    .menu.active {
+      right: 0;
+    }
+    .menu a {
+      display: block;
+      padding: 12px 0;
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+      border-bottom: 1px solid #333;
+    }
+    .menu a:hover {
+      color: rgb(0, 68, 255);
+    }
+    .close-btn {
+  display: block;
+  margin-bottom: 20px;
+  text-align: right;
+  font-size: 18px;
+  cursor: pointer;
+  color: red;
+  font-weight: bold;
+}
+.close-btn:hover {
+  color: #ff6666;
+}
+
+    #searchBar {
+      display: flex;
+      justify-content: center;
+      padding: 10px;
+      background: #1c2940;
+    }
+    #searchInput {
+      width: 90%;
+      max-width: 400px;
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+      font-size: 16px;
+    }
+    .books {
+      display: grid;
+      gap: 20px;
+      padding: 20px;
+      justify-content: center;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
+    .book {
+      background: #1c2940;
+      padding: 10px;
+      border-radius: 12px;
+      text-align: center;
+    }
+    .book img {
+      width: 100%;
+      height: auto;
+      max-width: 178px;
+      border-radius: 8px;
+    }
+    .price {
+      margin: 8px 0;
+      font-weight: bold;
+    }
+    .price .old {
+      text-decoration: line-through;
+      color: #ccc;
+      margin-right: 6px;
+    }
+    .price .new {
+      font-weight: bold;
+      color: limegreen;
+    }
+    .year {
+      font-style: none;
+      font-size: 14px;
+      margin-bottom: 5px;
+      color: #aaa;
+    }
+    .author {
+      font-style: none;
+      font-size: 14px;
+      margin-bottom: 5px;
+      color: #aaa;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    footer {
+      background: #121a2a;
+      padding: 8px;
+      text-align: center;
+      font-size: 14px;
+      color: #7a8aa0;
+      flex-shrink: 0;
+    }
+    #previewOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      display: none;
+      flex-direction: column;
+    }
+    #previewHeader {
+      background: #121a2a;
+      padding: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    #pdfFrame {
+      flex: 1;
+      width: 100%;
+      border: none;
+    }
+    @media (max-width: 600px) {
+      header {
+        font-size: 20px;
+      }
+      .books {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (min-width: 1024px) {
+      .books {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
+    </style>
+</head>
+<body>
+    <header>
+   <a href="index.html"><img src="logo.png" alt="BOOKStore" id="logo"></a>
+    <!-- Hamburger Button -->
+    <div class="hamburger" id="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </header>
+
+ <!-- Hamburger Menu -->
+  <div class="menu" id="menu">
+    <div class="close-btn" id="closeBtn">CLOSE </div>
+    <a href="index.html">🏠 Home</a>
+    <a href="games.html">🎮 Games Zone</a>
+    <a href="profile.html">👤Profile</a>
+  </div>
+
+<!-- Search Bar --> <div id="searchBar"> <input type="text" id="searchInput" placeholder="Search by Title, Author, or Year..." onkeyup="searchBooks()"> </div>
+  <div id="greeting"></div>
+<h1 style="text-align:center; margin-top:10px;">Syllabus</h1>
+  <!-- Books -->
+   <div class="books">
+    <div class="book">
+      <img src="mathsyllabus.png" onerror="this.onerror=null;this.src='error.jpg';">
+      <h3>Mathematics</h3>
+     <div class="year">Year: 2025-26</div>
+      <div class="author">Author: CBSE</div>
+      <div class="price" style="color:limegreen;">Free</div>
+      <button onclick="previewPDF('https://drive.google.com/file/d/19fk_YP86r4wqDuS4jCHfkt8cb-u9lZfH/preview')">Preview</button>
+    </div>
+        <div class="book">
+      <img src="scisyllabus.png" onerror="this.onerror=null;this.src='error.jpg';">
+      <h3>Science</h3>
+      <div class="year">Year: 2025-26</div>
+      <div class="author">Author: CBSE</div>
+      <div class="price" style="color:limegreen;">Free</div>
+      <button onclick="previewPDF('https://drive.google.com/file/d/1IDc2nzmKnF1fkYCWp3ljzAwEgoVc-EtB/preview')">Preview</button>
+    </div>
+    <div class="book">
+      <img src="sstsyllabus.png" onerror="this.onerror=null;this.src='error.jpg';">
+      <h3>SST</h3>
+      <div class="year">Year: 2025-26</div>
+      <div class="author">Author: CBSE</div>
+      <div class="price" style="color:limegreen;">Free</div>
+      <button onclick="previewPDF('https://drive.google.com/file/d/1XqAsHRcQsGxX_feQdcJ3P_7AGNZqlZDy/preview')">Preview</button>
+    </div>
+    <div class="book">
+      <img src="engsyllabus.png" onerror="this.onerror=null;this.src='error.jpg';">
+      <h3>English</h3>
+      <div class="year">Year: 2025-26</div>
+      <div class="author">Author: CBSE</div>
+      <div class="price" style="color:limegreen;">Free</div>
+      <button onclick="previewPDF('https://drive.google.com/file/d/1J30A1ZgKcrh4Jb2sCS9TsjG8ZlV7QVRw/preview')">Preview</button>
+    </div>
+    <div class="book">
+      <img src="hindisyllabus.png" onerror="this.onerror=null;this.src='error.jpg';">
+      <h3>Hindi</h3>
+      <div class="year">Year: 2025-26</div>
+      <div class="author">Author: CBSE</div>
+      <div class="price" style="color:limegreen;">Free</div>
+      <button onclick="previewPDF('https://drive.google.com/file/d/168GcCHmWdFWXahEt8RRAbXMdC9JZ9qMo/preview')">Preview</button>
+    </div>
+    <div class="book">
+      <img src="sktsyllabus.png" onerror="this.onerror=null;this.src='error.jpg';">
+      <h3>Sanskrit</h3>
+      <div class="year">Year: 2025-26</div>
+      <div class="author">Author: CBSE</div>
+      <div class="price" style="color:limegreen;">Free</div>
+      <button onclick="previewPDF('https://drive.google.com/file/d/1zjeWeIn1GKgbIznbuRU2Azm8AbakRgjJ/preview')">Preview</button>
+    </div>
+  <!-- Preview -->
+  <div id="previewOverlay">
+    <div id="previewHeader">
+      <span style="font-weight:bold;">PDF Preview</span>
+      <div>
+        <button onclick="openFullscreen()">Fullscreen</button>
+        <button onclick="closePreview()">Close</button>
+      </div>
+    </div>
+    <iframe id="pdfFrame" sandbox="allow-scripts allow-same-origin"></iframe>
+  </div>
+</div>
+  <footer style="background:#0b1220;color:white;text-align:center;padding:20px 10px;font-size:14px;">
+  <p>© 2025 BOOKStore. All rights reserved.</p>
+  <p>
+    <a href="privacy.html" style="color:#58a6ff;text-decoration:none;">Privacy Policy</a> |
+    <a href="about.html" style="color:#58a6ff;text-decoration:none;">About Us</a>
+  </p>
+</footer>
+
+  <script>
+  
+    const previewOverlay = document.getElementById("previewOverlay");
+    const pdfFrame = document.getElementById("pdfFrame");
+
+    const hamburger = document.getElementById("hamburger");
+    const menu = document.getElementById("menu");
+    hamburger.addEventListener("click", () => {
+      hamburger.classList.toggle("active");
+      menu.classList.toggle("active");
+    });
+    const closeBtn = document.getElementById("closeBtn");
+
+closeBtn.addEventListener("click", () => {
+  hamburger.classList.remove("active");
+  menu.classList.remove("active");
+});
+     function toggleMenu(){
+      document.getElementById("sidebar")?.classList.toggle("active");
+    }
+    function previewPDF(file) {
+      pdfFrame.src = file + "#toolbar=0&navpanes=0&scrollbar=0";
+      previewOverlay.style.display = "flex";
+    }
+    function closePreview() {
+      previewOverlay.style.display = "none";
+      pdfFrame.src = "";
+    }
+    function openFullscreen() {
+      if (pdfFrame.requestFullscreen) pdfFrame.requestFullscreen();
+    }
+
+    // Disable right-click
+    document.addEventListener("contextmenu", e => e.preventDefault());
+
+    // Block common shortcut keys
+    document.addEventListener("keydown", e => {
+      if ( 
+        (e.ctrlKey && ["s","u","p"].includes(e.key.toLowerCase())) ||
+        (e.ctrlKey && e.shiftKey && ["i","j","c"].includes(e.key.toLowerCase())) ||
+        (e.key === "PrintScreen")
+      ) {
+        e.preventDefault();
+        alert("Export/Download is disabled!");
+      }
+    });
+    function searchBooks() { let input = document.getElementById('searchInput').value.toLowerCase(); let books = document.getElementsByClassName('book'); for (let i = 0; i < books.length; i++) { let title = books[i].getElementsByTagName("h3")[0].innerText.toLowerCase(); let author = books[i].getElementsByClassName("author")[0]?.innerText.toLowerCase() || ""; let year = books[i].getElementsByClassName("year")[0]?.innerText.toLowerCase() || ""; if (title.includes(input) || author.includes(input) || year.includes(input)) { books[i].style.display = "block"; } else { books[i].style.display = "none"; } } }
+  </script>
+</body>
+</html>

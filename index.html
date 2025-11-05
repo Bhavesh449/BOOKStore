@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BOOKStore</title>
+  <link rel="icon" type="image/png" href="https://png.pngtree.com/png-vector/20240515/ourmid/pngtree-open-book-logo-png-image_12467719.png">
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <!-- Google Fonts for the 'G' logo -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b1220;
+      color: #e8edf6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      background: #0b1220;
+      padding: 15px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      
+    }
+    /* logo image in header */
+    #logo {
+      height: 66px;
+      max-width: 90%;
+      object-fit: contain;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    #searchBar {
+      display: flex;
+      justify-content: center;
+      padding: 10px;
+      background: #0b1220;
+    }
+    #searchInput {
+      width: 90%;
+      max-width: 400px;
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+      font-size: 16px;
+    }
+    .books {
+      display: grid;
+      gap: 20px;
+      padding: 20px;
+      justify-content: center;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
+    .book {
+      background: #1c2940;
+      padding: 10px;
+      border-radius: 12px;
+      text-align: center;
+    }
+    .book img {
+      width: 100%;
+      height: auto;
+      max-width: 178px;
+      border-radius: 8px;
+    }
+    .price {
+      margin: 8px 0;
+      font-weight: bold;
+    }
+    .price .old {
+      text-decoration: line-through;
+      color: #ccc;
+      margin-right: 6px;
+    }
+    .price .new {
+      font-weight: bold;
+      color: limegreen;
+    }
+    .year {
+      font-style: none;
+      font-size: 14px;
+      margin-bottom: 5px;
+      color: #aaa;
+    }
+    .author {
+      font-style: none;
+      font-size: 14px;
+      margin-bottom: 5px;
+      color: #aaa;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    footer {
+      background: #121a2a;
+      padding: 8px;
+      text-align: center;
+      font-size: 14px;
+      color: #7a8aa0;
+      flex-shrink: 0;
+    }
+    #loginPopup {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      transition: 0.6s ease;
+    }
+    #loginBox {
+      background: #1c2940;
+      /* Increased top padding to give space for the 'X' button and H2 */
+      padding: 40px 20px 20px 20px; 
+      border-radius: 10px;
+      text-align: center;
+      position: relative;
+      width: 100%;
+      max-width: 350px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    /* Style H2 to prevent default top margin from causing overlap */
+    #loginBox h2 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-size: 24px;
+    }
+    #loginBox input {
+      width: 90%;
+      max-width: 280px;
+      margin: 8px 0;
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+      background-color: #0b1220; /* Darker input background */
+      color: #e8edf6;
+    }
+    #loginBox button {
+      width: 90%;
+      max-width: 250px;
+      margin: 5px 0;
+      padding: 10px;
+      border: none;
+      border-radius: 9px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    /* Professional close button */
+    #closeLogin {
+      position: absolute;
+      top: 10px;
+      left: 220px;
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: bold;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    
+    #loginBox #emailLoginBtn {
+      background: #007bff;
+      color: white;
+    }
+    #loginBox #emailLoginBtn:hover {
+      background: #0056b3;
+    }
+    /* Google Login Button Style */
+    #googleLoginBtn {
+      background: white;
+      color: #4a4a4a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    #googleLoginBtn:hover {
+      background: #f0f0f0;
+    }
+    /* Google 'G' Logo Style */
+    #googleLoginBtn .material-icons {
+      color: #4285F4; /* Blue */
+      font-size: 20px;
+    }
+    #google {
+      margin-top: -10px;
+      margin-left: 2px;
+    }
+    /* Style for Create Account button - looks like a text link with 'or' logic */
+    #createAccountBtn {
+      width: auto; 
+      max-width: none;
+      background: none;
+      color: #aaa; /* Default text color */
+      padding: 0;
+      margin-top: 15px; 
+      border: none;
+      cursor: pointer;
+      font-weight: normal;
+      font-size: 14px;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    
+    #createAccountBtn:hover {
+      color: #fff;
+      background: none;
+    }
+    
+    /* Style for the dynamic error box (Red banner as requested) */
+    #authErrorBox {
+        background: #dc3545; 
+        color: white; 
+        padding: 10px; 
+        border-radius: 6px; 
+        margin-bottom: 10px; 
+        text-align: left; 
+        width: 90%; 
+        max-width: 280px; 
+        transition: opacity 0.5s, max-height 0.5s; 
+        opacity: 1; 
+        overflow: hidden; 
+        max-height: 100px; 
+        box-sizing: border-box;
+    }
+
+
+    /* Banner Carousel */
+    .banner-container {
+      position: relative;
+      overflow: hidden;
+      margin: 20px auto;
+      width: 95%;
+      border-radius: 20px;
+    }
+    .banner-slide {
+      display: flex;
+      transition: transform 0.8s ease-in-out;
+    }
+    .banner-item {
+      min-width: 100%;
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .banner-item img {
+      width: 100%;
+      height: auto;
+      border-radius: 20px;
+      object-fit: cover;
+    }
+    /* Desktop ratio 5:1 */
+    @media (min-width: 768px) {
+      .banner-container {
+        aspect-ratio: 5/1;
+      }
+      .banner-item:nth-child(1) img {
+        content: url('apppromo.png');
+      }
+      .banner-item:nth-child(2) img {
+        content: url('unpromo.png');
+      }
+    }
+  /* Mobile ratio 9:5 (cropped) */
+    @media (max-width: 767px) {
+      .banner-container {
+        aspect-ratio: 9/5;
+      }
+      .banner-item img {
+        object-fit: cover;
+        object-position: center;
+      }
+      .banner-item:nth-child(1) img {
+        content: url('apppromomobile.png');
+      }
+      .banner-item:nth-child(2) img {
+        content: url('unpromomobile.png');
+      }
+      
+    }
+    #previewOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      display: none;
+      flex-direction: column;
+    }
+    #previewHeader {
+      background: #121a2a;
+      padding: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    #pdfFrame {
+      flex: 1;
+      width: 100%;
+      border: none;
+    }
+    #greeting {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    /* small tick image next to Admin greeting */
+    #greeting img {
+      width: 30px;
+      height: 30px;
+      object-fit: contain;
+      display: inline-block;
+    }
+    /* color the Admin tag red */
+    #greeting .Admin {
+      color: rgb(255, 0, 0);
+      font-weight: bold;
+    }
+    #fakeAddBtn {
+      display: none;
+      margin: 10px auto;
+      background: #2264ff;
+    }
+    @media (max-width: 600px) {
+      header {
+        font-size: 20px;
+      }
+      .books {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (min-width: 1024px) {
+      .books {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
+      /* Dots */
+    .dots {
+      text-align: center;
+      margin-top: 10px;
+    }
+    .dot {
+      height: 12px;
+      width: 12px;
+      margin: 0 5px;
+      background-color: #bbb;
+      border-radius: 50%;
+      display: inline-block;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .dot.active {
+      background-color: #fff;
+    }
+/* ensure cards always fill their grid cell */
+.card{
+  background: #1c2940;
+  padding: 20px;
+  border-radius: 18px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  text-decoration: none;
+  color: #fff;
+}
+
+/* responsive image containers */
+.cover,
+.oswaal {
+  width: 100%;
+  max-width: 340px; /* reasonable max on wide screens */
+  height: 140px;
+  background: #1c2940;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* make images fluid and preserve aspect */
+.cover img,
+.oswaal img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+    /* Hamburger Button */
+    .hamburger {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      cursor: pointer;
+      width: 30px;
+      height: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .hamburger span {
+      display: block;
+      height: 4px;
+      background: white;
+      border-radius: 2px;
+      transition: 0.3s;
+    }
+    /* Change to "X" when active */
+    .hamburger.active span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+    .hamburger.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(6px, -6px);
+    }
+    
+    /* Menu */
+    .menu {
+      position: fixed;
+      top: 0;
+      right: -220px;
+      width: 200px;
+      height: 100%;
+      background: #1c2940;
+      padding: 60px 20px;
+      transition: right 0.3s ease;
+      z-index: 1000;
+    }
+    .menu.active {
+      right: 0;
+    }
+    .menu a {
+      display: block;
+      padding: 12px 0;
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+      border-bottom: 1px solid #333;
+    }
+    .menu a:hover {
+      color: rgb(0, 68, 255);
+    }
+    .close-btn {
+  display: block;
+  margin-bottom: 20px;
+  text-align: right;
+  font-size: 18px;
+  cursor: pointer;
+  color: red;
+  font-weight: bold;
+}
+.close-btn:hover {
+  color: #ff6666;
+}
+.folders{
+  display: grid;
+  gap: 20px;
+  /* auto-fit + minmax will make items take full row on small screens
+     and create columns as space allows (desktop will show 2+ columns) */
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  padding: 20px;
+  margin: 0 auto;
+  max-width: 1200px;
+  box-sizing: border-box;
+}
+
+/* ensure cards always fill their grid cell */
+.card{
+  background: #1c2940;
+  padding: 20px;
+  border-radius: 18px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  text-decoration: none;
+  color: #fff;
+}
+
+/* responsive image containers */
+.cover,
+.oswaal {
+  width: 100%;
+  max-width: 340px; /* reasonable max on wide screens */
+  height: 140px;
+  background: #1c2940;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* make images fluid and preserve aspect */
+.cover img,
+.oswaal img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* tighten layout on very small screens */
+@media (max-width: 420px) {
+  .folders {
+    grid-template-columns: 1fr; /* force single column for very small devices */
+    padding: 12px;
+    gap: 12px;
+  }
+  .cover,
+  .oswaal {
+    max-width: 220px;
+    height: 120px;
+  }
+}
+    </style>
+</head>
+<body>
+   <header style="text-align:center;padding:15px;background:#0b1220;">
+    <img src="logo.png" alt="BOOKStore Logo" style="height:50px;">
+    <!-- Hamburger Button -->
+    <div class="hamburger" id="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </header>
+  
+  <!-- Hamburger Menu -->
+  <div class="menu" id="menu">
+    <div class="close-btn" id="closeBtn">CLOSE </div>
+    <b><a href="index.html">🏠 Home</a></b>
+    <a href="games.html">🎮 Games Zone</a>
+    <a href="profile.html">👤Profile</a>
+  </div>
+
+<!-- Search Bar --> <div id="searchBar"> <input type="text" id="searchInput" placeholder="Search by Title, Author, or Year..." onkeyup="searchBooks()"> </div>
+  <div id="greeting"></div>
+  <button id="fakeAddBtn">+ Add New Book</button>
+  <!-- Moving Banners -->
+  <div class="banner-container" id="bannerContainer">
+    <div class="banner-slide" id="bannerSlide">
+      <div class="banner-item">
+         <a href="https://drive.usercontent.google.com/download?id=1RoRMILNHoG2DyvUCYsGJIdRD9ZhlqcI3&export=download&authuser=0"><img src="apppromo.png" alt="App Promotion"></a>
+      </div>
+      <div class="banner-item">
+        <img src="unpromo.png" alt="unpromo-Promotion">
+      </div>
+    </div>
+  </div>
+  <div class="dots">
+    <span class="dot active" onclick="setSlide(0)"></span>
+    <span class="dot" onclick="setSlide(1)"></span>
+    </div>
+
+  <!-- Login -->
+  <div id="loginPopup">
+    <div id="loginBox">
+      <button id="closeLogin">X</button> 
+      <h2>Login</h2>
+      <input type="email" id="email" placeholder="Email Address"><br>
+      <input type="password" id="password" placeholder="Password"><br>
+      <button id="emailLoginBtn">Login</button>
+      <p style="margin: 10px 0; font-size: 14px; color: #aaa;">OR</p>
+      <!-- Google Login Button with Logo -->
+      <button id="googleLoginBtn">
+        <span class="material-icons">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Google_Favicon_2025.svg/120px-Google_Favicon_2025.svg.png" 
+           id="google" style="width:20px;height:20px;vertical-align:middle;" viewBox="0 0 24 24" >
+        </img>
+        </span>
+        Continue with Google
+      </button>
+      <!-- Toggle button for Create Account/Back to Login -->
+      <button id="createAccountBtn"></button>
+      
+    </div>
+  </div>
+
+  <!-- Books -->
+    <div class="books">
+
+    <div class="book">
+      <img src="RD.jpg" onerror="this.onerror=null;this.src='error.jpg';">
+      <h3>RD Sharma</h3>
+      <div class="year">Class: X</div>
+      <div class="year">Edition: 2023-2024</div>
+      <div class="author">Author: RD Sharma</div>
+      <div class="price" style="color:limegreen;">Free</div>
+      <button onclick="previewPDF('https://drive.google.com/file/d/1sKoawaJf2PUk8dWSFvrcoGjC_0V0k8GS/preview')">Preview</button>
+    </div>
+    <div class="book">
+      <img src="unbarbaad.jpg"  onerror="this.onerror=null;this.src='error.jpg';">
+      <h3>Unbarbaad</h3>
+      <div class="author">Author: Shobit Nirwan</div>
+      <div class="price" style="color:limegreen;">Free</div>
+      <button onclick="previewPDF('https://drive.google.com/file/d/1KVuKBojVZLSi-dnjfVM1BkOp93w_1o4l/preview')">Preview</button>
+    </div>
+  </div>
+   <h2 style="text-align:center; margin-top:20px;">All Publishers</h2>
+<div class="folders">
+<a href="cbse.html" class="card">
+<div class="cover"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/CBSE_new_logo.svg/1200px-CBSE_new_logo.svg.png" alt="cbse"></div>
+<h3>CBSE Class X Syllabus</h3>
+<div class="meta">Click to view</div>
+</a>
+<a href="oswaal.html" class="card">
+<div class="oswaal"><img src="https://ebooks.oswaalbooks.com/assets/oswaal/oswaal-logo-6a3ed60b95cde852ea818d666fb67d06.png" alt="oswaal"></div>
+<h3>Oswaal</h3>
+<div class="meta">Click to view</div>
+</a>
+</div>
+  <!-- Preview -->
+  <div id="previewOverlay">
+    <div id="previewHeader">
+      <span style="font-weight:bold;">PDF Preview</span>
+      <div>
+        <button onclick="openFullscreen()">Fullscreen</button>
+        <button onclick="closePreview()">Close</button>
+      </div>
+    </div>
+    <iframe id="pdfFrame" sandbox="allow-scripts allow-same-origin"></iframe>
+  </div>
+  
+   <footer style="background:#0b1220;color:white;text-align:center;padding:20px 10px;font-size:14px;">
+  <p>© 2025 BOOKStore. All rights reserved.</p>
+  <p>
+    <a href="privacy.html" style="color:#58a6ff;text-decoration:none;">Privacy Policy</a> |
+    <a href="about.html" style="color:#58a6ff;text-decoration:none;">About Us</a>
+  </p>
+</footer>
+
+ <script>
+    // 1. Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCcpG-oEqkDprgTwWXKt5CFsttjAQAZFNg",
+      authDomain: "bookstore-6ab08.firebaseapp.com",
+      projectId: "bookstore-6ab08",
+      storageBucket: "bookstore-6ab08.firebasestorage.app",
+      messagingSenderId: "102226032749",
+      appId: "1:102226032749:web:f7090175d2e53c2f522764",
+      measurementId: "G-R9N7YSCMY0"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = app.auth();
+
+    // The Admin UID (Bhavesh)
+    const ADMIN_UID = "F9UxJ3W6CVUVIIgwByuHQxscQab2";
+
+    // 2. Element References
+    const loginPopup = document.getElementById("loginPopup");
+    const loginBox = document.getElementById("loginBox"); 
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const emailLoginBtn = document.getElementById("emailLoginBtn");
+    const googleLoginBtn = document.getElementById("googleLoginBtn");
+    const closeLogin = document.getElementById("closeLogin");
+    const greeting = document.getElementById("greeting");
+    const fakeAddBtn = document.getElementById("fakeAddBtn");
+    const previewOverlay = document.getElementById("previewOverlay");
+    const pdfFrame = document.getElementById("pdfFrame");
+    const createAccountBtn = document.getElementById("createAccountBtn"); 
+
+    let isCreatingAccount = false; 
+    
+    closeLogin.onclick = () => loginPopup.style.display = "none";
+    
+    // Helper to display errors without using alert()
+    function displayError(message) {
+        let errorBox = document.getElementById('authErrorBox');
+        if (!errorBox) {
+            errorBox = document.createElement('div');
+            errorBox.id = 'authErrorBox';
+            
+            // Apply the CSS defined in the <style> block
+            errorBox.style.cssText = 'background: #dc3545; color: white; padding: 10px; border-radius: 6px; margin-bottom: 10px; text-align: left; width: 90%; max-width: 280px; transition: opacity 0.5s, max-height 0.5s; opacity: 1; overflow: hidden; max-height: 100px; box-sizing: border-box;';
+            
+            // Insert after the H2 element
+            const h2 = loginBox.querySelector('h2');
+            loginBox.insertBefore(errorBox, h2.nextElementSibling);
+        }
+        errorBox.textContent = message;
+        errorBox.style.opacity = '1';
+        errorBox.style.maxHeight = '100px';
+        
+        // Hide after 5 seconds
+        setTimeout(() => {
+            errorBox.style.opacity = '0';
+            errorBox.style.maxHeight = '0';
+        }, 5000);
+    }
+    
+    const hamburger = document.getElementById("hamburger");
+    const menu = document.getElementById("menu");
+    hamburger.addEventListener("click", () => {
+      hamburger.classList.toggle("active");
+      menu.classList.toggle("active");
+    });
+    const closeBtn = document.getElementById("closeBtn");
+
+closeBtn.addEventListener("click", () => {
+  hamburger.classList.remove("active");
+  menu.classList.remove("active");
+});
+
+    // Helper to switch mode display (Login <-> Create Account)
+    function toggleMode(isCreate) {
+        isCreatingAccount = isCreate;
+        emailInput.value = ''; // Clear inputs when switching mode
+        passwordInput.value = '';
+        
+        // Hide existing error box when switching mode
+        const errorBox = document.getElementById('authErrorBox');
+        if (errorBox) {
+            errorBox.style.opacity = '0';
+            errorBox.style.maxHeight = '0';
+        }
+
+        document.querySelector('#loginBox h2').textContent = isCreate ? "Create Account" : "Login";
+        emailLoginBtn.textContent = isCreate ? "Sign Up" : "Login";
+        emailLoginBtn.style.background = isCreate ? '#007bff' : '#007bff'; // Blue for both actions
+
+        // Apply the "or" prefix logic for the toggle button
+        if (isCreate) {
+            createAccountBtn.innerHTML = 'or <span style="font-weight: bold; color: #4dabff;">Back to Login</span>';
+        } else {
+            createAccountBtn.innerHTML = 'or <span style="font-weight: bold; color: #4dabff;">Create new account</span>';
+        }
+    }
+
+    /**
+     * Updates the user's display name in Firebase and re-renders the greeting.
+     */
+    async function saveDisplayName(user, newName) {
+        const input = document.getElementById('userNameInput');
+        const oldNameSpan = document.createElement('span');
+        
+        // Use a temporary span element while updating
+        oldNameSpan.id = 'userNameDisplay';
+        oldNameSpan.title = "Double-click to edit";
+        
+        // Optimistic update
+        oldNameSpan.textContent = newName;
+        input.parentNode.replaceChild(oldNameSpan, input);
+        
+        try {
+            await user.updateProfile({
+                displayName: newName
+            });
+            console.log("Display name updated to:", newName);
+            // Re-attach dblclick listener to the new span element
+            setupGreetingEdit(user); 
+        } catch (error) {
+            console.error("Error updating display name:", error);
+            // Revert to old name if update failed (use the latest from Firebase if available)
+            oldNameSpan.textContent = user.displayName || 'Error';
+            displayError("Failed to save name: " + error.message);
+            setupGreetingEdit(user); // Re-attach listener anyway
+        }
+    }
+    
+    /**
+     * Sets up the double-click handler to allow editing the display name.
+     */
+    function setupGreetingEdit(user) {
+        const nameSpan = document.getElementById('userNameDisplay');
+        if (!nameSpan) return;
+
+        // Attach double-click listener
+        nameSpan.ondblclick = () => {
+            // Check if user is not the admin UID (optional restriction, can be removed)
+            // if (user.uid === ADMIN_UID) return; 
+
+            // Create an input field
+            const currentName = nameSpan.textContent.trim();
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentName;
+            input.id = 'userNameInput';
+            
+            // Inline styling for the input to blend with the greeting text
+            input.style.cssText = 'background: #0b1220; border: 1px solid #4dabff; color: #e8edf6; padding: 2px 4px; border-radius: 4px; font-size: 18px; width: 150px;';
+
+            // Replace the span with the input
+            nameSpan.parentNode.replaceChild(input, nameSpan);
+            input.focus();
+
+            // Function to save the name
+            const saveEdit = async () => {
+                const newName = input.value.trim();
+                // Check if name has changed and is not empty
+                if (newName && newName !== currentName) {
+                    await saveDisplayName(user, newName);
+                } else {
+                    // Revert if cancelled, empty, or unchanged
+                    // Create a new span element to replace the input
+                    const revertSpan = document.createElement('span');
+                    revertSpan.id = 'userNameDisplay';
+                    revertSpan.title = "Double-click to edit";
+                    revertSpan.textContent = currentName;
+                    
+                    input.parentNode.replaceChild(revertSpan, input);
+                    setupGreetingEdit(user); // Re-attach listener
+                }
+            };
+
+            // Save on blur (when input loses focus)
+            input.onblur = saveEdit;
+            
+            // Save on Enter key press
+            input.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); 
+                    saveEdit();
+                }
+            };
+        };
+    }
+
+    // 3. User Initialization and Admin Greeting
+    function initUser(user) {
+      loginPopup.style.display = "none";
+      fakeAddBtn.style.display = "none"; // Hide by default
+
+      if (user) {
+        let displayName = user.displayName;
+        const defaultName = user.email ? user.email.split('@')[0] : 'User';
+        
+        // 1. Check and set default name if not set
+        if (!displayName) {
+          displayName = defaultName;
+          user.updateProfile({
+            displayName: displayName
+          }).catch(error => console.error("Error setting default display name:", error));
+        }
+
+        // 2. Render the greeting with the name span
+        let adminTag = '';
+        if (user.uid === ADMIN_UID) {
+          adminTag = '<span class="Admin">(Admin)</span><img src="https://static.vecteezy.com/system/resources/thumbnails/034/211/380/small_2x/blue-checkmark-validation-social-media-png.png" alt="Admin tick">';
+          fakeAddBtn.style.display = "block";
+        }
+        
+        // Use a span with ID for the name that can be edited
+        greeting.innerHTML = `<span>Welcome, <span id="userNameDisplay" title="Double-click to edit">${displayName}</span> ${adminTag}</span>`;
+        
+        // 3. Setup editing capability
+        setupGreetingEdit(user);
+        
+      } else {
+        // No user logged in
+        greeting.innerHTML = '';
+      }
+    }
+
+    // 4. Firebase Authentication Handlers
+
+    // Listen for auth state changes
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        // User is signed in.
+        initUser(user);
+        toggleMode(false); // Reset to login mode on successful auth
+      } else {
+        // User is signed out.
+        initUser(null);
+        // Automatically show the login popup if no user is signed in
+        loginPopup.style.display = "flex";
+      }
+    });
+
+    // Email/Password Action (handles both Login and Signup)
+    emailLoginBtn.onclick = async () => {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+      
+      // Basic client-side validation
+      if (!email || !password) {
+        displayError("Please enter both email and password.");
+        return;
+      }
+
+      try {
+        if (isCreatingAccount) {
+            // New account creation (This will automatically log the user in)
+            await auth.createUserWithEmailAndPassword(email, password);
+            console.log("Account created successfully and user logged in.");
+        } else {
+            // Login
+            await auth.signInWithEmailAndPassword(email, password);
+        }
+        // auth.onAuthStateChanged will handle hiding the popup and initializing the user
+      } catch (error) {
+        displayError((isCreatingAccount ? "Sign Up" : "Login") + " failed: " + error.message);
+      }
+    };
+
+    // Toggle between Login and Create Account mode
+    createAccountBtn.onclick = () => {
+        toggleMode(!isCreatingAccount);
+    };
+    
+    // Google Sign-In
+    googleLoginBtn.onclick = async () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      try {
+        await auth.signInWithPopup(provider);
+        // auth.onAuthStateChanged will handle initUser
+      } catch (error) {
+        displayError("Google Login failed: " + error.message);
+      }
+    };
+    
+    // Initialize the mode when the script loads
+    toggleMode(false);
+
+
+    // Placeholder for searchBooks and other functions
+    
+    // Simple Auto Carousel
+    let index = 0;
+    const slides = document.getElementById("bannerSlide");
+    const totalSlides = slides.children.length;
+    const dots = document.querySelectorAll(".dot"); // Get dots here
+
+    function updateDots() {
+      dots.forEach((dot, i) => {
+        dot.classList.toggle("active", i === index);
+      });
+    }
+
+    function showSlide() {
+      index = (index + 1) % totalSlides;
+      slides.style.transform = `translateX(-${index * 100}%)`;
+      updateDots(); // Update dots on slide change
+    }
+
+    function setSlide(n) {
+      index = n;
+      slides.style.transform = `translateX(-${index * 100}%)`;
+      updateDots();
+    }
+
+    setInterval(showSlide, 4000);
+    // ... (rest of carousel/swipe code) ...
+    let startX = 0;
+    let endX = 0;
+    const bannerContainer = document.getElementById("bannerContainer");
+
+    bannerContainer.addEventListener("touchstart", (e) => {
+      startX = e.touches[0].clientX;
+    });
+
+    bannerContainer.addEventListener("touchend", (e) => {
+      endX = e.changedTouches[0].clientX;
+      handleSwipe();
+    });
+
+    function handleSwipe() {
+      const diff = endX - startX;
+      if (Math.abs(diff) > 50) { // swipe threshold
+        if (diff > 0) {
+          index = (index - 1 + totalSlides) % totalSlides; // swipe right
+        } else {
+          index = (index + 1) % totalSlides; // swipe left
+        }
+        slides.style.transform = `translateX(-${index * 100}%)`;
+        updateDots();
+      }
+    }
+
+    function toggleMenu(){
+      document.getElementById("sidebar")?.classList.toggle("active");
+    }
+
+    function previewPDF(file) {
+      pdfFrame.src = file + "#toolbar=0&navpanes=0&scrollbar=0";
+      previewOverlay.style.display = "flex";
+    }
+
+    function closePreview() {
+      previewOverlay.style.display = "none";
+      pdfFrame.src = "";
+    }
+
+    function openFullscreen() {
+      if (pdfFrame.requestFullscreen) pdfFrame.requestFullscreen();
+    }
+
+    // Disable right-click
+    document.addEventListener("contextmenu", e => e.preventDefault());
+
+    // Block common shortcut keys
+    document.addEventListener("keydown", e => {
+      if ( 
+        (e.ctrlKey && ["s","u","p"].includes(e.key.toLowerCase())) ||
+        (e.ctrlKey && e.shiftKey && ["i","j","c"].includes(e.key.toLowerCase())) ||
+        (e.key === "PrintScreen")
+      ) {
+        e.preventDefault();
+        displayError("Export/Download is disabled!");
+      }
+    });
+
+    function searchBooks() { 
+      let input = document.getElementById('searchInput').value.toLowerCase(); 
+      let books = document.getElementsByClassName('book'); 
+      for (let i = 0; i < books.length; i++) { 
+        let title = books[i].getElementsByTagName("h3")[0].innerText.toLowerCase(); 
+        let author = books[i].getElementsByClassName("author")[0]?.innerText.toLowerCase() || ""; 
+        let year = books[i].getElementsByClassName("year")[0]?.innerText.toLowerCase() || ""; 
+        if (title.includes(input) || author.includes(input) || year.includes(input)) { 
+          books[i].style.display = "block"; 
+        } else { 
+          books[i].style.display = "none"; 
+        } 
+      } 
+    }
+    
+  </script>
+
+</body>
+</html>

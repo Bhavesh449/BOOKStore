@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOOKStore-Games</title>
+    <style>
+        body {
+            background-color: #0b1220;
+            color: white;
+            font-family: sans-serif;
+            text-align: center;
+        }
+        #logo {height: 66px;
+      max-width: 90%;
+            display: block;
+            margin: 20px auto;
+        }
+        .tabs {
+            margin: 20px 0;
+        }
+        .tab-button {
+            background-color: rgb(40, 57, 87);
+            border: 1px solid rgb(25, 37, 56);
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+        .tab-button.active {
+            background-color: rgb(25, 37, 56);
+            border-radius: 8px;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        #play-sudoku {
+            padding: 20px;
+        }
+        #create-new-btn {
+          border-radius: 8px;
+            background-color: rgb(0, 90, 187);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+        #create-new-btn {
+          border-radius: 8px;
+            background-color: rgb(0, 90, 187);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+        #create-josh-btn {
+          border-radius: 8px;
+            background-color: rgb(0, 90, 187);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+        #leaderboard-table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 80%;
+        }
+        #leaderboard-table th, #leaderboard-table td {
+            border: 1px solid #555;
+            padding: 10px;
+        }
+        /* Box around page title */
+     .section-box {
+       width: 72%;
+       max-width: 820px;
+       margin: 14px auto;
+       padding: 14px 20px;
+       border-radius: 14px;
+       background: linear-gradient(135deg, rgba(77,171,255,0.06), rgba(155,89,255,0.03));
+       border: 1px solid rgba(77,171,255,0.14);
+       box-shadow: 0 10px 30px rgba(4,25,50,0.55), inset 0 1px 0 rgba(255,255,255,0.02);
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+       justify-content: center;
+       text-align: center;
+       backdrop-filter: blur(6px) saturate(120%);
+     } 
+     .section-box h1 {
+       margin: 0;
+       font-size: 20px;
+       color: #e8f7ff;
+       letter-spacing: 0.6px;
+       text-shadow: 0 6px 18px rgba(4,85,160,0.06);
+     }
+     .section-box .subtitle {
+       margin-top: -8px;
+       margin-bottom: 20px;
+       font-size: 13px;
+       color: #c3d7ef;
+       opacity: 0.95;
+     }/* thin divider between game cards */
+       .game-divider {
+         width: 100%;
+         height: 2px;
+         background: rgba(255,255,255,0.06);
+         margin: 18px 0;
+         border-radius: 1px;
+       }
+  
+/* Leaderboard list styles */
+    .leaderboard-list {
+      width: 100%;
+      max-width: 720px;
+      margin: 12px auto 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 4px 6px;
+      box-sizing: border-box;
+    }
+    .leader-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+     background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.03);
+      border-radius: 12px;
+      color: #e8f7ff;
+    }
+    /* scale / sizing by rank: 1 is largest, then 2, then 3, then normal */
+    .leaderboard-list .leader-row { transition: all .18s ease, transform .18s ease; }
+
+    /* Rank 1 - largest */
+    .leaderboard-list .leader-row:nth-child(1) {
+      padding: 20px 18px;
+      transform: scale(1.05);
+      background: linear-gradient(90deg, rgba(77,171,255,0.10), rgba(155,89,255,0.04));
+      border-color: rgba(77,171,255,0.18);
+    }
+    .leaderboard-list .leader-row:nth-child(1) .rank-img,
+    .leaderboard-list .leader-row:nth-child(1) .rank-badge {
+      width: 64px;
+      height: 64px;
+    }
+    .leaderboard-list .leader-row:nth-child(1) .player-name { font-size: 18px; font-weight: 800; }
+
+    /* Rank 2 - slightly smaller */
+    .leaderboard-list .leader-row:nth-child(2) {
+      padding: 18px 16px;
+      transform: scale(1.03);
+      border-color: rgba(155,155,255,0.10);
+    }
+    .leaderboard-list .leader-row:nth-child(2) .rank-img,
+    .leaderboard-list .leader-row:nth-child(2) .rank-badge { width: 54px; height: 54px; }
+    .leaderboard-list .leader-row:nth-child(2) .player-name { font-size: 16px; font-weight: 700; }
+
+    /* Rank 3 - a bit smaller again */
+    .leaderboard-list .leader-row:nth-child(3) {
+      padding: 16px 14px;
+      transform: scale(1.02);
+    }
+    .leaderboard-list .leader-row:nth-child(3) .rank-img,
+    .leaderboard-list .leader-row:nth-child(3) .rank-badge { width: 46px; height: 46px; }
+    .leaderboard-list .leader-row:nth-child(3) .player-name { font-size: 15px; }
+
+   /* Ranks 4+ normal size */
+    .leaderboard-list .leader-row:nth-child(n+4) {
+      padding: 12px 14px;
+      transform: scale(1);
+    }
+    .leaderboard-list .leader-row .rank-badge { width: 40px; height: 40px; }
+ 
+    .leader-left {
+      display:flex;
+    align-items:center;
+      gap:12px;
+    }
+    /* leaderboard header with trophy */
+    .leaderboard-header {
+      display: flex;
+      align-items: center;
+      justify-content: center; /* keep centered with page */
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .leaderboard-header .trophy {
+      width: 25px;
+      height: 25px;
+      object-fit: contain;
+      display: block;
+    }
+    .rank-img {
+      width:24px;
+      height:24px;
+      object-fit:contain;
+      display:block;
+    }
+    .rank-badge {
+      width:44px;
+      height:44px;
+      border-radius:50%;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(77,171,255,0.14);
+      color:#cfe9ff;
+      font-weight:700;
+      font-size:16px;
+    }
+   .player-name {
+      font-weight:600;
+      color:#dff3ff;
+    }
+    .matches {
+      font-weight:700;
+      color:#9fd1ff;
+      min-width:56px;
+      text-align:right;
+    }
+    /* Hamburger Button */
+    .hamburger {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      cursor: pointer;
+      width: 30px;
+      height: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .hamburger span {
+      display: block;
+      height: 4px;
+      background: white;
+      border-radius: 2px;
+      transition: 0.3s;
+    }
+    /* Change to "X" when active */
+    .hamburger.active span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+    .hamburger.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(6px, -6px);
+    }
+    
+    /* Menu */
+    .menu {
+      position: fixed;
+      top: 0;
+      right: -220px;
+      width: 200px;
+      height: 100%;
+      background: #1c2940;
+      padding: 60px 20px;
+      transition: right 0.3s ease;
+      z-index: 1000;
+    }
+    .menu.active {
+      right: 0;
+    }
+    .menu a {
+      display: block;
+      padding: 12px 0;
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+      border-bottom: 1px solid #333;
+    }
+    .menu a:hover {
+      color: rgb(0, 68, 255);
+    }
+    .close-btn {
+  display: block;
+  margin-bottom: 20px;
+  text-align: right;
+  font-size: 18px;
+  cursor: pointer;
+  color: red;
+  font-weight: bold;
+}
+.close-btn:hover {
+  color: #ff6666;
+}
+
+    </style>
+</head>
+<body>
+ <header>
+   <a href="index.html"><img src="logo.png" alt="BOOKStore" id="logo"></a>
+    <!-- Hamburger Button -->
+    <div class="hamburger" id="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </header>
+
+ <!-- Hamburger Menu -->
+  <div class="menu" id="menu">
+    <div class="close-btn" id="closeBtn">CLOSE </div>
+    <a href="index.html">🏠 Home</a>
+    <b><a href="games.html">🎮 Games Zone</a></b>
+    </a><a href="profile.html">👤Profile</a>
+  </div>
+    <h1>Mini-Games</h1>
+
+    <div class="tabs">
+        <button class="tab-button active" onclick="openTab('play')">Play</button>
+        <button class="tab-button" onclick="openTab('leaderboard')">Leaderboard</button>
+    </div>
+
+<div class="section-box">
+    <div id="play" class="tab-content active">
+    <div class="game-card">
+      <h2>Play Sudoku</h2>
+      <button id="create-new-btn">Create New</button>
+    </div>
+<div class="game-divider" role="separator" aria-hidden="true"></div>
+    <div class="game-card" style="margin-top:18px;">
+      <h2>Play 100x Josh</h2>
+      <button id="create-josh-btn">Create New</button>
+    </div>
+  </div>
+
+  <div id="leaderboard" class="tab-content">
+   <div class="leaderboard-header">
+      <img src="https://www.pngplay.com/wp-content/uploads/6/Gold-Trophy-Vector-Transparent-PNG.png" alt="Trophy" class="trophy" />
+      <h2>Leaderboard</h2>
+    </div>
+    <div class="subtitle"><b>Do you know:</b> Rank 1 get Rewards</div>
+    <!-- New leaderboard list: rows per user, top-3 use images https://cdn.pixabay.com/photo/2023/08/23/03/14/award-8207550_1280.png / https://png.pngtree.com/png-clipart/20230811/original/pngtree-ranking-medal-icon-illustration-2nd-place-silver-set-success-graphic-vector-picture-image_10347047.png / https://cdn-icons-png.flaticon.com/512/2249/2249022.png -->
+    <div id="leaderboard-list" class="leaderboard-list" aria-live="polite"></div>
+  </div>
+</div>
+<footer style="background:#0b1220;color:white;text-align:center;padding:20px 10px;font-size:14px;">
+  <p>© 2025 BOOKStore. All rights reserved.</p>
+  <p>
+    <a href="privacy.html" style="color:#58a6ff;text-decoration:none;">Privacy Policy</a> |
+    <a href="about.html" style="color:#58a6ff;text-decoration:none;">About Us</a>
+  </p>
+</footer>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-database-compat.js"></script>
+
+    <script>
+         const hamburger = document.getElementById("hamburger");
+    const menu = document.getElementById("menu");
+    hamburger.addEventListener("click", () => {
+      hamburger.classList.toggle("active");
+      menu.classList.toggle("active");
+    });
+    const closeBtn = document.getElementById("closeBtn");
+
+closeBtn.addEventListener("click", () => {
+  hamburger.classList.remove("active");
+  menu.classList.remove("active");
+});
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+             apiKey: "AIzaSyCcpG-oEqkDprgTwWXKt5CFsttjAQAZFNg",
+             authDomain: "bookstore-6ab08.firebaseapp.com",
+             projectId: "bookstore-6ab08",
+             storageBucket: "bookstore-6ab08.appspot.com",
+             messagingSenderId: "102226032749",
+             appId: "1:102226032749:web:428129ff9e000450522764",
+             measurementId: "G-QKHR0B3MCY"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        function openTab(tabName) {
+  const tabButtons = document.querySelectorAll(".tab-button");
+  const tabContents = document.querySelectorAll(".tab-content");
+
+  tabButtons.forEach(btn => btn.classList.remove("active"));
+  tabContents.forEach(content => content.classList.remove("active"));
+
+  document.querySelector(`[onclick="openTab('${tabName}')"]`).classList.add("active");
+  document.getElementById(tabName).classList.add("active");
+}
+
+ const leaderboardList = document.getElementById('leaderboard-list');
+       const playersRef = database.ref('leaderboard');
+
+        // --- Firebase Leaderboard Code ---
+
+       
+
+        // Function to add a new player (for testing)
+        function addPlayer(name, matches) {
+            const newPlayerRef = playersRef.push();
+            newPlayerRef.set({
+                name: name,
+                matches: matches
+            });
+        }
+
+        const leaderboardRef = database.ref('leaderboard');
+// Update or add player on leaderboard
+function updateLeaderboard(playerName) {
+  const leaderboardRef = database.ref('leaderboard');
+
+  leaderboardRef.once('value', (snapshot) => {
+    let playerExists = false;
+
+    snapshot.forEach((childSnapshot) => {
+      const player = childSnapshot.val();
+      const key = childSnapshot.key;
+
+      if (player.name === playerName) {
+        // Player already exists → update their matches
+        playerExists = true;
+        const newMatches = (player.matches || 0) + 1;
+        database.ref('leaderboard/' + key).update({
+          matches: newMatches
+        });
+      }
+    });
+
+    // If player not found, add a new one
+    if (!playerExists) {
+      leaderboardRef.push({
+        name: playerName,
+        matches: 1
+      });
+    }
+  });
+}
+
+// Function to add a player and their matches to the database
+function addPlayerToLeaderboard(playerName, matchesPlayed) {
+  // Create a new entry in the 'leaderboard' list
+  const newPlayerRef = leaderboardRef.push();
+  newPlayerRef.set({
+    name: playerName,
+    matches: matchesPlayed
+  });
+}
+        // Helper: simple escape to avoid injecting HTML from DB
+        function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+        playersRef.on('value', (snapshot) => {
+          leaderboardList.innerHTML = '';
+          const players = [];
+          snapshot.forEach((childSnapshot) => {
+            players.push(childSnapshot.val());
+          });
+          // Sort descending by matches
+          players.sort((a, b) => (b.matches || 0) - (a.matches || 0));
+
+          let rank = 1;
+          players.forEach((player) => {
+            const row = document.createElement('div');
+            row.className = 'leader-row';
+
+            // rank visual: image for top3, numeric badge otherwise
+            let rankHTML = '';
+            if (rank === 1) rankHTML = `<img src="https://cdn.pixabay.com/photo/2023/08/23/03/14/award-8207550_1280.png" alt="1st" class="rank-img">`;
+            else if (rank === 2) rankHTML = `<img src="https://png.pngtree.com/png-clipart/20230811/original/pngtree-ranking-medal-icon-illustration-2nd-place-silver-set-success-graphic-vector-picture-image_10347047.png" alt="2nd" class="rank-img">`;
+            else if (rank === 3) rankHTML = `<img src="https://cdn-icons-png.flaticon.com/512/2249/2249022.png" alt="3rd" class="rank-img">`;
+            else rankHTML = `<div class="rank-badge">${rank}</div>`;
+
+            row.innerHTML = `
+              <div class="leader-left">
+                ${rankHTML}
+                <div class="player-name">${escapeHtml(player.name || 'Unknown')}</div>
+              </div>
+              <div class="matches">${Number(player.matches || 0)}</div>
+            `;
+
+           leaderboardList.appendChild(row);
+            rank++;
+          });
+        });
+// Move root player object into /leaderboard as a child with a push-id
+const rootRef = database.ref('/');
+rootRef.once('value').then(snap => {
+  const data = snap.val();
+  // If name & matches exist at root, push them under /leaderboard
+  if (data && data.name && data.matches !== undefined) {
+    const lbRef = database.ref('leaderboard');
+    lbRef.push({
+      name: data.name,
+      matches: Number(data.matches) // ensure numeric
+    }).then(() => {
+      // Optionally remove old root fields so migration is clean:
+      rootRef.child('name').remove();
+      rootRef.child('matches').remove();
+      console.log('Migrated root player into /leaderboard');
+    });
+  } else {
+    console.log('No player found at root to migrate.');
+  }
+});
+// Redirect to Sudoku.html when clicking "Create New"
+document.getElementById("create-new-btn").addEventListener("click", () => {
+  window.location.href = "Sudoku.html";
+});
+// Redirect to 100x Josh game page
+const joshBtn = document.getElementById("create-josh-btn");
+if (joshBtn) {
+  joshBtn.addEventListener("click", () => {
+    window.location.href = "josh.html";
+  });
+}
+// Disable right-click
+    document.addEventListener("contextmenu", e => e.preventDefault());
+
+    // Block common shortcut keys
+    document.addEventListener("keydown", e => {
+      if ( 
+        (e.ctrlKey && ["s","u","p"].includes(e.key.toLowerCase())) ||
+        (e.ctrlKey && e.shiftKey && ["i","j","c"].includes(e.key.toLowerCase())) ||
+        (e.key === "PrintScreen")
+      ) {
+        e.preventDefault();
+        alert("Export/Download is disabled!");
+      }
+    });
+    </script>
+
+</body>
+</html>

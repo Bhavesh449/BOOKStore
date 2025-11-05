@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BOOKStore - My Account</title>
+  <link rel="icon" type="image/png" href="https://png.pngtree.com/png-vector/20240515/ourmid/pngtree-open-book-logo-png-image_12467719.png">
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b1220;
+      color: #e8edf6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      padding-bottom: 60px; /* Space for the fixed bottom nav */
+    }
+    header {
+      background: #0b1220;
+      padding: 15px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      border-bottom: 1px solid #1f2a3d;
+    }
+    #logo {
+      height: 66px;
+      max-width: 90%;
+      object-fit: contain;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .container {
+      max-width: 600px;
+      width: 90%;
+      margin: 20px auto;
+      padding: 20px;
+      background: #1c2940;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    h2 {
+      color: #4dabff;
+      border-bottom: 2px solid #1f2a3d;
+      padding-bottom: 10px;
+      margin-top: 0;
+    }
+
+    /* Profile Info Section */
+    .profile-info {
+      margin-bottom: 30px;
+      padding: 15px;
+      background: #121a2a;
+      border-radius: 8px;
+    }
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px dotted #2d3c54;
+    }
+    .info-item:last-child {
+      border-bottom: none;
+    }
+    .label {
+      font-weight: bold;
+      color: #aaa;
+    }
+    #displayName, #userEmail {
+      font-size: 1.1em;
+      color: #e8edf6;
+      cursor: pointer;
+      padding: 2px 5px;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+    #displayName:hover {
+      background-color: #2d3c54;
+    }
+    #nameInput {
+      background: #0b1220;
+      border: 1px solid #4dabff;
+      color: #e8edf6;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-size: 1.1em;
+      width: 150px;
+    }
+
+
+    /* Password Change Form */
+    .password-form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .password-form input {
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      background-color: #0b1220;
+      color: #e8edf6;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    #logoutBtn {
+        background: #dc3545;
+    }
+    #logoutBtn:hover {
+        background: #c82333;
+    }
+    #messageBox {
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 15px;
+      font-weight: bold;
+      text-align: center;
+      display: none;
+    }
+    /* Dynamic Message Colors via JS */
+    .error { background: #dc3545; color: white; }
+    .success { background: #4dabff; color: white; }
+
+    /* Top-left back button (same as Oswaal) */
+    .back-btn {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1100;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+      border: 1px solid rgba(255,255,255,0.03);
+      text-decoration: none;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+    .back-btn svg {
+      width: 20px;
+      height: 20px;
+      display: block;
+      fill: #e8edf6;
+    }
+    .back-btn:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.06);
+    }
+    
+    /* Hamburger Button */
+    .hamburger {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      cursor: pointer;
+      width: 30px;
+      height: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .hamburger span {
+      display: block;
+      height: 4px;
+      background: white;
+      border-radius: 2px;
+      transition: 0.3s;
+    }
+    /* Change to "X" when active */
+    .hamburger.active span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+    .hamburger.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(6px, -6px);
+    }
+    
+    /* Menu */
+    .menu {
+      position: fixed;
+      top: 0;
+      right: -220px;
+      width: 200px;
+      height: 100%;
+      background: #1c2940;
+      padding: 60px 20px;
+      transition: right 0.3s ease;
+      z-index: 1000;
+    }
+    .menu.active {
+      right: 0;
+    }
+    .menu a {
+      display: block;
+      padding: 12px 0;
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+      border-bottom: 1px solid #333;
+    }
+    .menu a:hover {
+      color: rgb(0, 68, 255);
+    }
+    .close-btn {
+  display: block;
+  margin-bottom: 20px;
+  text-align: right;
+  font-size: 18px;
+  cursor: pointer;
+  color: red;
+  font-weight: bold;
+}
+.close-btn:hover {
+  color: #ff6666;
+}
+
+#logo {
+  cursor: pointer; /* makes it clear the logo is clickable */
+}
+  </style>
+</head>
+<body>
+   <header>
+  <a href="index.html">
+    <img src="logo.png" alt="BOOKStore" id="logo">
+  </a>
+  <!-- Hamburger Button -->
+  <div class="hamburger" id="hamburger">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</header>
+
+  <!-- Hamburger Menu -->
+  <div class="menu" id="menu">
+    <div class="close-btn" id="closeBtn">CLOSE </div>
+    <a href="index.html">🏠 Home</a>
+    <a href="games.html">🎮 Games Zone</a>
+    <b><a href="profile.html">👤Profile</a></b>
+  </div>
+
+  <!-- Hamburger Menu -->
+  <div class="menu" id="menu">
+    <div class="close-btn" id="closeBtn">CLOSE </div>
+    <b><a href="index.html">🏠 Home</a></b>
+    <a href="games.html">🎮 Games Zone</a>
+    <a href="profile.html">👤Profile</a>
+  </div>
+
+  <div class="container" id="accountContainer">
+    <h2 id="pageTitle">My Account</h2>
+    
+    <div id="profileDetails">
+        <!-- User details will be populated here -->
+    </div>
+    
+    <!-- Password Change Section -->
+    <h2 style="margin-top: 30px;">Change Password</h2>
+    <div id="passwordFormContainer">
+        <div class="password-form">
+            <input type="password" id="currentPassword" placeholder="Current Password" required>
+            <input type="password" id="newPassword" placeholder="New Password (min 6 characters)" required>
+            <input type="password" id="confirmNewPassword" placeholder="Confirm New Password" required>
+            <button id="changePasswordBtn">Update Password</button>
+        </div>
+    </div>
+    
+    <div id="messageBox"></div>
+
+    <button id="logoutBtn" style="margin-top: 30px; width: 100%;">Log Out</button>
+  </div>
+<footer style="background:#0b1220;color:white;text-align:center;padding:20px 10px;font-size:14px;">
+  <p>© 2025 BOOKStore. All rights reserved.</p>
+  <p>
+    <a href="privacy.html" style="color:#58a6ff;text-decoration:none;">Privacy Policy</a> |
+    <a href="about.html" style="color:#58a6ff;text-decoration:none;">About Us</a>
+  </p>
+</footer>
+<script>
+    
+    const hamburger = document.getElementById("hamburger");
+    const menu = document.getElementById("menu");
+    hamburger.addEventListener("click", () => {
+      hamburger.classList.toggle("active");
+      menu.classList.toggle("active");
+    });
+    const closeBtn = document.getElementById("closeBtn");
+
+closeBtn.addEventListener("click", () => {
+  hamburger.classList.remove("active");
+  menu.classList.remove("active");
+});
+    // 1. Firebase Configuration (MUST MATCH index.html)
+    const firebaseConfig = {
+      apiKey: "AIzaSyCcpG-oEqkDprgTwWXKt5CFsttjAQAZFNg",
+      authDomain: "bookstore-6ab08.firebaseapp.com",
+      projectId: "bookstore-6ab08",
+      storageBucket: "bookstore-6ab08.firebasestorage.app",
+      messagingSenderId: "102226032749",
+      appId: "1:102226032749:web:f7090175d2e53c2f522764",
+      measurementId: "G-R9N7YSCMY0"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = app.auth();
+
+    // 2. Element References
+    const container = document.getElementById("accountContainer");
+    const profileDetails = document.getElementById("profileDetails");
+    const currentPasswordField = document.getElementById("currentPassword");
+    const newPasswordField = document.getElementById("newPassword");
+    const confirmNewPasswordField = document.getElementById("confirmNewPassword");
+    const changePasswordBtn = document.getElementById("changePasswordBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const messageBox = document.getElementById("messageBox");
+
+    let currentUser = null; // To hold the authenticated user object
+
+    /**
+     * Display a temporary message to the user.
+     * @param {string} message The text content.
+     * @param {boolean} isError True for errors (red), false for success (blue).
+     */
+    function displayMessage(message, isError = false) {
+      messageBox.textContent = message;
+      messageBox.className = isError ? 'error' : 'success';
+      messageBox.style.display = 'block';
+      setTimeout(() => {
+        messageBox.style.display = 'none';
+      }, 5000);
+    }
+
+    /**
+     * Renders the user's profile details with an editable display name.
+     * @param {firebase.User} user The authenticated Firebase user object.
+     */
+    function renderProfile(user) {
+      currentUser = user;
+      
+      const displayName = user.displayName || (user.email ? user.email.split('@')[0] : 'User');
+      const email = user.email || 'N/A';
+      
+      profileDetails.innerHTML = `
+        <div class="profile-info">
+          <div class="info-item">
+            <span class="label">Display Name:</span>
+            <span id="displayName" title="Double-click to edit">${displayName}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Email:</span>
+            <span id="userEmail">${email}</span>
+          </div>
+        </div>
+      `;
+
+      // Set up the double-click edit functionality for the display name
+      setupGreetingEdit(user);
+      
+      // Clear password fields on successful render
+      currentPasswordField.value = '';
+      newPasswordField.value = '';
+      confirmNewPasswordField.value = '';
+    }
+
+    // 3. Display Name Editing Logic (adapted from previous file)
+    function setupGreetingEdit(user) {
+        const nameSpan = document.getElementById('displayName');
+        if (!nameSpan) return;
+
+        // Attach double-click listener
+        nameSpan.ondblclick = () => {
+            const currentName = nameSpan.textContent.trim();
+            
+            // Create the input field
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentName;
+            input.id = 'nameInput';
+            
+            nameSpan.parentNode.replaceChild(input, nameSpan);
+            input.focus();
+
+            const saveEdit = async () => {
+                const newName = input.value.trim();
+                
+                if (newName && newName !== currentName) {
+                    await saveDisplayName(user, newName, input, nameSpan);
+                } else {
+                    // Revert if cancelled, empty, or unchanged
+                    revertToSpan(input, currentName);
+                }
+            };
+
+            // Save on blur or Enter key press
+            input.onblur = saveEdit;
+            input.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); 
+                    saveEdit();
+                }
+            };
+        };
+    }
+    
+    function revertToSpan(inputElement, originalName) {
+        const revertSpan = document.createElement('span');
+        revertSpan.id = 'displayName';
+        revertSpan.title = "Double-click to edit";
+        revertSpan.textContent = originalName;
+        inputElement.parentNode.replaceChild(revertSpan, inputElement);
+        setupGreetingEdit(currentUser); // Re-attach listener
+    }
+
+    async function saveDisplayName(user, newName, inputElement, originalSpan) {
+        // Optimistic update
+        inputElement.parentNode.replaceChild(originalSpan, inputElement);
+        originalSpan.textContent = newName;
+        originalSpan.id = 'displayName'; // Ensure ID is correct for re-attachment
+        
+        try {
+            await user.updateProfile({ displayName: newName });
+            displayMessage("Display name updated successfully!", false);
+        } catch (error) {
+            console.error("Error updating display name:", error);
+            displayMessage("Failed to save name: " + error.message, true);
+            // Revert on failure
+            originalSpan.textContent = user.displayName;
+        } finally {
+            setupGreetingEdit(user); // Re-attach dblclick listener
+        }
+    }
+
+
+    // 4. Password Change Logic
+    changePasswordBtn.onclick = async () => {
+        const user = currentUser;
+        if (!user) {
+            displayMessage("You must be logged in to change your password.", true);
+            return;
+        }
+        
+        const currentPassword = currentPasswordField.value;
+        const newPassword = newPasswordField.value;
+        const confirmNewPassword = confirmNewPasswordField.value;
+
+        if (!currentPassword || !newPassword || !confirmNewPassword) {
+            displayMessage("All password fields are required.", true);
+            return;
+        }
+
+        if (newPassword !== confirmNewPassword) {
+            displayMessage("New passwords do not match.", true);
+            return;
+        }
+        
+        if (newPassword.length < 6) {
+            displayMessage("New password must be at least 6 characters.", true);
+            return;
+        }
+        
+        changePasswordBtn.disabled = true;
+        changePasswordBtn.textContent = 'Updating...';
+
+        try {
+            // 1. Re-authenticate the user with their current password.
+            // This is required by Firebase for security-sensitive operations like password change.
+            const credential = firebase.auth.EmailAuthProvider.credential(user.email, currentPassword);
+            await user.reauthenticateWithCredential(credential);
+
+            // 2. If re-authentication succeeds, update the password.
+            await user.updatePassword(newPassword);
+
+            displayMessage("Password updated successfully! You must log in again with your new password.", false);
+            
+            // Clear fields
+            currentPasswordField.value = '';
+            newPasswordField.value = '';
+            confirmNewPasswordField.value = '';
+            
+            // Optional: Log out user after successful password change for security
+            setTimeout(() => auth.signOut(), 3000); 
+
+        } catch (error) {
+            let errorMessage = "Failed to update password. ";
+            if (error.code === 'auth/requires-recent-login') {
+                errorMessage = "For security, please log out, log back in, and try again.";
+            } else if (error.code === 'auth/wrong-password') {
+                errorMessage = "Current password is incorrect.";
+            } else if (error.code === 'auth/invalid-email') {
+                errorMessage = "Invalid email. (This should not happen if logged in)";
+            } else {
+                errorMessage += error.message;
+            }
+            displayMessage(errorMessage, true);
+        } finally {
+            changePasswordBtn.disabled = false;
+            changePasswordBtn.textContent = 'Update Password';
+        }
+    };
+
+
+    // 5. Log Out Handler
+    logoutBtn.onclick = async () => {
+        try {
+            await auth.signOut();
+            displayMessage("Logged out successfully! Redirecting...", false);
+            setTimeout(() => {
+                window.location.href = "index.html"; // Redirect to the main page
+            }, 1000);
+        } catch (error) {
+            displayMessage("Logout failed: " + error.message, true);
+        }
+    };
+
+    // 6. Auth State Listener
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        // User is signed in. Render profile details.
+        renderProfile(user);
+      } else {
+        // User is signed out. Display a prompt or redirect.
+        container.innerHTML = `
+            <div style="text-align: center; padding: 50px;">
+                <p style="font-size: 1.2em; color: #aaa;">You are not logged in.</p>
+                <p>Please <a href="index.html" style="color: #4dabff; text-decoration: underline;">log in</a> to view your account details.</p>
+            </div>
+        `;
+      }
+    });
+    
+    // Disable right-click
+    document.addEventListener("contextmenu", e => e.preventDefault());
+
+    // Block common shortcut keys
+    document.addEventListener("keydown", e => {
+      if ( 
+        (e.ctrlKey && ["s","u","p"].includes(e.key.toLowerCase())) ||
+        (e.ctrlKey && e.shiftKey && ["i","j","c"].includes(e.key.toLowerCase())) ||
+        (e.key === "PrintScreen")
+      ) {
+        e.preventDefault();
+        displayError("Export/Download is disabled!");
+      }
+    });
+</script>
+</body>
+</html>

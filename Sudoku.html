@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BOOKStore-Sudoku</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+    <style>
+         body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b1220; /* Dark blue background */
+            color: #E0E0E0; /* Light gray text for contrast */
+        }
+        
+       /* logo shown inside the game container */
+       .game-logo {
+         height: 56px;
+         max-width: 160px;
+         object-fit: contain;
+         display: block;
+         margin: 0 auto 12px;
+       }
+        
+    /* logo image in header */
+    #logo {
+      height: 66px;
+      max-width: 90%;
+      object-fit: contain;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    
+        .sudoku-grid {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            grid-template-rows: repeat(9, 1fr);
+            border: 3px solid #4A5568; /* Medium blue-gray border */
+            border-radius: 8px;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+        .sudoku-grid .cell {
+            aspect-ratio: 1 / 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: clamp(1rem, 5vw, 1.75rem);
+            border: 1px solid #2D3748; /* Darker blue-gray cell border */
+            cursor: pointer;
+            transition: background-color 0.2s;
+            position: relative;
+        }
+        .sudoku-grid .cell:nth-child(3n) {
+            border-right: 2px solid #4A5568; /* Thicker border for 3x3 sections */
+        }
+        .sudoku-grid .cell:nth-child(9n) {
+            border-right: none;
+        }
+        .sudoku-grid > .cell:nth-child(n+19):nth-child(-n+27),
+        .sudoku-grid > .cell:nth-child(n+46):nth-child(-n+54) {
+            border-bottom: 2px solid #4A5568; /* Thicker border for 3x3 sections */
+        }
+        .cell.fixed {
+            color: #A0AEC0; /* Lighter gray for fixed numbers */
+            font-weight: 700;
+        }
+        .cell.selected {
+            background-color: #2a4365; /* A shade of blue for selection */
+        }
+         /* lighter highlight for the selected cell's row / column / box */
+      .cell.area-highlight {
+          background-color: rgba(66, 103, 150, 0.12);
+        }
+        /* ensure selected remains visually stronger than area highlights */
+        .cell.selected.area-highlight { background-color: #2a4365; }
+       /* highlight all cells that share the same value as the selected cell */
+       .cell.value-highlight {
+           background-color: #2a4365;
+       }
+        .cell.error {
+            color: #E53E3E; /* Red for errors remains effective */
+            animation: shake 0.5s;
+        }
+        .note-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            font-size: clamp(0.5rem, 1.5vw, 0.75rem);
+            color: #90cdf4; /* Light blue for notes */
+            pointer-events: none;
+        }
+        .note-grid span {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
+        .control-btn, .number-btn {
+            border-radius: 8px;
+            transition: background-color 0.2s, box-shadow 0.2s;
+        }
+        .control-btn:hover, .number-btn:hover {
+            background-color: #3a4a72; /* Slightly lighter blue for hover */
+        }
+        .control-btn.active, .number-btn.selected {
+            background-color: #4a5a8a; /* A distinct blue for active/selected state */
+            color: #fff;
+        }
+        .highlight {
+            background-color: rgba(74, 85, 104, 0.5); /* A subtle highlight that works on dark backgrounds */
+            transition: background-color 0.2s ease;
+        }
+        .win-modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6); /* Slightly darker overlay */
+            justify-content: center;
+            align-items: center;
+        }
+         /* controls row (icon buttons) placed above number pad */
+       .controls-row {
+           display: flex;
+           gap: 12px;
+           justify-content: center;
+           align-items: center;
+           margin-bottom: 8px;
+       }
+      .icon-btn {
+           width: 48px;
+           height: 48px;
+           border-radius: 999px; /* circular */
+           display: inline-flex;
+           align-items: center;
+           justify-content: center;
+           background: #2a3858;
+           border: 1px solid rgba(255,255,255,0.04);
+           cursor: pointer;
+           transition: transform .12s ease, background .12s, box-shadow .12s;
+           padding: 8px;
+           position: relative; /* allow absolute badge positioning */
+       }
+       .icon-btn img { width: 22px; height: 22px; display:block; object-fit:contain; filter: none; }
+       .icon-btn:hover { transform: translateY(-3px); background: #334569; }
+       /* active state for icon buttons (notes will toggle this class) */
+       .icon-btn.active {
+           background: linear-gradient(180deg,#3b5998,#2b3f72);
+           box-shadow: 0 6px 18px rgba(0,0,0,0.4), inset 0 -2px 0 rgba(255,255,255,0.03);
+           transform: translateY(-2px);
+       }
+/* badge positioned centered above the icon button (always visible) */
+       .icon-btn .badge {
+           position: absolute;
+           top: -10px;
+           left: 85%;
+           transform: translateX(-50%);
+           min-width: 22px;
+           height: 22px;
+           padding: 0 6px;
+           border-radius: 999px;
+           background: #1381ff;
+           color: #fff;
+           font-size: 12px;
+           display: inline-flex;
+           align-items: center;
+           justify-content: center;
+           box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+       }
+        .win-modal.show {
+            display: flex;
+        }
+        
+/* Back button (top-left) */
+    .back-btn {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+    background: rgba(255,255,255,0.04);
+      display: flex;
+      align-items: center;
+     justify-content: center;
+      z-index: 1100;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+      border: 1px solid rgba(255,255,255,0.03);
+      text-decoration: none;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+    .back-btn svg { width: 20px; height: 20px; display:block; fill: #e8edf6; }
+    .back-btn:hover { transform: translateY(-2px); background: rgba(255,255,255,0.06); }
+/* Disable text selection and dragging across the whole page */
+* {
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+    </style>
+     </head>
+ 
+     </div>
+   </header><body class="flex items-center justify-center min-h-screen p-2 sm:p-4">
+    <!-- Back button (top-left) -->
+  <a href="games.html" class="back-btn" aria-label="Go back">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+      <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+    </svg>
+  </a>
+  
+    <main class="w-full max-w-md mx-auto bg-[#1a2035] rounded-2xl p-4 shadow-lg space-y-4">
+        <!-- logo inside the game card -->
+        <img src="logo.png" alt="BOOKStore" class="game-logo" />
+         <header class="flex justify-between items-center text-sm sm:text-base">
+             <div class="text-left">
+                 <h1 id="difficulty-display" class="font-bold text-lg">Sudoku</h1>
+                 <p>Mistakes: <span id="mistakes">0</span>/10</p>
+             </div>
+            <div class="text-right">
+                <p id="timer" class="font-semibold text-lg">00:00</p>
+                <p>Score: <span id="score">0</span></p>
+            </div>
+        </header>
+        <div id="sudoku-grid" class="sudoku-grid"></div>
+        </div>
+        <!-- controls row: circular icon buttons (notes / hint / test) -->
+        <div class="controls-row" role="toolbar" aria-label="game controls">
+            <button id="notes-btn" class="icon-btn" title="Notes" aria-label="Notes">
+                <img src="note.svg" alt="">
+            </button>
+            <button id="hint-btn" class="icon-btn" title="Hint" aria-label="Hint">
+                <img src="hint.svg" alt="">
+                <span class="badge" id="hints-left">3</span>
+            </button>
+        </div>
+        <div id="number-pad" class="grid grid-cols-9 gap-1 sm:gap-2"></div>
+    <footer style="color:white;text-align:center;padding:20px 10px;font-size:14px;">
+  <p>© 2025 BOOKStore. All rights reserved.</p>
+  <p>
+    <a href="privacy.html" style="color:#58a6ff;text-decoration:none;">Privacy Policy</a> |
+    <a href="about.html" style="color:#58a6ff;text-decoration:none;">About Us</a>
+  </p>
+</footer>
+    </main>
+    
+    <div id="win-modal" class="win-modal">
+        <div class="bg-[#1a2035] rounded-lg p-8 text-center shadow-2xl">
+            <h2 class="text-3xl font-bold mb-4 text-green-500">Completed</h2>
+            <p class="mb-2">Your Score: <span id="final-score"></span></p>
+            <p class="mb-4">Time: <span id="final-time"></span></p>
+            <button id="new-game-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">New Game</button>
+        </div>
+    </div>
+    
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-database-compat.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const grid = document.getElementById('sudoku-grid');
+    const numberPad = document.getElementById('number-pad');
+    const mistakesEl = document.getElementById('mistakes');
+    const timerEl = document.getElementById('timer');
+    const notesBtn = document.getElementById('notes-btn');
+    const hintBtn = document.getElementById('hint-btn');
+    const hintsLeftEl = document.getElementById('hints-left');
+    const winModal = document.getElementById('win-modal');
+    const finalScoreEl = document.getElementById('final-score');
+    const finalTimeEl = document.getElementById('final-time');
+    const newGameBtn = document.getElementById('new-game-btn');
+
+    // --- Add Google Login Button ---
+    const googleBtn = document.createElement('button');
+    googleBtn.id = "google-login-btn";
+    googleBtn.type = "button";
+    // keep Tailwind classes for sizing but explicitly set styles to ensure text is visible
+    googleBtn.className = "flex items-center justify-center gap-2 bg-gray-200 border w-50 h-10 border-gray-400 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded mt-3 shadow";
+    googleBtn.style.minWidth = "200px";
+    googleBtn.style.background = "#ffffff";
+    googleBtn.style.color = "#111111";
+    googleBtn.style.display = "flex";
+    googleBtn.style.alignItems = "center";
+    googleBtn.style.justifyContent = "center";
+    googleBtn.style.gap = "8px";
+    // use a span for the label so color/weight are explicit
+    googleBtn.innerHTML = `<img src="google.png" alt="Google" style="width:20px;height:20px;display:inline-block"> <span style="color:#111;font-weight:600;display:inline-block">Login with Google</span>`;
+
+    // add explanatory note + button into the modal content (safe append)
+    const winInner = winModal.querySelector('div');
+    if (winInner) {
+      const googleNote = document.createElement('p');
+      googleNote.className = 'google-note';winInner.appendChild(googleNote);
+      winInner.appendChild(googleBtn);
+    }
+
+    // --- Create reward notification ---
+    const rewardPopup = document.createElement('div');
+    rewardPopup.textContent = "🎉 Rewards will be announced soon!";
+    rewardPopup.className = "fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white font-semibold py-2 px-6 rounded-lg shadow-lg opacity-0 transition-all duration-700 z-50";
+    document.body.appendChild(rewardPopup);
+
+    // --- Firebase Configuration ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyCcpG-oEqkDprgTwWXKt5CFsttjAQAZFNg",
+        authDomain: "bookstore-6ab08.firebaseapp.com",
+        projectId: "bookstore-6ab08",
+        databaseURL: "https://bookstore-6ab08-default-rtdb.firebaseio.com/",
+        storageBucket: "bookstore-6ab08.appspot.com",
+        messagingSenderId: "102226032749",
+        appId: "1:102226032749:web:428129ff9e000450522764"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const database = firebase.database();
+
+    let currentUserEmail = null;
+
+    // --- Listen for login state changes ---
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            currentUserEmail = user.email;
+            console.log("Already logged in as:", currentUserEmail);
+            googleBtn.style.display = "none";
+        } else {
+            currentUserEmail = null;
+            googleBtn.style.display = "inline-block";
+        }
+    });
+
+    // --- Handle Google Login ---
+    googleBtn.addEventListener("click", () => {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider)
+            .then(result => {
+                const user = result.user;
+                currentUserEmail = user.email;
+                googleBtn.style.display = "none";
+                console.log("Logged in as:", currentUserEmail);
+                alert(`Welcome ${user.displayName}!`);
+            })
+            .catch(error => {
+                console.error("Login failed:", error);
+                alert("Login failed. Try again!");
+            });
+    });
+
+    // --- Save Game Data (after win) ---
+    function saveGameRecord(score, time) {
+        if (!currentUserEmail) {
+            alert("Please login first to save your game.");
+            return;
+        }
+
+        const date = new Date().toLocaleString();
+        database.ref("scores").push({
+            email: currentUserEmail,
+            score: score,
+            time: time,
+            date: date
+        });
+
+        // Show reward popup
+        rewardPopup.classList.remove("opacity-0");
+        rewardPopup.classList.add("opacity-100");
+        rewardPopup.style.top = "20px";
+        setTimeout(() => {
+            rewardPopup.classList.remove("opacity-100");
+            rewardPopup.classList.add("opacity-0");
+        }, 5000);
+    }
+
+    // --- Sudoku logic ---
+    let board = [], solution = [], userBoard = [], notesBoard = [];
+    let selectedCell = null, mistakes = 0, timerInterval, time = 0, score = 0, hintsLeft = 3, isNotesMode = false;
+
+    function init() {
+        board = Array.from({ length: 9 }, () => Array(9).fill(0));
+        generateSolution(board);
+        solution = board.map(row => [...row]);
+        board = generatePuzzle(solution, 40);
+        userBoard = board.map(row => [...row]);
+        notesBoard = Array.from({ length: 9 }, () => Array(9).fill([]));
+        mistakes = 0; time = 0; score = 0; hintsLeft = 3;
+        clearInterval(timerInterval);
+        createGrid(); createNumberPad(); startTimer();
+        updateMistakes(); updateHints();
+        // Reset visible score when a new game starts (fix: score stays 0 after win)
+       const scoreEl = document.getElementById('score');
+       if (scoreEl) scoreEl.textContent = score;
+        
+        winModal.classList.remove('show');
+    }
+
+    function generateSolution(board) {
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                if (board[row][col] === 0) {
+                    let nums = shuffleArray([1,2,3,4,5,6,7,8,9]);
+                    for (let num of nums) {
+                        if (isValid(board, row, col, num)) {
+                            board[row][col] = num;
+                            if (generateSolution(board)) return true;
+                            board[row][col] = 0;
+                        }
+                    }
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    function isValid(board, row, col, num) {
+        for (let i = 0; i < 9; i++) {
+            if (board[row][i] === num || board[i][col] === num) return false;
+            const boxRow = 3 * Math.floor(row / 3) + Math.floor(i / 3);
+            const boxCol = 3 * Math.floor(col / 3) + (i % 3);
+            if (board[boxRow][boxCol] === num) return false;
+        }
+        return true;
+    }
+
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    function generatePuzzle(solution, emptyCells = 40) {
+        const puzzle = solution.map(row => [...row]);
+        let count = 0;
+        while (count < emptyCells) {
+            const r = Math.floor(Math.random() * 9);
+            const c = Math.floor(Math.random() * 9);
+            if (puzzle[r][c] !== 0) {
+                puzzle[r][c] = 0;
+                count++;
+            }
+        }
+        return puzzle;
+    }
+
+    function createGrid() {
+        grid.innerHTML = '';
+        for (let r = 0; r < 9; r++) {
+            for (let c = 0; c < 9; c++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.dataset.row = r;
+                cell.dataset.col = c;
+                if (board[r][c] !== 0) {
+                    cell.textContent = board[r][c];
+                    cell.classList.add('fixed');
+                } else {
+                    cell.addEventListener('click', onCellClick);
+                }
+                // attach click listener for all cells (so filled numbers can be selected/highlighted)
+                cell.addEventListener('click', onCellClick);
+                grid.appendChild(cell);
+            }
+        }
+    }
+
+    function createNumberPad() {
+        numberPad.innerHTML = '';
+        for (let i = 1; i <= 9; i++) {
+            const btn = document.createElement('button');
+            btn.textContent = i;
+            btn.classList.add('number-btn', 'p-3', 'text-xl', 'bg-[#2a3858]', 'shadow');
+            btn.addEventListener('click', () => onNumberClick(i));
+            numberPad.appendChild(btn);
+        }
+    }
+
+    function onCellClick(e) {
+        // remove previous selection + area highlights
+        clearSelectionAndHighlights();
+ 
+        selectedCell = e.currentTarget;
+        selectedCell.classList.add('selected');
+        const row = parseInt(selectedCell.dataset.row, 10);
+        const col = parseInt(selectedCell.dataset.col, 10);
+        highlightAreas(row, col);
+        // if the clicked cell has a number, highlight all cells with same number
+        const val = selectedCell.textContent ? selectedCell.textContent.trim() : '';
+        if (val) {
+            highlightSameNumber(val);
+        }
+     
+    }
+function clearSelectionAndHighlights() {
+        // remove selected class
+        const prev = grid.querySelector('.cell.selected');
+        if (prev) prev.classList.remove('selected');
+        // remove area-highlight from any cells
+        grid.querySelectorAll('.cell.area-highlight').forEach(c => c.classList.remove('area-highlight'));
+        // remove value highlight from previously highlighted values
+        grid.querySelectorAll('.cell.value-highlight').forEach(c => c.classList.remove('value-highlight'));
+    }
+ 
+    function highlightAreas(row, col) {
+        // highlight same row
+        for (let c = 0; c < 9; c++) {
+            const cell = getCell(row, c);
+            if (!cell) continue;
+            if (c === col) continue; // selected cell handled separately
+            cell.classList.add('area-highlight');
+        }
+        // highlight same column
+        for (let r = 0; r < 9; r++) {
+            const cell = getCell(r, col);
+            if (!cell) continue;
+            if (r === row) continue;
+            cell.classList.add('area-highlight');
+        }
+        // highlight same 3x3 box
+       const boxRowStart = Math.floor(row / 3) * 3;
+        const boxColStart = Math.floor(col / 3) * 3;
+        for (let r = boxRowStart; r < boxRowStart + 3; r++) {
+            for (let c = boxColStart; c < boxColStart + 3; c++) {
+                if (r === row && c === col) continue;
+                const cell = getCell(r, c);
+                if (!cell) continue;
+                cell.classList.add('area-highlight');
+            }
+        }
+        // keep selected cell visually on top
+        const sel = getCell(row, col);
+        if (sel) sel.classList.add('selected');
+    }
+
+    // highlight all cells that contain the same number (string) as the selected cell
+    function highlightSameNumber(value) {
+        if (!value) return;
+        value = String(value).trim();
+        grid.querySelectorAll('.cell').forEach(cell => {
+            if (cell.textContent && cell.textContent.trim() === value) {
+                // don't override selected style — add value-highlight class
+                cell.classList.add('value-highlight');
+            }
+        });
+    }
+ 
+    function onNumberClick(num) {
+        if (!selectedCell) return;
+        const row = parseInt(selectedCell.dataset.row);
+        const col = parseInt(selectedCell.dataset.col);
+        if (selectedCell.classList.contains('fixed')) return;
+        if (isNotesMode) {
+            if (!notesBoard[row][col].includes(num)) {
+                notesBoard[row][col].push(num);
+            } else {
+                notesBoard[row][col] = notesBoard[row][col].filter(n => n !== num);
+            }
+            renderNotes(row, col);
+            return;
+        }
+        if (solution[row][col] === num) {
+            selectedCell.textContent = num;
+            userBoard[row][col] = num;
+            score += 10;
+            document.getElementById('score').textContent = score;
+            if (checkWin()) winGame();
+        } else {
+            mistakes++;
+            updateMistakes();
+            selectedCell.classList.add('error');
+            setTimeout(() => selectedCell.classList.remove('error'), 500);
+            if (mistakes >= 10) {
+                alert('Game Over! Too many mistakes.');
+                init();
+            }
+        }
+    }
+
+    function renderNotes(row, col) {
+        const cell = getCell(row, col);
+        cell.innerHTML = '';
+        const noteDiv = document.createElement('div');
+        noteDiv.classList.add('note-grid');
+        for (let i = 1; i <= 9; i++) {
+            const span = document.createElement('span');
+            if (notesBoard[row][col].includes(i)) span.textContent = i;
+            noteDiv.appendChild(span);
+        }
+        cell.appendChild(noteDiv);
+    }
+
+    function getCell(row, col) {
+        return grid.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+    }
+
+    function updateMistakes() {
+        mistakesEl.textContent = mistakes;
+    }
+
+    function updateHints() {
+        hintsLeftEl.textContent = hintsLeft;
+    }
+
+    function startTimer() {
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            time++;
+            const m = String(Math.floor(time / 60)).padStart(2, '0');
+            const s = String(time % 60).padStart(2, '0');
+            timerEl.textContent = `${m}:${s}`;
+        }, 1000);
+    }
+
+    function checkWin() {
+        for (let r = 0; r < 9; r++) {
+            for (let c = 0; c < 9; c++) {
+                if (userBoard[r][c] !== solution[r][c]) return false;
+            }
+        }
+        return true;
+    }
+
+    function winGame() {
+        clearInterval(timerInterval);
+        finalScoreEl.textContent = score;
+        finalTimeEl.textContent = timerEl.textContent;
+        winModal.classList.add('show');
+        saveGameRecord(score, timerEl.textContent);
+    }
+
+    notesBtn.addEventListener('click', () => {
+        isNotesMode = !isNotesMode;
+        notesBtn.classList.toggle('active');
+    });
+
+    hintBtn.addEventListener('click', () => {
+       if (hintsLeft <= 0) return;
+        // prefer selected empty cell, otherwise pick a random empty cell
+        let target = null;
+        if (selectedCell) {
+            const r = parseInt(selectedCell.dataset.row, 10);
+            const c = parseInt(selectedCell.dataset.col, 10);
+            if (!userBoard[r][c]) target = { r, c };
+        }
+        if (!target) {
+            const emptyCells = [];
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    if (!userBoard[r][c]) emptyCells.push({ r, c });
+                }
+            }
+            if (emptyCells.length === 0) return;
+            target = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+        }
+        const { r, c } = target;
+        // reveal the solution number into that cell
+        const targetCell = getCell(r, c);
+        if (targetCell) {
+            // clear previous selection/highlights and select this revealed cell
+            clearSelectionAndHighlights();
+            targetCell.textContent = solution[r][c];
+            userBoard[r][c] = solution[r][c];
+            targetCell.classList.remove('error');
+            targetCell.classList.add('selected');
+            highlightAreas(r, c);
+        }
+        hintsLeft--;
+        updateHints();
+        if (checkWin()) winGame();
+    
+    });
+
+
+    newGameBtn.addEventListener('click', init);
+    init();
+});
+// Disable right-click
+    document.addEventListener("contextmenu", e => e.preventDefault());
+
+    // Block common shortcut keys
+    document.addEventListener("keydown", e => {
+      if ( 
+        (e.ctrlKey && ["s","u","p"].includes(e.key.toLowerCase())) ||
+        (e.ctrlKey && e.shiftKey && ["i","j","c"].includes(e.key.toLowerCase())) ||
+        (e.key === "PrintScreen")
+      ) {
+        e.preventDefault();
+        displayError("Export/Download is disabled!");
+      }
+    });
+    // Disable right-click
+document.addEventListener("contextmenu", e => e.preventDefault());
+
+// Disable text copying or selection via keyboard
+document.addEventListener("copy", e => e.preventDefault());
+document.addEventListener("cut", e => e.preventDefault());
+document.addEventListener("selectstart", e => e.preventDefault());
+
+// Block common developer/inspect shortcuts
+document.addEventListener("keydown", e => {
+  if (
+    e.key === "F12" || 
+    (e.ctrlKey && e.shiftKey && ["I", "J", "C"].includes(e.key.toUpperCase())) || 
+    (e.ctrlKey && ["U", "S", "A", "P", "C"].includes(e.key.toUpperCase()))
+  ) {
+    e.preventDefault();
+  }
+});
+
+</script>
+</body>
+</html>
