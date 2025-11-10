@@ -237,63 +237,18 @@
   <div id="greeting"></div>
 <h1 style="text-align:center; margin-top:10px;">Oswaal Books</h1>
   <!-- Books -->
-   <div class="books">
-    <div class="book">
-      <img src="https://m.media-amazon.com/images/I/815cDuEv4-L._UF1000,1000_QL80_.jpg">
-      <h3>Oswaal CBSE 10 Years Solved Papers(All Subjects)</h3>
-      <div class="year">Class: X</div>
-     <div class="year">Year: 2024-25</div>
-      <div class="author">Author: Oswaal</div>
-      <div class="price" style="color:limegreen;">Free</div>
-      <button onclick="previewPDF('https://drive.google.com/file/d/1TJ_JeeP93fs0MXH49qAC2OBHRYSissg4/preview')">Preview</button>
-    </div>
-     <div class="book">
-      <img src="https://m.media-amazon.com/images/I/81TITBtA1zL._UF1000,1000_QL80_.jpg">
-      <h3>Question Bank Mathematics (Standard)</h3>
-      <div class="year">Class: X</div>
-     <div class="year">Year: 2024-25</div>
-      <div class="author">Author: Oswaal</div>
-      <div class="price" style="color:limegreen;">Free</div>
-      <button onclick="previewPDF('https://drive.google.com/file/d/1TWe9t2jd1X283DLRkF6YHT-NXfLPCuce/preview')">Preview</button>
-    </div>
-    <div class="book">
-      <img src="https://m.media-amazon.com/images/I/81fFQISeedL._UF1000,1000_QL80_.jpg">
-      <h3>Question Bank Sanskrit</h3>
-      <div class="year">Class: X</div>
-     <div class="year">Year: 2024-25</div>
-      <div class="author">Author: Oswaal</div>
-      <div class="price" style="color:limegreen;">Free</div>
-      <button onclick="previewPDF('https://drive.google.com/file/d/1lnT0a7O1tJGOIOpUe6LjIKo992ih5I1z/preview')">Preview</button>
-    </div>
-      <div class="book">
-      <img src="https://m.media-amazon.com/images/I/81qjdddpOIL._UF1000,1000_QL80_.jpg">
-      <h3>Question Bank English</h3>
-      <div class="year">Class: X</div>
-     <div class="year">Year: 2024-25</div>
-      <div class="author">Author: Oswaal</div>
-      <div class="price" style="color:limegreen;">Free</div>
-      <button onclick="previewPDF('https://drive.google.com/file/d/1OuHBY3d_bHSa_V4XZNABvHzSLHTxC0N5/preview')">Preview</button>
-    </div>
-    <div class="book">
-      <img src="https://m.media-amazon.com/images/I/81xGUIMu8CL._UF1000,1000_QL80_.jpg" onerror="this.onerror=null;this.src='error.jpg';">
-      <h3>Question Bank Science</h3>
-      <div class="year">Class: X</div>
-     <div class="year">Year: 2024-25</div>
-      <div class="author">Author: Oswaal</div>
-      <div class="price" style="color:limegreen;">Free</div>
-      <button onclick="previewPDF('https://drive.google.com/file/d/1GPV2pSd3FC0K0-Kef_srwy7ejF52vnhT/preview')">Preview</button>
-    </div>
-        <div class="book">
-      <img src="https://m.media-amazon.com/images/I/81iySrBBqhL.jpg" onerror="this.onerror=null;this.src='error.jpg';">
-      <h3>Question Bank Social Science</h3>
-      <div class="year">Class: X</div>
-      <div class="year">Year: 2024-25</div>
-      <div class="author">Author: Oswaal</div>
-      <div class="price" style="color:limegreen;">Free</div>
-      <button onclick="previewPDF('https://drive.google.com/file/d/1oNzE11QkxJKIX_7lcvi1IrFDyL_rtxAu/preview')">Preview</button>
-    </div>
-  <!-- Preview -->
-  <div id="previewOverlay">
+   <div class="books" id="booksContainer">
+  <!-- Books will be loaded dynamically here -->
+</div>
+
+   <footer style="background:#0b1220;color:white;text-align:center;padding:20px 10px;font-size:14px;">
+  <p>© 2025 BOOKStore. All rights reserved.</p>
+  <p>
+    <a href="privacy.html" style="color:#58a6ff;text-decoration:none;">Privacy Policy</a> |
+    <a href="about.html" style="color:#58a6ff;text-decoration:none;">About Us</a>
+  </p>
+</footer>
+<div id="previewOverlay">
     <div id="previewHeader">
       <span style="font-weight:bold;">PDF Preview</span>
       <div>
@@ -304,15 +259,96 @@
     <iframe id="pdfFrame" sandbox="allow-scripts allow-same-origin"></iframe>
   </div>
 </div>
-   <footer style="background:#0b1220;color:white;text-align:center;padding:20px 10px;font-size:14px;">
-  <p>© 2025 BOOKStore. All rights reserved.</p>
-  <p>
-    <a href="privacy.html" style="color:#58a6ff;text-decoration:none;">Privacy Policy</a> |
-    <a href="about.html" style="color:#58a6ff;text-decoration:none;">About Us</a>
-  </p>
-</footer>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+  // Initialize Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyCcpG-oEqkDprgTwWXKt5CFsttjAQAZFNg",
+  authDomain: "bookstore-6ab08.firebaseapp.com",
+  databaseURL: "https://bookstore-6ab08-default-rtdb.firebaseio.com",
+  projectId: "bookstore-6ab08",
+  storageBucket: "bookstore-6ab08.firebasestorage.app",
+  messagingSenderId: "102226032749",
+  appId: "1:102226032749:web:f7090175d2e53c2f522764"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+</script>
+
   <script>
-  
+  const booksContainer = document.getElementById("booksContainer");
+
+function loadBooks() {
+  db.ref("oswaalBooks").on("value", (snapshot) => {
+    booksContainer.innerHTML = ""; // Clear existing books
+    const data = snapshot.val();
+    if (data) {
+      // Get keys and sort them in reverse order
+      const sortedKeys = Object.keys(data).sort((a, b) => {
+        // For purely numeric keys like "key1", "key2"...
+        const numA = parseInt(a.replace(/[^\d]/g, ''), 10) || 0;
+        const numB = parseInt(b.replace(/[^\d]/g, ''), 10) || 0;
+        return numB - numA; // descending order
+      });
+
+      sortedKeys.forEach(key => {
+        const book = data[key];
+
+        // Skip the book if all fields are empty
+        if (!book.title && !book.class && !book.year && !book.author && !book.price && !book.image && !book.pdf) return;
+
+        const bookDiv = document.createElement("div");
+        bookDiv.className = "book";
+
+        // Only show fields if they exist
+        const title = book.title ? `<h3>${book.title}</h3>` : "";
+        const bookClass = book.class ? `<div class="year">Class: ${book.class}</div>` : "";
+        const year = book.year ? `<div class="year">Year: ${book.year}</div>` : "";
+        const author = book.author ? `<div class="author">Author: ${book.author}</div>` : "";
+        const price = book.price ? `<div class="price" style="color:limegreen;">${book.price}</div>` : "";
+        const image = book.image ? `<img src="${book.image}" onerror="this.onerror=null;this.src='error.jpg';">` : `<img src="error.jpg">`;
+
+        // PDF preview button only if PDF link exists
+        const previewBtn = book.pdf ? `<button onclick="previewPDF('${book.pdf}')">Preview</button>` : "";
+
+        bookDiv.innerHTML = `
+          ${image}
+          ${title}
+          ${bookClass}
+          ${year}
+          ${author}
+          ${price}
+          ${previewBtn}
+        `;
+
+        booksContainer.appendChild(bookDiv);
+      });
+    }
+  });
+}
+
+
+
+// Call it on page load
+loadBooks();
+// Add a new book
+function addBook(book) {
+  const newBookRef = db.ref("oswaalBooks").push();
+  newBookRef.set(book);
+}
+
+// Remove a book
+function removeBook(bookId) {
+  if(confirm("Are you sure you want to remove this book?")) {
+    db.ref("oswaalBooks/" + bookId).remove();
+  }
+}
+
     const previewOverlay = document.getElementById("previewOverlay");
     const pdfFrame = document.getElementById("pdfFrame");
 
@@ -332,9 +368,11 @@ closeBtn.addEventListener("click", () => {
       document.getElementById("sidebar")?.classList.toggle("active");
     }
     function previewPDF(file) {
-      pdfFrame.src = file + "#toolbar=0&navpanes=0&scrollbar=0";
-      previewOverlay.style.display = "flex";
-    }
+  if (!file) return; // skip if no PDF link
+  pdfFrame.src = file + "#toolbar=0&navpanes=0&scrollbar=0";
+  previewOverlay.style.display = "flex";
+}
+
     function closePreview() {
       previewOverlay.style.display = "none";
       pdfFrame.src = "";
