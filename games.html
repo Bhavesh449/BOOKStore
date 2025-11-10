@@ -292,6 +292,14 @@
 .close-btn:hover {
   color: #ff6666;
 }
+.player-icon {
+  width: 34px;
+  height: 34px;
+  margin-left: 6px;
+  border-radius: 4px;
+  object-fit: cover; /* ensures it fills the box without distortion */
+  margin-bottom: -12px;
+}
 
     </style>
 </head>
@@ -442,50 +450,57 @@ function updateLeaderboard(playerName) {
 }
 
 // Function to add a player and their matches to the database
-function addPlayerToLeaderboard(playerName, matchesPlayed) {
-  // Create a new entry in the 'leaderboard' list
-  const newPlayerRef = leaderboardRef.push();
-  newPlayerRef.set({
-    name: playerName,
-    matches: matchesPlayed
-  });
+function addPlayerToLeaderboard(playerName, matchesPlayed, iconURL = '') {
+    const newPlayerRef = leaderboardRef.push();
+    newPlayerRef.set({
+        name: playerName,
+        matches: matchesPlayed,
+        icon: iconURL // optional icon
+    });
 }
+
         // Helper: simple escape to avoid injecting HTML from DB
         function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
         playersRef.on('value', (snapshot) => {
-          leaderboardList.innerHTML = '';
-          const players = [];
-          snapshot.forEach((childSnapshot) => {
-            players.push(childSnapshot.val());
-          });
-          // Sort descending by matches
-          players.sort((a, b) => (b.matches || 0) - (a.matches || 0));
+    leaderboardList.innerHTML = '';
+    const players = [];
+    snapshot.forEach((childSnapshot) => {
+        const playerData = childSnapshot.val();
+        players.push(playerData);
+    });
 
-          let rank = 1;
-          players.forEach((player) => {
-            const row = document.createElement('div');
-            row.className = 'leader-row';
+    // Sort descending by matches
+    players.sort((a, b) => (b.matches || 0) - (a.matches || 0));
 
-            // rank visual: image for top3, numeric badge otherwise
-            let rankHTML = '';
-            if (rank === 1) rankHTML = `<img src="https://cdn.pixabay.com/photo/2023/08/23/03/14/award-8207550_1280.png" alt="1st" class="rank-img">`;
-            else if (rank === 2) rankHTML = `<img src="https://png.pngtree.com/png-clipart/20230811/original/pngtree-ranking-medal-icon-illustration-2nd-place-silver-set-success-graphic-vector-picture-image_10347047.png" alt="2nd" class="rank-img">`;
-            else if (rank === 3) rankHTML = `<img src="https://cdn-icons-png.flaticon.com/512/2249/2249022.png" alt="3rd" class="rank-img">`;
-            else rankHTML = `<div class="rank-badge">${rank}</div>`;
+    let rank = 1;
+    players.forEach((player) => {
+        const row = document.createElement('div');
+        row.className = 'leader-row';
 
-            row.innerHTML = `
-              <div class="leader-left">
+        // Rank visuals
+        let rankHTML = '';
+        if (rank === 1) rankHTML = `<img src="https://cdn.pixabay.com/photo/2023/08/23/03/14/award-8207550_1280.png" alt="1st" class="rank-img">`;
+        else if (rank === 2) rankHTML = `<img src="https://png.pngtree.com/png-clipart/20230811/original/pngtree-ranking-medal-icon-illustration-2nd-place-silver-set-success-graphic-vector-picture-image_10347047.png" alt="2nd" class="rank-img">`;
+        else if (rank === 3) rankHTML = `<img src="https://cdn-icons-png.flaticon.com/512/2249/2249022.png" alt="3rd" class="rank-img">`;
+        else rankHTML = `<div class="rank-badge">${rank}</div>`;
+
+        // Optional icon next to name
+        const iconHTML = player.icon ? `<img src="${player.icon}" alt="icon" class="player-icon">` : '';
+
+
+        row.innerHTML = `
+            <div class="leader-left">
                 ${rankHTML}
-                <div class="player-name">${escapeHtml(player.name || 'Unknown')}</div>
-              </div>
-              <div class="matches">${Number(player.matches || 0)}</div>
-            `;
+                <div class="player-name">${escapeHtml(player.name || 'Unknown')}${iconHTML}</div>
+            </div>
+            <div class="matches">${Number(player.matches || 0)}</div>
+        `;
+        leaderboardList.appendChild(row);
+        rank++;
+    });
+});
 
-           leaderboardList.appendChild(row);
-            rank++;
-          });
-        });
 // Move root player object into /leaderboard as a child with a push-id
 const rootRef = database.ref('/');
 rootRef.once('value').then(snap => {
