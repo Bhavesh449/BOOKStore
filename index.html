@@ -553,7 +553,36 @@
     height: 120px;
   }
 }
+/* VIP golden animated text */
+.vip {
+  color: gold;
+  font-weight: bold;
+  font-size: 22px;
+  animation: shine 1.5s infinite alternate;
+}
+
+/* Simple shimmer/glow effect */
+@keyframes shine {
+  0% { text-shadow: 0 0 5px gold, 0 0 10px gold, 0 0 15px orange; }
+  50% { text-shadow: 0 0 10px gold, 0 0 20px gold, 0 0 25px orange; }
+  100% { text-shadow: 0 0 5px gold, 0 0 10px gold, 0 0 15px orange; }
+}
+/* Admin red glowing text */
+.Admin {
+  color: red;
+  font-weight: bold;
+  font-size: 18px;
+  animation: redGlow 1.5s infinite alternate;
+}
+
+@keyframes redGlow {
+  0% { text-shadow: 0 0 5px red, 0 0 10px red, 0 0 15px darkred; }
+  50% { text-shadow: 0 0 10px red, 0 0 20px red, 0 0 25px darkred; }
+  100% { text-shadow: 0 0 5px red, 0 0 10px red, 0 0 15px darkred; }
+}
+
     </style>
+    
 </head>
 <body>
    <header style="text-align:center;padding:15px;background:#0b1220;">
@@ -718,6 +747,7 @@ window.addEventListener("load", () => {
 
     // The Admin UID (Bhavesh)
     const ADMIN_UID = "F9UxJ3W6CVUVIIgwByuHQxscQab2";
+    const VIP_UID = "KGi3N6UPRic9tlRZOfwp6giIoGt1";
 
     // 2. Element References
     const loginPopup = document.getElementById("loginPopup");
@@ -891,39 +921,41 @@ closeBtn.addEventListener("click", () => {
 
     // 3. User Initialization and Admin Greeting
     function initUser(user) {
-      loginPopup.style.display = "none";
-      fakeAddBtn.style.display = "none"; // Hide by default
+  loginPopup.style.display = "none";
+  fakeAddBtn.style.display = "none"; // Hide by default
 
-      if (user) {
-        let displayName = user.displayName;
-        const defaultName = user.email ? user.email.split('@')[0] : 'User';
-        
-        // 1. Check and set default name if not set
-        if (!displayName) {
-          displayName = defaultName;
-          user.updateProfile({
-            displayName: displayName
-          }).catch(error => console.error("Error setting default display name:", error));
-        }
-
-        // 2. Render the greeting with the name span
-        let adminTag = '';
-        if (user.uid === ADMIN_UID) {
-          adminTag = '<span class="Admin">(Admin)</span><img src="https://static.vecteezy.com/system/resources/thumbnails/034/211/380/small_2x/blue-checkmark-validation-social-media-png.png" alt="Admin tick">';
-          fakeAddBtn.style.display = "block";
-        }
-        
-        // Use a span with ID for the name that can be edited
-        greeting.innerHTML = `<span>Welcome, <span id="userNameDisplay" title="Double-click to edit">${displayName}</span> ${adminTag}</span>`;
-        
-        // 3. Setup editing capability
-        setupGreetingEdit(user);
-        
-      } else {
-        // No user logged in
-        greeting.innerHTML = '';
-      }
+  if (user) {
+    let displayName = user.displayName;
+    const defaultName = user.email ? user.email.split('@')[0] : 'User';
+    
+    if (!displayName) {
+      displayName = defaultName;
+      user.updateProfile({ displayName: displayName })
+          .catch(error => console.error("Error setting default display name:", error));
     }
+
+    // VIP user greeting
+    if (user.uid === VIP_UID) {
+      greeting.innerHTML = `Welcome <span id="userNameDisplay">${displayName}</span> <span class="vip">VIP</span>`;
+      fakeAddBtn.style.display = "none";
+    } 
+    // Admin user greeting
+    else if (user.uid === ADMIN_UID) {
+      greeting.innerHTML = `Welcome <span id="userNameDisplay">${displayName}</span> <span class="Admin">(Admin)</span>
+                            <img src="https://static.vecteezy.com/system/resources/thumbnails/034/211/380/small_2x/blue-checkmark-validation-social-media-png.png" alt="Admin tick">`;
+      fakeAddBtn.style.display = "block";
+    } 
+    // Regular user greeting
+    else {
+      greeting.innerHTML = `Welcome <span id="userNameDisplay">${displayName}</span>`;
+    }
+
+    setupGreetingEdit(user);
+  } else {
+    greeting.innerHTML = '';
+  }
+}
+
 
     // 4. Firebase Authentication Handlers
 
