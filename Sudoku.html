@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sudoku</title>
+    <title>BOOKStore-Sudoku</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
     <style>
@@ -30,7 +30,8 @@
       display: inline-block;
       vertical-align: middle;
     }
-.sudoku-grid {
+    
+        .sudoku-grid {
             display: grid;
             grid-template-columns: repeat(9, 1fr);
             grid-template-rows: repeat(9, 1fr);
@@ -202,6 +203,14 @@
     }
     .back-btn svg { width: 20px; height: 20px; display:block; fill: #e8edf6; }
     .back-btn:hover { transform: translateY(-2px); background: rgba(255,255,255,0.06); }
+/* Disable text selection and dragging across the whole page */
+* {
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
+  -webkit-touch-callout: none;
+}
 
     </style>
      </head>
@@ -214,6 +223,7 @@
       <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
     </svg>
   </a>
+  
     <main class="w-full max-w-md mx-auto bg-[#1a2035] rounded-2xl p-4 shadow-lg space-y-4">
         <!-- logo inside the game card -->
         <img src="logo.png" alt="BOOKStore" class="game-logo" />
@@ -240,7 +250,15 @@
             </button>
         </div>
         <div id="number-pad" class="grid grid-cols-9 gap-1 sm:gap-2"></div>
+    <footer style="color:white;text-align:center;padding:20px 10px;font-size:14px;">
+  <p>© 2025 BOOKStore. All rights reserved.</p>
+  <p>
+    <a href="privacy.html" style="color:#58a6ff;text-decoration:none;">Privacy Policy</a> |
+    <a href="about.html" style="color:#58a6ff;text-decoration:none;">About Us</a>
+  </p>
+</footer>
     </main>
+    
     <div id="win-modal" class="win-modal">
         <div class="bg-[#1a2035] rounded-lg p-8 text-center shadow-2xl">
             <h2 class="text-3xl font-bold mb-4 text-green-500">Completed</h2>
@@ -250,48 +268,6 @@
         </div>
     </div>
     
-
-<style>
-  .bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #121a2a;
-    display: flex;
-    justify-content: space-around;
-    border-top: 2px solid #1f2a3d;
-    z-index: 999;
-  }
-  .nav-item {
-    flex: 1;
-    text-align: center;
-    color: #aaa;
-    padding: 8px 0;
-    font-size: 14px;
-    text-decoration: none;
-    transition: 0.2s;
-  }
-  .nav-icon {
-    height: 20px;
-    width: auto;
-    display: inline-block;
-    vertical-align: middle;
-    margin-bottom: 4px;
-  }
-  .nav-item span {
-    display: block;
-    font-size: 12px;
-  }
-  .nav-item.active,
-  .nav-item:hover {
-    color: #4dabff;
-    font-weight: bold;
-  }
-  body {
-    padding-bottom: 60px; /* prevent content from hiding behind nav */
-  }
-</style>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
@@ -337,7 +313,7 @@
 
     // --- Create reward notification ---
     const rewardPopup = document.createElement('div');
-    rewardPopup.textContent = "🎉 Game saved successfully!";
+    rewardPopup.textContent = "🎉 Rewards will be announced soon!";
     rewardPopup.className = "fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white font-semibold py-2 px-6 rounded-lg shadow-lg opacity-0 transition-all duration-700 z-50";
     document.body.appendChild(rewardPopup);
 
@@ -359,7 +335,7 @@
     let currentUserEmail = null;
 
     // --- Listen for login state changes ---
-    auth.onAuthStateChanged(user => {
+   auth.onAuthStateChanged(user => {
     if (user) {
         const wasLoggedIn = !!currentUserEmail;
         currentUserEmail = user.email;
@@ -386,6 +362,7 @@
                 currentUserEmail = user.email;
                 googleBtn.style.display = "none";
                 console.log("Logged in as:", currentUserEmail);
+                alert(`Welcome ${user.displayName}!`);
             })
             .catch(error => {
                 console.error("Login failed:", error);
@@ -734,10 +711,42 @@ function clearSelectionAndHighlights() {
 });
 
 
-
     newGameBtn.addEventListener('click', init);
     init();
 });
+// Disable right-click
+    document.addEventListener("contextmenu", e => e.preventDefault());
+
+    // Block common shortcut keys
+    document.addEventListener("keydown", e => {
+      if ( 
+        (e.ctrlKey && ["s","u","p"].includes(e.key.toLowerCase())) ||
+        (e.ctrlKey && e.shiftKey && ["i","j","c"].includes(e.key.toLowerCase())) ||
+        (e.key === "PrintScreen")
+      ) {
+        e.preventDefault();
+        displayError("Export/Download is disabled!");
+      }
+    });
+    // Disable right-click
+document.addEventListener("contextmenu", e => e.preventDefault());
+
+// Disable text copying or selection via keyboard
+document.addEventListener("copy", e => e.preventDefault());
+document.addEventListener("cut", e => e.preventDefault());
+document.addEventListener("selectstart", e => e.preventDefault());
+
+// Block common developer/inspect shortcuts
+document.addEventListener("keydown", e => {
+  if (
+    e.key === "F12" || 
+    (e.ctrlKey && e.shiftKey && ["I", "J", "C"].includes(e.key.toUpperCase())) || 
+    (e.ctrlKey && ["U", "S", "A", "P", "C"].includes(e.key.toUpperCase()))
+  ) {
+    e.preventDefault();
+  }
+});
+
 </script>
 </body>
 </html>
