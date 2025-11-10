@@ -671,6 +671,36 @@
 </footer>
 
  <script>
+   function showToast(message, duration = 3000) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.style.display = "block";
+  toast.style.opacity = "1";
+
+  setTimeout(() => {
+    toast.style.transition = "opacity 0.5s ease";
+    toast.style.opacity = "0";
+    setTimeout(() => {
+      toast.style.display = "none";
+      toast.style.transition = "";
+    }, 500);
+  }, duration);
+}
+window.addEventListener("load", () => {
+  const topToast = document.getElementById("topToast");
+  topToast.style.display = "flex";
+  topToast.style.opacity = "1";
+
+  setTimeout(() => {
+    topToast.style.transition = "opacity 0.5s ease";
+    topToast.style.opacity = "0";
+    setTimeout(() => {
+      topToast.style.display = "none";
+      topToast.style.transition = "";
+    }, 500);
+  }, 2000); // 3 seconds
+});
+
     // 1. Firebase Configuration
     const firebaseConfig = {
       apiKey: "AIzaSyCcpG-oEqkDprgTwWXKt5CFsttjAQAZFNg",
@@ -1058,8 +1088,29 @@ closeBtn.addEventListener("click", () => {
         } 
       } 
     }
-    
+   
+
   </script>
+<!-- Top Toast Notification -->
+<div id="topToast" style="
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #17305a;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-weight: bold;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  z-index: 100000;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+">
+  <img src="book.png" alt="Logo" style="height:24px; width:24px;"> 
+  Welcome to BOOKStore!
+</div>
 
 </body>
 </html>
