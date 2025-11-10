@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BOOKStore-Sudoku</title>
+    <title>Sudoku</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
     <style>
@@ -30,8 +30,7 @@
       display: inline-block;
       vertical-align: middle;
     }
-    
-        .sudoku-grid {
+.sudoku-grid {
             display: grid;
             grid-template-columns: repeat(9, 1fr);
             grid-template-rows: repeat(9, 1fr);
@@ -203,14 +202,6 @@
     }
     .back-btn svg { width: 20px; height: 20px; display:block; fill: #e8edf6; }
     .back-btn:hover { transform: translateY(-2px); background: rgba(255,255,255,0.06); }
-/* Disable text selection and dragging across the whole page */
-* {
-  user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  -moz-user-select: none;
-  -webkit-touch-callout: none;
-}
 
     </style>
      </head>
@@ -223,7 +214,6 @@
       <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
     </svg>
   </a>
-  
     <main class="w-full max-w-md mx-auto bg-[#1a2035] rounded-2xl p-4 shadow-lg space-y-4">
         <!-- logo inside the game card -->
         <img src="logo.png" alt="BOOKStore" class="game-logo" />
@@ -250,15 +240,7 @@
             </button>
         </div>
         <div id="number-pad" class="grid grid-cols-9 gap-1 sm:gap-2"></div>
-    <footer style="color:white;text-align:center;padding:20px 10px;font-size:14px;">
-  <p>© 2025 BOOKStore. All rights reserved.</p>
-  <p>
-    <a href="privacy.html" style="color:#58a6ff;text-decoration:none;">Privacy Policy</a> |
-    <a href="about.html" style="color:#58a6ff;text-decoration:none;">About Us</a>
-  </p>
-</footer>
     </main>
-    
     <div id="win-modal" class="win-modal">
         <div class="bg-[#1a2035] rounded-lg p-8 text-center shadow-2xl">
             <h2 class="text-3xl font-bold mb-4 text-green-500">Completed</h2>
@@ -268,6 +250,48 @@
         </div>
     </div>
     
+
+<style>
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #121a2a;
+    display: flex;
+    justify-content: space-around;
+    border-top: 2px solid #1f2a3d;
+    z-index: 999;
+  }
+  .nav-item {
+    flex: 1;
+    text-align: center;
+    color: #aaa;
+    padding: 8px 0;
+    font-size: 14px;
+    text-decoration: none;
+    transition: 0.2s;
+  }
+  .nav-icon {
+    height: 20px;
+    width: auto;
+    display: inline-block;
+    vertical-align: middle;
+    margin-bottom: 4px;
+  }
+  .nav-item span {
+    display: block;
+    font-size: 12px;
+  }
+  .nav-item.active,
+  .nav-item:hover {
+    color: #4dabff;
+    font-weight: bold;
+  }
+  body {
+    padding-bottom: 60px; /* prevent content from hiding behind nav */
+  }
+</style>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
@@ -313,7 +337,7 @@
 
     // --- Create reward notification ---
     const rewardPopup = document.createElement('div');
-    rewardPopup.textContent = "🎉 Rewards will be announced soon!";
+    rewardPopup.textContent = "🎉 Game saved successfully!";
     rewardPopup.className = "fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white font-semibold py-2 px-6 rounded-lg shadow-lg opacity-0 transition-all duration-700 z-50";
     document.body.appendChild(rewardPopup);
 
@@ -336,15 +360,22 @@
 
     // --- Listen for login state changes ---
     auth.onAuthStateChanged(user => {
-        if (user) {
-            currentUserEmail = user.email;
-            console.log("Already logged in as:", currentUserEmail);
-            googleBtn.style.display = "none";
-        } else {
-            currentUserEmail = null;
-            googleBtn.style.display = "inline-block";
+    if (user) {
+        const wasLoggedIn = !!currentUserEmail;
+        currentUserEmail = user.email;
+        console.log("Logged in as:", currentUserEmail);
+        googleBtn.style.display = "none";
+
+        // If the game is already won, trigger save & reward immediately
+        if (!wasLoggedIn && winModal.classList.contains('show')) {
+            saveGameRecord(score, timerEl.textContent);
         }
-    });
+    } else {
+        currentUserEmail = null;
+        googleBtn.style.display = "inline-block";
+    }
+});
+
 
     // --- Handle Google Login ---
     googleBtn.addEventListener("click", () => {
@@ -355,7 +386,6 @@
                 currentUserEmail = user.email;
                 googleBtn.style.display = "none";
                 console.log("Logged in as:", currentUserEmail);
-                alert(`Welcome ${user.displayName}!`);
             })
             .catch(error => {
                 console.error("Login failed:", error);
@@ -365,34 +395,52 @@
 
     // --- Save Game Data (after win) ---
     function saveGameRecord(score, time) {
-        if (!currentUserEmail) {
-            alert("Please login first to save your game.");
-            return;
-        }
+  if (!currentUserEmail) {
+    console.warn("User not logged in, skipping save");
+    return;
+  }
 
-        const date = new Date().toLocaleString();
-        database.ref("scores").push({
-            email: currentUserEmail,
-            score: score,
-            time: time,
-            date: date
-        });
+  const safeEmail = currentUserEmail.replace(/\./g, "_");
+  const recordRef = firebase.database().ref("scores/" + safeEmail).push();
 
-        // Show reward popup
-        rewardPopup.classList.remove("opacity-0");
-        rewardPopup.classList.add("opacity-100");
-        rewardPopup.style.top = "20px";
-        setTimeout(() => {
-            rewardPopup.classList.remove("opacity-100");
-            rewardPopup.classList.add("opacity-0");
-        }, 5000);
-    }
+  recordRef.set({
+    email: currentUserEmail,
+    score: score,
+    time: time,
+    mistakes: mistakes,   // ✅ save mistakes
+    hintsUsed: hintsUsed, // ✅ save hints used
+    date: new Date().toLocaleString()
+  })
+  .then(() => {
+    console.log("✅ Game saved for:", currentUserEmail);
+    rewardPopup.textContent = "🎉 Game saved successfully!";
+    rewardPopup.classList.remove("opacity-0");
+    rewardPopup.classList.add("opacity-100");
+    rewardPopup.style.top = "20px";
+    setTimeout(() => {
+      rewardPopup.classList.remove("opacity-100");
+      rewardPopup.classList.add("opacity-0");
+    }, 5000);
+  })
+  .catch(error => {
+    console.error("❌ Error saving game:", error);
+  });
+}
 
     // --- Sudoku logic ---
     let board = [], solution = [], userBoard = [], notesBoard = [];
     let selectedCell = null, mistakes = 0, timerInterval, time = 0, score = 0, hintsLeft = 3, isNotesMode = false;
+let hintsUsed = 0;
 
     function init() {
+        hintsUsed = 0; // ✅ reset for new game
+mistakes = 0;
+time = 0;
+score = 0;
+hintsLeft = 3;
+updateMistakes();
+updateHints();
+
         board = Array.from({ length: 9 }, () => Array(9).fill(0));
         generateSolution(board);
         solution = board.map(row => [...row]);
@@ -651,80 +699,45 @@ function clearSelectionAndHighlights() {
         notesBtn.classList.toggle('active');
     });
 
-    hintBtn.addEventListener('click', () => {
-       if (hintsLeft <= 0) return;
-        // prefer selected empty cell, otherwise pick a random empty cell
-        let target = null;
-        if (selectedCell) {
-            const r = parseInt(selectedCell.dataset.row, 10);
-            const c = parseInt(selectedCell.dataset.col, 10);
-            if (!userBoard[r][c]) target = { r, c };
-        }
-        if (!target) {
-            const emptyCells = [];
-            for (let r = 0; r < 9; r++) {
-                for (let c = 0; c < 9; c++) {
-                    if (!userBoard[r][c]) emptyCells.push({ r, c });
-                }
+   hintBtn.addEventListener('click', () => {
+    if (hintsLeft <= 0) return;
+    let target = null;
+    if (selectedCell) {
+        const r = parseInt(selectedCell.dataset.row, 10);
+        const c = parseInt(selectedCell.dataset.col, 10);
+        if (!userBoard[r][c]) target = { r, c };
+    }
+    if (!target) {
+        const emptyCells = [];
+        for (let r = 0; r < 9; r++) {
+            for (let c = 0; c < 9; c++) {
+                if (!userBoard[r][c]) emptyCells.push({ r, c });
             }
-            if (emptyCells.length === 0) return;
-            target = emptyCells[Math.floor(Math.random() * emptyCells.length)];
         }
-        const { r, c } = target;
-        // reveal the solution number into that cell
-        const targetCell = getCell(r, c);
-        if (targetCell) {
-            // clear previous selection/highlights and select this revealed cell
-            clearSelectionAndHighlights();
-            targetCell.textContent = solution[r][c];
-            userBoard[r][c] = solution[r][c];
-            targetCell.classList.remove('error');
-            targetCell.classList.add('selected');
-            highlightAreas(r, c);
-        }
-        hintsLeft--;
-        updateHints();
-        if (checkWin()) winGame();
-    
-    });
+        if (emptyCells.length === 0) return;
+        target = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+    }
+    const { r, c } = target;
+    const targetCell = getCell(r, c);
+    if (targetCell) {
+        clearSelectionAndHighlights();
+        targetCell.textContent = solution[r][c];
+        userBoard[r][c] = solution[r][c];
+        targetCell.classList.remove('error');
+        targetCell.classList.add('selected');
+        highlightAreas(r, c);
+    }
+    hintsLeft--;
+    hintsUsed++; // ✅ Track hints used
+    updateHints();
+    if (checkWin()) winGame();
+});
+
 
 
     newGameBtn.addEventListener('click', init);
     init();
 });
-// Disable right-click
-    document.addEventListener("contextmenu", e => e.preventDefault());
-
-    // Block common shortcut keys
-    document.addEventListener("keydown", e => {
-      if ( 
-        (e.ctrlKey && ["s","u","p"].includes(e.key.toLowerCase())) ||
-        (e.ctrlKey && e.shiftKey && ["i","j","c"].includes(e.key.toLowerCase())) ||
-        (e.key === "PrintScreen")
-      ) {
-        e.preventDefault();
-        displayError("Export/Download is disabled!");
-      }
-    });
-    // Disable right-click
-document.addEventListener("contextmenu", e => e.preventDefault());
-
-// Disable text copying or selection via keyboard
-document.addEventListener("copy", e => e.preventDefault());
-document.addEventListener("cut", e => e.preventDefault());
-document.addEventListener("selectstart", e => e.preventDefault());
-
-// Block common developer/inspect shortcuts
-document.addEventListener("keydown", e => {
-  if (
-    e.key === "F12" || 
-    (e.ctrlKey && e.shiftKey && ["I", "J", "C"].includes(e.key.toUpperCase())) || 
-    (e.ctrlKey && ["U", "S", "A", "P", "C"].includes(e.key.toUpperCase()))
-  ) {
-    e.preventDefault();
-  }
-});
-
 </script>
 </body>
 </html>
