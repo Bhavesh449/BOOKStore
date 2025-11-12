@@ -16,7 +16,7 @@
       min-height: 100vh;
     }
     header {
-      background: #121a2a;
+      background: #0b1220;
       padding: 15px;
       text-align: center;
       font-size: 24px;
@@ -99,20 +99,37 @@
   color: #ff6666;
 }
 
-    #searchBar {
-      display: flex;
-      justify-content: center;
-      padding: 10px;
-      background: #1c2940;
-    }
-    #searchInput {
-      width: 90%;
-      max-width: 400px;
-      padding: 8px;
-      border-radius: 6px;
-      border: none;
-      font-size: 16px;
-    }
+   #searchBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: #0b1220;
+}
+
+#searchInput {
+  width: 90%;
+  max-width: 600px;
+  padding: 12px 45px;
+  border-radius: 50px;
+  border: 1px solid #3c4a66;
+  background-color: #1c2940;
+  color: #e8edf6;
+  font-size: 16px;
+  outline: none;
+  transition: all 0.3s ease;
+  background-image: url('https://cdn-icons-png.flaticon.com/512/622/622669.png');
+  background-size: 20px;
+  background-repeat: no-repeat;
+  background-position: 15px center;
+}
+
+#searchInput:focus {
+  background-color: #24314d;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.4);
+  border-color: #007bff;
+}
+
     .books {
       display: grid;
       gap: 20px;
@@ -323,6 +340,17 @@ closeBtn.addEventListener("click", () => {
      function toggleMenu(){
       document.getElementById("sidebar")?.classList.toggle("active");
     }
+    // Close menu when clicking outside it
+document.addEventListener("click", (event) => {
+  const isClickInsideMenu = menu.contains(event.target);
+  const isClickOnHamburger = hamburger.contains(event.target);
+
+  if (!isClickInsideMenu && !isClickOnHamburger) {
+    menu.classList.remove("active");
+    hamburger.classList.remove("active");
+  }
+});
+
     function previewPDF(file) {
       pdfFrame.src = file + "#toolbar=0&navpanes=0&scrollbar=0";
       previewOverlay.style.display = "flex";
