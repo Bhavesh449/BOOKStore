@@ -315,6 +315,17 @@ closeBtn.addEventListener("click", () => {
   hamburger.classList.remove("active");
   menu.classList.remove("active");
 });
+// Close menu when clicking outside it
+document.addEventListener("click", (event) => {
+  const isClickInsideMenu = menu.contains(event.target);
+  const isClickOnHamburger = hamburger.contains(event.target);
+
+  if (!isClickInsideMenu && !isClickOnHamburger) {
+    menu.classList.remove("active");
+    hamburger.classList.remove("active");
+  }
+});
+
     // 1. Firebase Configuration (MUST MATCH index.html)
     const firebaseConfig = {
       apiKey: "AIzaSyCcpG-oEqkDprgTwWXKt5CFsttjAQAZFNg",
