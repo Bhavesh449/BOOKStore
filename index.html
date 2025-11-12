@@ -37,20 +37,36 @@
       display: inline-block;
       vertical-align: middle;
     }
-    #searchBar {
-      display: flex;
-      justify-content: center;
-      padding: 10px;
-      background: #0b1220;
-    }
-    #searchInput {
-      width: 90%;
-      max-width: 400px;
-      padding: 8px;
-      border-radius: 6px;
-      border: none;
-      font-size: 16px;
-    }
+      #searchBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: #0b1220;
+}
+
+#searchInput {
+  width: 90%;
+  max-width: 600px;
+  padding: 12px 45px;
+  border-radius: 50px;
+  border: 1px solid #3c4a66;
+  background-color: #1c2940;
+  color: #e8edf6;
+  font-size: 16px;
+  outline: none;
+  transition: all 0.3s ease;
+  background-image: url('https://cdn-icons-png.flaticon.com/512/622/622669.png');
+  background-size: 20px;
+  background-repeat: no-repeat;
+  background-position: 15px center;
+}
+
+#searchInput:focus {
+  background-color: #24314d;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.4);
+  border-color: #007bff;
+}
     .books {
       display: grid;
       gap: 20px;
@@ -531,11 +547,27 @@
   justify-content: center;
   overflow: hidden;
 }
+.pw {
+  width: 100%;
+  max-width: 340px; /* reasonable max on wide screens */
+  height: 140px;
+  background: #1c2940;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
 
 /* make images fluid and preserve aspect */
 .cover img,
 .oswaal img {
   width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.pw img {
+  width: 70%;
   height: 100%;
   object-fit: contain;
 }
@@ -549,6 +581,10 @@
   }
   .cover,
   .oswaal {
+    max-width: 220px;
+    height: 120px;
+  }
+  .pw {
     max-width: 220px;
     height: 120px;
   }
@@ -678,6 +714,11 @@
 <h3>Oswaal</h3>
 <div class="meta">Click to view</div>
 </a>
+<a href="pw.html" class="card">
+<div class="pw"><img src="https://pibook.pw.live/pw-logo-white.png" alt="pw"></div>
+<h3>PW</h3>
+<div class="meta">Click to view</div>
+</a>
 </div>
   <!-- Preview -->
   <div id="previewOverlay">
@@ -700,6 +741,7 @@
 </footer>
 
  <script>
+  
    function showToast(message, duration = 3000) {
   const toast = document.getElementById("toast");
   toast.textContent = message;
@@ -745,7 +787,7 @@ window.addEventListener("load", () => {
     const app = firebase.initializeApp(firebaseConfig);
     const auth = app.auth();
 
-    // The Admin UID (Bhavesh)
+    // The UID Collection
     const ADMIN_UID = "F9UxJ3W6CVUVIIgwByuHQxscQab2";
     const VIP_UID = "KGi3N6UPRic9tlRZOfwp6giIoGt1";
 
@@ -781,6 +823,7 @@ window.addEventListener("load", () => {
             const h2 = loginBox.querySelector('h2');
             loginBox.insertBefore(errorBox, h2.nextElementSibling);
         }
+        
         errorBox.textContent = message;
         errorBox.style.opacity = '1';
         errorBox.style.maxHeight = '100px';
@@ -803,6 +846,16 @@ window.addEventListener("load", () => {
 closeBtn.addEventListener("click", () => {
   hamburger.classList.remove("active");
   menu.classList.remove("active");
+});
+// Close menu when clicking outside it
+document.addEventListener("click", (event) => {
+  const isClickInsideMenu = menu.contains(event.target);
+  const isClickOnHamburger = hamburger.contains(event.target);
+
+  if (!isClickInsideMenu && !isClickOnHamburger) {
+    menu.classList.remove("active");
+    hamburger.classList.remove("active");
+  }
 });
 
     // Helper to switch mode display (Login <-> Create Account)
