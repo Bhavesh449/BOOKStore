@@ -109,25 +109,68 @@
       width: 100%;
       box-sizing: border-box;
     }
-    button {
-      background: #007bff;
-      color: white;
-      padding: 10px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background-color 0.3s;
-    }
-    button:hover {
-      background: #0056b3;
-    }
-    #logoutBtn {
-        background: #dc3545;
-    }
-    #logoutBtn:hover {
-        background: #c82333;
-    }
+    /* Modern Glowing Buttons */
+button {
+  position: relative;
+  background: linear-gradient(90deg, #007bff, #0056b3);
+  color: #fff;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  font-size: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(0,123,255,0.4);
+}
+
+button:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(90deg, #009dff, #0061ff);
+  box-shadow: 0 0 20px rgba(77,171,255,0.6);
+}
+
+button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: rgba(255,255,255,0.15);
+  transform: skewX(-25deg);
+  transition: left 0.5s ease;
+}
+
+button:hover::before {
+  left: 125%;
+}
+
+/* Update Password Button */
+#changePasswordBtn {
+  background: linear-gradient(90deg, #4dabff, #007bff);
+  box-shadow: 0 0 10px rgba(77,171,255,0.3);
+}
+#changePasswordBtn:hover {
+  background: linear-gradient(90deg, #66c0ff, #008cff);
+  box-shadow: 0 0 25px rgba(77,171,255,0.6);
+}
+
+/* Logout Button (Red & Glowing) */
+#logoutBtn {
+  background: linear-gradient(90deg, #dc3545, #a4161a);
+  box-shadow: 0 0 10px rgba(220,53,69,0.4);
+  margin-top: 30px;
+  width: 100%;
+}
+#logoutBtn:hover {
+  background: linear-gradient(90deg, #ff4d5b, #c82333);
+  box-shadow: 0 0 25px rgba(255,77,91,0.6);
+  transform: translateY(-2px);
+}
+
     #messageBox {
       padding: 10px;
       border-radius: 6px;
@@ -241,6 +284,68 @@
 #logo {
   cursor: pointer; /* makes it clear the logo is clickable */
 }
+/* Floating Label Styles */
+.input-field {
+  position: relative;
+  width: 100%;
+}
+
+.input-field input {
+  width: 100%;
+  padding: 14px 12px 12px;
+  border: 1px solid #2a3b55;
+  border-radius: 8px;
+  background: #0b1220;
+  color: #e8edf6;
+  font-size: 16px;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-field input:focus {
+  border-color: #4dabff;
+  box-shadow: 0 0 0 3px rgba(77, 171, 255, 0.2);
+}
+
+.input-field label {
+  position: absolute;
+  left: 12px;
+  top: 14px;
+  color: #9aa6b2;
+  pointer-events: none;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  background-color: #0b1220;
+  padding: 0 4px;
+}
+
+.input-field input:focus + label,
+.input-field input:not(:placeholder-shown) + label,
+.input-field.filled label {
+  top: -8px;
+  left: 10px;
+  font-size: 13px;
+  color: #4dabff;
+}
+button .ripple {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background: rgba(255,255,255,0.4);
+  border-radius: 50%;
+  transform: scale(0);
+  animation: rippleEffect 0.6s linear;
+  pointer-events: none;
+}
+
+@keyframes rippleEffect {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -283,11 +388,24 @@
     <h2 style="margin-top: 30px;">Change Password</h2>
     <div id="passwordFormContainer">
         <div class="password-form">
-            <input type="password" id="currentPassword" placeholder="Current Password" required>
-            <input type="password" id="newPassword" placeholder="New Password (min 6 characters)" required>
-            <input type="password" id="confirmNewPassword" placeholder="Confirm New Password" required>
-            <button id="changePasswordBtn">Update Password</button>
-        </div>
+  <div class="input-field" id="currentPasswordField">
+    <input type="password" id="currentPassword" placeholder=" " required>
+    <label for="currentPassword">Current Password</label>
+  </div>
+
+  <div class="input-field" id="newPasswordField">
+    <input type="password" id="newPassword" placeholder=" " required>
+    <label for="newPassword">New Password (min 6 characters)</label>
+  </div>
+
+  <div class="input-field" id="confirmPasswordField">
+    <input type="password" id="confirmNewPassword" placeholder=" " required>
+    <label for="confirmNewPassword">Confirm New Password</label>
+  </div>
+
+  <button id="changePasswordBtn">Update Password</button>
+</div>
+
     </div>
     
     <div id="messageBox"></div>
@@ -564,7 +682,34 @@ document.addEventListener("click", (event) => {
         `;
       }
     });
-    
+    // Floating label support for autofill or prefilled inputs
+document.querySelectorAll('.input-field input').forEach(input => {
+  const wrapper = input.parentElement;
+  const update = () => {
+    if (input.value.trim() !== "") {
+      wrapper.classList.add("filled");
+    } else {
+      wrapper.classList.remove("filled");
+    }
+  };
+  input.addEventListener("input", update);
+  update();
+});
+// Ripple effect for all buttons
+document.querySelectorAll('button').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    const ripple = document.createElement('span');
+    ripple.classList.add('ripple');
+    this.appendChild(ripple);
+
+    const rect = this.getBoundingClientRect();
+    ripple.style.left = `${e.clientX - rect.left}px`;
+    ripple.style.top = `${e.clientY - rect.top}px`;
+
+    setTimeout(() => ripple.remove(), 600);
+  });
+});
+
     // Disable right-click
     document.addEventListener("contextmenu", e => e.preventDefault());
 
