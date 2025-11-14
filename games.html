@@ -225,61 +225,75 @@
       text-align:right;
     }
     /* Hamburger Button */
-    .hamburger {
-      position: absolute;
-      top: 15px;
-      right: 20px;
-      cursor: pointer;
-      width: 30px;
-      height: 22px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .hamburger span {
-      display: block;
-      height: 4px;
-      background: white;
-      border-radius: 2px;
-      transition: 0.3s;
-    }
-    /* Change to "X" when active */
-    .hamburger.active span:nth-child(1) {
-      transform: rotate(45deg) translate(5px, 5px);
-    }
-    .hamburger.active span:nth-child(2) {
-      opacity: 0;
-    }
-    .hamburger.active span:nth-child(3) {
-      transform: rotate(-45deg) translate(6px, -6px);
-    }
-    
-    /* Menu */
-    .menu {
-      position: fixed;
-      top: 0;
-      right: -220px;
-      width: 200px;
-      height: 100%;
-      background: #1c2940;
-      padding: 60px 20px;
-      transition: right 0.3s ease;
-      z-index: 1000;
-    }
-    .menu.active {
-      right: 0;
-    }
-    .menu a {
-      display: block;
-      padding: 12px 0;
-      color: white;
-      text-decoration: none;
-      font-size: 18px;
-      border-bottom: 1px solid #333;
-    }
-    .menu a:hover {
-      color: rgb(0, 68, 255);
-    }
+   /* Hamburger Button */
+.hamburger {
+  position: absolute;
+  top: 18px;
+  right: 25px;
+  width: 30px;
+  height: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  z-index: 1100;
+}
+
+.hamburger span {
+  height: 4px;
+  width: 100%;
+  background: #fff;
+  border-radius: 2px;
+  transition: all 0.4s ease;
+}
+
+/* Turn into X when active */
+.hamburger.active span:nth-child(1) {
+  transform: rotate(45deg) translate(6px, 6px);
+}
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+.hamburger.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* Slide Menu */
+.menu {
+  position: fixed;
+  top: 0;
+  right: -260px;
+  width: 220px;
+  height: 100%;
+  background: #1c2940;
+  display: flex;
+  flex-direction: column;
+  padding-top: 80px;
+  transition: right 0.4s ease;
+  z-index: 1000;
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.6);
+}
+
+.menu.active {
+  right: 0;
+}
+
+.menu a {
+  padding: 14px 20px;
+  text-decoration: none;
+  color: white;
+  font-size: 18px;
+  font-weight: 500;
+  transition: background 0.3s, transform 0.2s;
+  border-bottom: 1px solid #2e3a55;
+   text-align: left;
+}
+
+.menu a:hover {
+  background: #24314d;
+  transform: translateX(5px);
+}
+
     .close-btn {
   display: block;
   margin-bottom: 20px;
@@ -292,6 +306,21 @@
 .close-btn:hover {
   color: #ff6666;
 }
+.menu-icon {
+  width: 22px;
+  height: 22px;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+.menu a.active {
+  background: #24314d;
+  color: #58a6ff;
+  font-weight: bold;
+  border-left: 4px solid #58a6ff;
+  transform: translateX(5px);
+}
+
 .player-icon {
   width: 34px;
   height: 34px;
@@ -304,23 +333,34 @@
     </style>
 </head>
 <body>
- <header>
-   <a href="index.html"><img src="logo.png" alt="BOOKStore" id="logo"></a>
-    <!-- Hamburger Button -->
-    <div class="hamburger" id="hamburger">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-  </header>
-
- <!-- Hamburger Menu -->
-  <div class="menu" id="menu">
-    <div class="close-btn" id="closeBtn">CLOSE </div>
-    <a href="index.html">🏠 Home</a>
-    <b><a href="games.html">🎮 Games Zone</a></b>
-    </a><a href="profile.html">👤Profile</a>
+ <!-- Header -->
+<header>
+   <a href="index.html">
+    <img src="logo.png" alt="BOOKStore" id="logo">
+  </a>
+  <!-- Hamburger Button -->
+  <div class="hamburger" id="hamburger">
+    <span></span>
+    <span></span>
+    <span></span>
   </div>
+</header>
+
+<!-- Slide Menu -->
+<nav class="menu" id="menu">
+  <a href="index.html">
+    <img src="home.svg" alt="Home" class="menu-icon"> Home
+  </a>
+  <a href="games.html" class="active">
+    <img src="game.svg" alt="Games" class="menu-icon"> Games Zone
+  </a>
+  <a href="profile.html">
+    <img src="profile.svg" alt="Profile" class="menu-icon"> Profile
+  </a>
+</nav>
+
+
+
     <h1>Mini-Games</h1>
 
     <div class="tabs">
@@ -363,27 +403,30 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-database-compat.js"></script>
 
     <script>
-         const hamburger = document.getElementById("hamburger");
-    const menu = document.getElementById("menu");
-    hamburger.addEventListener("click", () => {
-      hamburger.classList.toggle("active");
-      menu.classList.toggle("active");
-    });
-    const closeBtn = document.getElementById("closeBtn");
+ const hamburger = document.getElementById("hamburger");
+const menu = document.getElementById("menu");
 
-closeBtn.addEventListener("click", () => {
-  hamburger.classList.remove("active");
-  menu.classList.remove("active");
+// Toggle menu open/close
+hamburger.addEventListener("click", (event) => {
+  event.stopPropagation(); // prevent triggering document click
+  hamburger.classList.toggle("active");
+  menu.classList.toggle("active");
 });
-// Close menu when clicking outside it
-document.addEventListener("click", (event) => {
-  const isClickInsideMenu = menu.contains(event.target);
-  const isClickOnHamburger = hamburger.contains(event.target);
 
-  if (!isClickInsideMenu && !isClickOnHamburger) {
+// Close menu when clicking outside
+document.addEventListener("click", (event) => {
+  const clickedInsideMenu = menu.contains(event.target);
+  const clickedHamburger = hamburger.contains(event.target);
+
+  if (!clickedInsideMenu && !clickedHamburger) {
     menu.classList.remove("active");
     hamburger.classList.remove("active");
   }
+});
+
+// Prevent clicks inside menu from closing it
+menu.addEventListener("click", (event) => {
+  event.stopPropagation();
 });
 
         // Your web app's Firebase configuration
