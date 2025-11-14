@@ -368,6 +368,13 @@ button .ripple {
   }
 }
 
+.menu a.active {
+  background: #24314d;
+  color: #58a6ff;
+  font-weight: bold;
+  border-left: 4px solid #58a6ff;
+  transform: translateX(5px);
+}
   </style>
 </head>
 <body>
@@ -392,7 +399,7 @@ button .ripple {
   <a href="games.html">
     <img src="game.svg" class="menu-icon"> Games Zone
   </a>
-  <a href="profile.html">
+  <a href="profile.html" class="active">
     <img src="profile.svg" class="menu-icon"> Profile
   </a>
 </nav>
