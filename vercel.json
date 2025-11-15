@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/Home", "destination": "/index.html" }
+    { "source": "/Home", "destination": "/index.html" },
     { "source": "/Games", "destination": "/games.html" },
     { "source": "/100x-Josh", "destination": "/josh.html" },
     { "source": "/Soduko", "destination": "/Soduko.html" },
