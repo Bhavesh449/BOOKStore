@@ -8,14 +8,14 @@
   ],
 
   "rewrites": [
-    { "source": "/Home", "destination": "/index.html" },
-    { "source": "/Games", "destination": "/games.html" },
-    { "source": "/100x-Josh", "destination": "/josh.html" },
-    { "source": "/Soduko", "destination": "/Soduko.html" },
-    { "source": "/Oswaal", "destination": "/oswaal.html" },
-    { "source": "/Syllabus", "destination": "/cbse.html" },
-    { "source": "/Account", "destination": "/profile.html" },
-    { "source": "/Policy", "destination": "/privacy.html" },
+    { "source": "/home", "destination": "/index.html" },
+    { "source": "/games", "destination": "/games.html" },
+    { "source": "/100x-josh", "destination": "/josh.html" },
+    { "source": "/soduko", "destination": "/Soduko.html" },
+    { "source": "/oswaal", "destination": "/oswaal.html" },
+    { "source": "/syllabus", "destination": "/cbse.html" },
+    { "source": "/account", "destination": "/profile.html" },
+    { "source": "/policy", "destination": "/privacy.html" },
     { "source": "/about", "destination": "/about.html" },
 
     { "source": "/:page", "destination": "/:page.html" }
