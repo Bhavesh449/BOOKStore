@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/oswaal",
+      "destination": "/oswaal.html"
+    }
+  ]
+}
