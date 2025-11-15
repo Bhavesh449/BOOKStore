@@ -1,8 +1,12 @@
 {
   "rewrites": [
-    {
-      "source": "/oswaal",
-      "destination": "/oswaal.html"
-    }
+    { "source": "/Games", "destination": "/games.html" },
+    { "source": "/100x-Josh", "destination": "/josh.html" },
+    { "source": "/Soduko", "destination": "/Soduko.html" },
+    { "source": "/Oswaal", "destination": "/oswaal.html" },
+    { "source": "/Syllabus", "destination": "/cbse.html" },
+    { "source": "/Account", "destination": "/profile.html" },
+    { "source": "/Policy", "destination": "/privacy.html" },
+    { "source": "/about", "destination": "/about.html" }
   ]
 }
