@@ -1,0 +1,10 @@
+RewriteEngine On
+
+# If the request corresponds to an existing file or directory, serve it
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# If appending .html would locate a file, internally rewrite /oswaal -> /oswaal.html
+RewriteCond %{DOCUMENT_ROOT}/$1.html -f
+RewriteRule ^(.+)$ $1.html [L]
