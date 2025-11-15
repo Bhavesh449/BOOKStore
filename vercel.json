@@ -1,4 +1,12 @@
 {
+  "redirects": [
+    {
+      "source": "/:page.html",
+      "destination": "/:page",
+      "permanent": true
+    }
+  ],
+
   "rewrites": [
     { "source": "/Home", "destination": "/index.html" },
     { "source": "/Games", "destination": "/games.html" },
@@ -8,6 +16,8 @@
     { "source": "/Syllabus", "destination": "/cbse.html" },
     { "source": "/Account", "destination": "/profile.html" },
     { "source": "/Policy", "destination": "/privacy.html" },
-    { "source": "/about", "destination": "/about.html" }
+    { "source": "/about", "destination": "/about.html" },
+
+    { "source": "/:page", "destination": "/:page.html" }
   ]
 }
