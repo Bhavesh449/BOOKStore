@@ -254,13 +254,30 @@
       }
     }
     
+.madeby {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 6px;
+  background: linear-gradient(90deg, #6dd5fa, #2980b9, #6dd5fa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 10px rgba(0,153,255,0.6);
+  animation: glowMove 3s infinite linear;
+}
+
+@keyframes glowMove {
+  0% { text-shadow: 0 0 8px #1e90ff; }
+  50% { text-shadow: 0 0 16px #00c3ff; }
+  100% { text-shadow: 0 0 8px #1e90ff; }
+}
+
     </style>
 </head>
 <body>
   <!-- Header -->
 <header style="text-align:center;padding:15px;background:#0b1220;position:relative;">
    <a href="index.html">
-    <img src="logo.png" alt="BOOKStore" id="logo">
+    <img src="logo.png" alt="BOOKStore" id="logo" style="height:50px;">
   </a>
 
   <!-- Hamburger Button -->
@@ -295,6 +312,7 @@
 </div>
 
    <footer style="background:#0b1220;color:white;text-align:center;padding:20px 10px;font-size:14px;">
+    <div class="madeby">Made by Bhavesh </div>
   <p>© 2025 BOOKStore. All rights reserved.</p>
   <p>
     <a href="privacy.html" style="color:#58a6ff;text-decoration:none;">Privacy Policy</a> |
@@ -464,3 +482,4 @@ menu.addEventListener("click", (event) => {
 </body>
 
 </html>
+
