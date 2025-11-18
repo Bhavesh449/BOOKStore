@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abhay 10th Batch 2026</title>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #0b1220;
+        color: #ffffff;
+    }
+
+    /* Top Section */
+    .header {
+        padding: 30px 20px;
+        background: 1c2940;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+    }
+
+    .title {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .validity {
+        font-size: 14px;
+        opacity: 0.7;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Tabs */
+    .tabs {
+        display: flex;
+        background: #1c2940;
+        border-bottom: 1px solid #1c2940;
+        margin-top: 10px;
+    }
+
+    .tab {
+        flex: 1;
+        text-align: center;
+        padding: 15px 0;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.2s;
+        opacity: 0.6;
+    }
+
+    .tab.active {
+        opacity: 1;
+        border-bottom: 3px solid #ffffff;
+        font-weight: bold;
+    }
+
+    /* Content Boxes */
+    .content {
+        padding: 25px;
+        display: none;
+    }
+
+    .content.active {
+        display: block;
+    }
+
+    /* Overview List */
+    .list {
+        background: 1c2940;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        line-height: 1.7;
+        font-size: 15px;
+        text-align: left;
+    }
+
+    /* Folder Card */
+    .folder-card {
+        background: #1c2940;
+        padding: 15px;
+        width: 90%;
+        margin: 20px auto;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        cursor: pointer;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        transition: 0.2s;
+    }
+
+    .folder-card:hover {
+        transform: scale(1.02);
+    }
+
+    .folder-img {
+        width: 85px;
+        border-radius: 10px;
+    }
+
+    .folder-right {
+        flex-grow: 1;
+    }
+
+    .folder-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .folder-topics {
+        opacity: 0.7;
+        font-size: 14px;
+    }
+
+    .arrow {
+        font-size: 22px;
+        opacity: 0.5;
+    }
+    .madeby {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 6px;
+  background: linear-gradient(90deg, #6dd5fa, #2980b9, #6dd5fa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 10px rgba(0,153,255,0.6);
+  animation: glowMove 3s infinite linear;
+}
+
+@keyframes glowMove {
+  0% { text-shadow: 0 0 8px #1e90ff; }
+  50% { text-shadow: 0 0 16px #00c3ff; }
+  100% { text-shadow: 0 0 8px #1e90ff; }
+}
+</style>
+
+</head>
+<body>
+ <!-- Header -->
+<header style="text-align:center;padding:15px;background:#0b1220;position:relative;">
+  <a href="index.html"><img src="logo.png" alt="BOOKStore Logo" style="height:50px;"></a>
+
+<!-- Header -->
+<div class="header">
+    <div class="title">Abhay 10th Batch 2026</div>
+    <div class="validity">
+        📄 Validity: 15/Nov/2025 - 30/04/2026
+    </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+    <div class="tab active" onclick="showTab('overview')">Overview</div>
+    <div class="tab" onclick="showTab('video')">Lectures</div>
+</div>
+
+<!-- Overview Tab -->
+<div id="overview" class="content active">
+    <div class="list">
+        • We'll cover Science, Maths, Social Science, English( course A and B ), Hindi( Course A and B ), Sanskrit and IT for class 10th students.<br><br>
+        • Live lectures will be conducted, and in case you miss a session, recordings will be available to students in the BOOKStore app/website.<br><br>
+        • Classes will be scheduled according to your school timings.<br><br>
+        • There will be two classes per day, each lasting 1 hour 30 mins,  timings will be shared in orientation session.<br><br>
+        • Every fifth class will be a dedicated doubt-solving session.<br><br>
+        • A weekly schedule will be provided for your convenience.<br><br>
+        • Class notes will be provided in PDF format after each class on the BOOKStore App/website.<br><br>
+        • The entire course will remain accessible to you until your exams in 2026<br><br>
+        • Classes will commence on 1st December 2025 and the syllabus will be completed by mid January.<br><br>
+        • English, Hindi, Sanskrit and IT will be given recorded.
+    </div>
+</div>
+
+<!-- Video Tab -->
+<div id="video" class="content">
+
+    <div class="folder-card" onclick="location.href='welcome.html'">
+        <img class="folder-img" src="https://play-lh.googleusercontent.com/-tLt6jjKIAtTLDpeIYkQrZ-mLr0xAi1UICQ-Xhw_psDWHLF7hSnl80wqBA2ckKdjF7aU=w240-h480-rw" alt="Folder">
+        <div class="folder-right">
+            <div class="folder-title">Welcome</div>
+            <div class="folder-topics">1 Topics</div>
+        </div>
+        <div class="arrow">➤</div>
+    </div>
+
+</div>
+<footer style="background:#0b1220;color:white;text-align:center;padding:20px 10px;font-size:14px;">
+  <div class="madeby">Made by Bhavesh </div>
+    <p>© 2025 BOOKStore. All rights reserved.</p>
+  <p>
+    <a href="privacy.html" style="color:#58a6ff;text-decoration:none;">Privacy Policy</a> |
+    <a href="about.html" style="color:#58a6ff;text-decoration:none;">About Us</a>
+  </p>
+</footer>
+<script>
+    function showTab(tab) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+
+        event.target.classList.add('active');
+        document.getElementById(tab).classList.add('active');
+    }
+</script>
+
+</body>
+</html>

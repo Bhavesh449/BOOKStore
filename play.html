@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lecture Player</title>
+
+<style>
+    body {
+        background: #0b1220;
+        margin: 0;
+        padding: 0;
+        color: white;
+        font-family: "Segoe UI", Arial;
+    }
+
+    .player-container {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        background: black;
+    }
+
+    video {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        background: #000;
+    }
+
+    /* ----- Custom Player Controls ----- */
+    
+    .controls-and-seek-container {
+        position: absolute;
+        bottom: 25px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 92%;
+        
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        opacity: 1;
+        pointer-events: auto;
+        z-index: 9999;
+    }
+
+    .controls-and-seek-container.hidden {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateX(-50%) translateY(8px);
+    }
+
+    .controls {
+        width: 100%;
+        background: rgba(0,0,0,0.45);
+        padding: 14px 18px;
+        border-radius: 14px;
+        backdrop-filter: blur(6px);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-sizing: border-box;
+    }
+
+    .seek-wrapper {
+        width: 100%;
+        pointer-events: auto;
+    }
+
+    /* ----- Volume & Settings ----- */
+
+    .volume-box {
+        position: relative;
+        display: flex; /* Align items nicely */
+        align-items: center;
+        margin-left: 5px;
+    }
+
+    /* COOL VOLUME SLIDER STYLES */
+    #volumeSlider {
+        width: 0px; /* Hidden by default via width */
+        overflow: hidden;
+        opacity: 0;
+        margin-left: 0;
+        transition: all 0.3s ease;
+        
+        /* Custom Range Styling */
+        -webkit-appearance: none;
+        height: 5px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    /* Show slider on hover of the box */
+    .volume-box:hover #volumeSlider {
+        width: 80px;
+        opacity: 1;
+        margin-left: 10px;
+    }
+
+    /* Thumb (The dot) styling */
+    #volumeSlider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 14px;
+        height: 14px;
+        background: #379dfd;
+        border-radius: 50%;
+        box-shadow: 0 0 10px rgba(55, 157, 253, 0.5); /* Glow effect */
+        cursor: pointer;
+        transition: transform 0.1s;
+    }
+    
+    #volumeSlider::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+        background: #fff;
+    }
+
+    .settings-box {
+        position: relative;
+        display: inline-block;
+    }
+
+    /* Icon Buttons */
+    .ctrl-icon {
+        width: 28px;
+        height: 28px;
+        margin: 0 8px;
+        cursor: pointer;
+        opacity: 0.8;
+        transition: 0.2s;
+    }
+    .ctrl-icon:hover {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+
+    /* Seek Bar */
+    .seek-bar {
+        width: 100%;
+        height: 6px;
+        border-radius: 6px;
+        background: #ffffff33;
+        cursor: pointer;
+        pointer-events: auto;
+        appearance: none;
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .seek-bar::-webkit-slider-thumb {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: white;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    
+    .seek-bar::-webkit-slider-thumb:hover {
+        box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
+    }
+
+    .bottom-progress {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 4px;
+        width: 0%;
+        background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+        transition: width 0.2s linear;
+        border-radius: 3px;
+        pointer-events: none; /* Let clicks pass through */
+    }
+
+    .controls-left {
+        display: flex;
+        align-items: center;
+    }
+
+    .controls-right {
+        position: relative;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Book logo */
+    .book-logo {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 48px;
+        height: auto;
+        opacity: 0.5;
+        z-index: 10005;
+        pointer-events: none;
+    }
+
+    /* Settings Menu */
+    .settings-menu {
+        position: absolute;
+        bottom: 45px;
+        right: 0;
+        width: 150px;
+        background: #121726;
+        padding: 10px 0;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+        display: none;
+        z-index: 10050;
+        overflow: hidden;
+    }
+
+    .setting-section {
+        padding: 6px 0;
+    }
+
+    .setting-title {
+        font-size: 13px;
+        color: #7f8caa;
+        padding: 6px 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .option {
+        padding: 8px 14px;
+        color: #e1e1e1;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .option:hover {
+        background: #1b2236;
+    }
+
+    .option.active {
+        background: #2c3e6f;
+        color: #fff;
+    }
+
+    .divider {
+        width: 100%;
+        height: 1px;
+        background: #222a3d;
+        margin: 3px 0;
+    }
+    
+    /* Removed defaults for cleaner look */
+    input[type="range"]:focus {
+        outline: none;
+    }
+/* ============================= */
+/*  COOL DUAL-COLOR SEEKBAR      */
+/* ============================= */
+.seek-bar {
+    width: 100%;
+    height: 7px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #0d1528, #0d1528); /* default */
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+}
+
+/* Fills the played part (watch-progress color) */
+.seek-bar::-webkit-slider-runnable-track {
+    height: 7px;
+    border-radius: 10px;
+
+    background: linear-gradient(
+        90deg,
+        #3a7bd5 0%,         /* bright start */
+        #00d2ff var(--seek-pos, 0%), /* watched part */
+        #0d1528 var(--seek-pos, 0%)  /* remaining part */
+    );
+}
+
+/* Thumb */
+.seek-bar::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: white;
+    border-radius: 50%;
+    margin-top: -5px;
+    box-shadow: 0 0 12px rgba(255,255,255,0.5);
+    transition: 0.2s;
+}
+.seek-bar::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+/* ============================= */
+/*  COOL DUAL-COLOR VOLUME BAR   */
+/* ============================= */
+
+#volumeSlider {
+    width: 0px;
+    opacity: 0;
+    transition: 0.3s ease;
+    height: 6px;
+    background: #1b2739;
+    border-radius: 10px;
+    cursor: pointer;
+    -webkit-appearance: none;
+}
+
+/* show on hover */
+.volume-box:hover #volumeSlider {
+    width: 80px;
+    opacity: 1;
+}
+
+/* active fill color (like YouTube style) */
+#volumeSlider::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 10px;
+    background: linear-gradient(
+        90deg,
+        #379dfd var(--vol-pos, 100%),
+        rgba(255,255,255,0.25) var(--vol-pos, 100%)
+    );
+}
+
+/* thumb */
+#volumeSlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #379dfd;
+    box-shadow: 0 0 12px rgba(55,157,253,0.7);
+    margin-top: -4px;
+    transition: 0.2s;
+}
+#volumeSlider::-webkit-slider-thumb:hover {
+    background: white;
+    transform: scale(1.2);
+}
+
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+</head>
+<body>
+
+<div class="player-container" id="playerContainer">
+    <img src="book.png" alt="book" class="book-logo">
+
+    <video id="video" autoplay></video>
+    
+    <div class="bottom-progress" id="bottomProgress"></div>
+
+    <div class="controls-and-seek-container" id="controlsContainer">
+        <div class="controls" id="controls">
+            <div class="controls-left">
+                <img src="backward.svg" id="back5" class="ctrl-icon">
+                <img src="play.svg" id="playPauseBtn" class="ctrl-icon">
+                <img src="forward.svg" id="forward5" class="ctrl-icon">
+
+                <div class="volume-box" id="volumeBox">
+                    <img src="volume.svg" id="volumeBtn" class="ctrl-icon" title="Mute/Unmute">
+                    <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="1">
+                </div>
+            </div>
+
+            <div class="controls-right">
+                <img src="settings.svg" id="settingsBtn" class="ctrl-icon">
+                <img src="fullscreen.svg" id="fullscreenBtn" class="ctrl-icon" title="Toggle Fullscreen">
+                
+                <div class="settings-menu" id="settingsMenu">
+                    <div class="setting-section">
+                        <div class="setting-title">Speed</div>
+                        <div class="option" data-speed="0.25">0.25x</div>
+                        <div class="option" data-speed="0.5">0.5x</div>
+                        <div class="option active" data-speed="1">1x</div>
+                        <div class="option" data-speed="1.25">1.25x</div>
+                        <div class="option" data-speed="1.5">1.5x</div>
+                        <div class="option" data-speed="2">2x</div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="setting-section">
+                        <div class="setting-title">Quality</div>
+                        <div class="option active" data-quality="auto">Auto</div>
+                        <div class="option" data-quality="240">240p</div>
+                        <div class="option" data-quality="360">360p</div>
+                        <div class="option" data-quality="480">480p</div>
+                        <div class="option" data-quality="720">720p</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="seek-wrapper">
+            <input type="range" id="seekBar" value="0" min="0" max="100" step="0.1" class="seek-bar">
+        </div>
+    </div>
+</div>
+
+<script>
+    const video = document.getElementById("video");
+    const seekBar = document.getElementById("seekBar");
+    const bottomProgress = document.getElementById("bottomProgress");
+    const playerContainer = document.getElementById("playerContainer");
+    const controlsContainer = document.getElementById("controlsContainer");
+    
+    // Volume Elements
+    const volumeBtn = document.getElementById("volumeBtn");
+    const volumeSlider = document.getElementById("volumeSlider");
+// Update Seek Bar fill color position
+video.addEventListener("timeupdate", () => {
+    const progress = (video.currentTime / video.duration) * 100;
+    seekBar.style.setProperty("--seek-pos", progress + "%");
+});
+
+// Update volume bar fill color
+volumeSlider.addEventListener("input", (e) => {
+    const progress = (e.target.value * 100);
+    volumeSlider.style.setProperty("--vol-pos", progress + "%");
+});
+
+    // HLS setup
+    const url = "https://d3cx6qbbd4cbso.cloudfront.net/file_library/videos/vod_non_drm_ios/4603299/1763294304_8192435093590433/sunny/1763294300828_380976912071675500_video_VOD.m3u8";
+    let hls = null;
+
+    if (Hls.isSupported()) {
+        hls = new Hls();
+        hls.loadSource(url);
+        hls.attachMedia(video);
+    } else {
+        video.src = url;
+    }
+
+    // --- VOLUME & MUTE LOGIC ---
+    let lastVolume = 1; // Store volume before muting
+
+    // 1. Handle Slider Change
+    volumeSlider.addEventListener("input", (e) => {
+        const val = parseFloat(e.target.value);
+        video.volume = val;
+        
+        if(val === 0) {
+            video.muted = true;
+            volumeBtn.src = "mute.svg";
+        } else {
+            video.muted = false;
+            volumeBtn.src = "volume.svg";
+            lastVolume = val; // Update last volume memory
+        }
+    });
+
+    // 2. Handle Mute Toggle Click
+    volumeBtn.addEventListener("click", (e) => {
+        e.stopPropagation(); // Prevent clicking behind
+        
+        if (video.muted || video.volume === 0) {
+            // Unmute
+            video.muted = false;
+            video.volume = lastVolume || 0.5; // Restore to last known or 50%
+            volumeSlider.value = video.volume;
+            volumeBtn.src = "volume.svg";
+        } else {
+            // Mute
+            lastVolume = video.volume; // Save current
+            video.muted = true;
+            video.volume = 0;
+            volumeSlider.value = 0;
+            volumeBtn.src = "mute.svg";
+        }
+    });
+
+
+    // --- SETTINGS MENU ---
+    const settingsBtn = document.getElementById("settingsBtn");
+    const settingsMenu = document.getElementById("settingsMenu");
+
+    settingsMenu.addEventListener('click', e => e.stopPropagation());
+
+    settingsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        settingsMenu.style.display = (settingsMenu.style.display === 'block') ? 'none' : 'block';
+    });
+
+    document.addEventListener('click', () => {
+        settingsMenu.style.display = 'none';
+    });
+
+    settingsMenu.querySelectorAll("[data-speed]").forEach(item => {
+        item.addEventListener("click", () => {
+            settingsMenu.querySelectorAll("[data-speed]").forEach(i => i.classList.remove("active"));
+            item.classList.add("active");
+            video.playbackRate = parseFloat(item.dataset.speed);
+        });
+    });
+
+    settingsMenu.querySelectorAll("[data-quality]").forEach(item => {
+        item.addEventListener("click", () => {
+            settingsMenu.querySelectorAll("[data-quality]").forEach(i => i.classList.remove("active"));
+            item.classList.add("active");
+            const q = item.dataset.quality;
+            if (hls) {
+                if (q === "auto") hls.currentLevel = -1;
+                else {
+                    const levelIndex = hls.levels.findIndex(l => l.height == Number(q));
+                    if (levelIndex >= 0) hls.currentLevel = levelIndex;
+                }
+            }
+        });
+    });
+
+    // --- VIDEO TIME UPDATE ---
+    video.addEventListener("loadedmetadata", () => {
+        if (!isNaN(video.duration)) seekBar.max = video.duration;
+    });
+
+    video.addEventListener("timeupdate", () => {
+        if (!isNaN(video.duration)) {
+            seekBar.value = video.currentTime;
+            bottomProgress.style.width = ((video.currentTime / video.duration) * 100) + "%";
+        }
+    });
+
+    seekBar.addEventListener("input", () => {
+        video.currentTime = Number(seekBar.value);
+        bottomProgress.style.width = ((seekBar.value / video.duration) * 100) + "%";
+    });
+    seekBar.addEventListener("change", () => {
+        video.currentTime = Number(seekBar.value);
+    });
+
+    // --- PLAY/PAUSE & SKIP ---
+    document.getElementById("back5").onclick = () => video.currentTime = Math.max(0, video.currentTime - 5);
+    document.getElementById("forward5").onclick = () => video.currentTime = Math.min(video.duration || Infinity, video.currentTime + 5);
+
+    const playBtn = document.getElementById("playPauseBtn");
+    
+    function togglePlayPause() {
+        if (video.paused || video.ended) { 
+            video.play(); 
+            playBtn.src = "pause.svg"; 
+        } else { 
+            video.pause(); 
+            playBtn.src = "play.svg"; 
+        }
+        showControls();
+    }
+
+    playBtn.onclick = (e) => {
+        e.stopPropagation();
+        togglePlayPause();
+    };
+    
+    video.onplay = () => { playBtn.src = "pause.svg"; showControls(); };
+    video.onpause = () => { playBtn.src = "play.svg"; showControls(); };
+
+    // --- SHOW/HIDE CONTROLS ---
+    let inactivityTimer;
+    const INACTIVITY_MS = 3000;
+
+    function showControls() {
+        controlsContainer.classList.remove("hidden");
+        clearTimeout(inactivityTimer);
+        document.body.style.cursor = 'default';
+
+        if (!video.paused) {
+            inactivityTimer = setTimeout(() => {
+                controlsContainer.classList.add("hidden");
+                document.body.style.cursor = 'none'; // Hide cursor in fullscreen feeling
+            }, INACTIVITY_MS);
+        }
+    }
+
+    function attachActivityListeners(el) {
+        ['mousemove','mousedown','touchstart','touchmove','keydown'].forEach(evt => {
+            el.addEventListener(evt, showControls, { passive: true });
+        });
+    }
+
+    attachActivityListeners(document);
+    attachActivityListeners(playerContainer);
+    showControls();
+
+    controlsContainer.addEventListener('mouseenter', () => {
+        clearTimeout(inactivityTimer);
+        controlsContainer.classList.remove('hidden');
+    });
+    
+    controlsContainer.addEventListener('mouseleave', () => {
+        if (!video.paused) {
+            inactivityTimer = setTimeout(() => {
+                controlsContainer.classList.add('hidden');
+            }, INACTIVITY_MS);
+        }
+    });
+
+    // Click anywhere to Play/Pause
+    playerContainer.addEventListener('click', (e) => {
+        if (e.target.closest('#controlsContainer')) return;
+        togglePlayPause();
+    });
+
+    // --- FULLSCREEN ---
+    const fullscreenBtn = document.getElementById("fullscreenBtn");
+    
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            if (playerContainer.requestFullscreen) playerContainer.requestFullscreen();
+            else if (playerContainer.webkitRequestFullscreen) playerContainer.webkitRequestFullscreen();
+        } else {
+            if (document.exitFullscreen) document.exitFullscreen();
+        }
+    }
+
+    fullscreenBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleFullscreen();
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+        const fs = !!document.fullscreenElement;
+        if (fs) {
+            fullscreenBtn.src = "exit.svg";
+            fullscreenBtn.title = "Exit Fullscreen";
+        } else {
+            fullscreenBtn.src = "fullscreen.svg";
+            fullscreenBtn.title = "Enter Fullscreen";
+        }
+        showControls();
+    });
+ 
+    video.addEventListener('dblclick', () => toggleFullscreen());
+
+    // --- KEYBOARD SHORTCUTS ---
+    document.addEventListener('keydown', (e) => {
+        const tag = document.activeElement && document.activeElement.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+
+        if (e.code === 'Space') {
+            e.preventDefault();
+            togglePlayPause();
+        } else if (e.code === 'ArrowLeft') {
+            e.preventDefault();
+            video.currentTime = Math.max(0, (video.currentTime || 0) - 5);
+            showControls();
+        } else if (e.code === 'ArrowRight') {
+            e.preventDefault();
+            video.currentTime = Math.min(video.duration || Infinity, (video.currentTime || 0) + 5);
+            showControls();
+        }
+    });
+
+    // --- MOBILE LANDSCAPE ENFORCEMENT ---
+    function forceLandscape() {
+        if (window.innerHeight > window.innerWidth && /Mobi|Android/i.test(navigator.userAgent)) {
+           // alert("Rotate for best view");
+        }
+    }
+    video.addEventListener("play", forceLandscape);
+    window.addEventListener("orientationchange", () => {
+        if (video.paused) return;
+        forceLandscape();
+    });
+
+</script>
+</body>
+</html>
