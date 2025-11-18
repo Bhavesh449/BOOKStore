@@ -694,6 +694,172 @@
   50% { text-shadow: 0 0 16px #00c3ff; }
   100% { text-shadow: 0 0 8px #1e90ff; }
 }
+/* COLLECTION BOXES – NEW COOL DESIGN */
+.collection-box {
+  background: linear-gradient(145deg, #162238, #0d1525);
+  border-radius: 18px;
+  padding: 22px;
+  text-align: center;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.6),
+              inset 0 0 0 2px rgba(255,255,255,0.05);
+  transition: 0.4s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glow ring animation */
+.collection-box::before {
+  content: "";
+  position: absolute;
+  width: 180%;
+  height: 180%;
+  left: -40%;
+  top: -40%;
+  background: conic-gradient(#007bff, #00d4ff, #007bff);
+  animation: rotateGlow 6s linear infinite;
+  opacity: 0.15;
+  z-index: 0;
+}
+
+@keyframes rotateGlow {
+  100% { transform: rotate(360deg); }
+}
+
+/* Inner dark layer */
+.collection-box::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  background: #121a2b;
+  border-radius: 14px;
+  z-index: 1;
+}
+
+/* Actual content (text + images) */
+.collection-content {
+  position: relative;
+  z-index: 10;
+}
+
+/* Title style */
+.collection-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  background: linear-gradient(90deg, #6dd5fa, #2980b9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Preview image */
+.collection-img {
+  width: 100%;
+  max-width: 260px;
+  height: 130px;
+  border-radius: 10px;
+  object-fit: contain;
+  margin-bottom: 10px;
+  transition: 0.3s ease;
+}
+
+/* Hover effects */
+.collection-box:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 35px rgba(0,0,0,0.7),
+              inset 0 0 0 2px rgba(0,132,255,0.2);
+}
+
+.collection-box:hover .collection-img {
+  transform: scale(1.05);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .collection-img {
+    height: 110px;
+  }
+}
+/* BATCH BOX – PREMIUM STYLE */
+.batch-box {
+  background: linear-gradient(145deg, #1b2a44, #101a2b);
+  border-radius: 20px;
+  padding: 25px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.7),
+              inset 0 0 0 2px rgba(255,255,255,0.05);
+  transition: 0.4s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 35px; /* Show above Collections */
+}
+
+/* Glow Ring */
+.batch-box::before {
+  content: "";
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  left: -50%;
+  top: -50%;
+  background: conic-gradient(#00d0ff, #0077ff, #00d0ff);
+  animation: rotateBatchGlow 6s linear infinite;
+  opacity: 0.18;
+  z-index: 0;
+}
+
+@keyframes rotateBatchGlow {
+  100% { transform: rotate(360deg); }
+}
+
+/* Inner Layer */
+.batch-box::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  background: #121a2b;
+  border-radius: 16px;
+  z-index: 1;
+}
+
+/* Content */
+.batch-content {
+  position: relative;
+  z-index: 10;
+}
+
+/* Title */
+.batch-title {
+  font-size: 23px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  background: linear-gradient(90deg, #4ecbff, #2979ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Image */
+.batch-img {
+  width: 100%;
+  max-width: 450px;
+  height: 230px; /* You will replace with 677h × 1203w image, auto-fit */
+  border-radius: 14px;
+  object-fit: contain;
+  margin-bottom: 12px;
+  transition: 0.3s ease;
+}
+
+/* Hover */
+.batch-box:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.75),
+              inset 0 0 0 2px rgba(0,132,255,0.25);
+}
+
+.batch-box:hover .batch-img {
+  transform: scale(1.05);
+}
 
     </style>
     
@@ -797,19 +963,40 @@
       <button onclick="previewPDF('https://drive.google.com/file/d/1KVuKBojVZLSi-dnjfVM1BkOp93w_1o4l/preview')">Preview</button>
     </div>
   </div>
+   <h2 style="text-align:center; margin-top:20px;">Batches</h2>
+
+  <a href="abhay.html" class="batch-box">
+  <div class="batch-content">
+    <img src="abhay.png" class="batch-img" alt="Abhay Batch">
+    <div class="batch-title">Abhay Batch (2025–26)</div>
+    <div style="color:#a8c4e9;font-size:15px;">Comeback Batch • Notes • Study Material</div>
+  </div>
+</a>
+
    <h2 style="text-align:center; margin-top:20px;">All Publishers</h2>
-<div class="folders">
-<a href="cbse.html" class="card">
-<div class="cover"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/CBSE_new_logo.svg/1200px-CBSE_new_logo.svg.png" alt="cbse"></div>
-<h3>CBSE Class X Syllabus</h3>
-<div class="meta">Click to view</div>
-</a>
-<a href="oswaal.html" class="card">
-<div class="oswaal"><img src="https://ebooks.oswaalbooks.com/assets/oswaal/oswaal-logo-6a3ed60b95cde852ea818d666fb67d06.png" alt="oswaal"></div>
-<h3>Oswaal</h3>
-<div class="meta">Click to view</div>
-</a>
+
+   <div class="folders">
+
+  <!-- OSWAAL COLLECTION -->
+  <a href="oswaal.html" class="collection-box">
+    <div class="collection-content">
+      <img src="https://ebooks.oswaalbooks.com/assets/oswaal/oswaal-logo-icon-5b53538829e0bfbe5be442c684abe649.png" class="collection-img" alt="Oswaal Books">
+      <div class="collection-title">Oswaal Books</div>
+      <div style="color:#9bb4d8;font-size:14px;">Latest PDFs • Sample papers</div>
+    </div>
+  </a>
+
+  <!-- CBSE COLLECTION -->
+  <a href="cbse.html" class="collection-box">
+    <div class="collection-content">
+      <img src="https://images.seeklogo.com/logo-png/37/2/cbse-logo-png_seeklogo-371643.png" class="collection-img" alt="CBSE Material">
+      <div class="collection-title">CBSE Syllabus</div>
+      <div style="color:#9bb4d8;font-size:14px;">Syllabus • PYQs</div>
+    </div>
+  </a>
+
 </div>
+
   <!-- Preview -->
   <div id="previewOverlay">
     <div id="previewHeader">
