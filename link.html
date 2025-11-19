@@ -131,12 +131,73 @@
   50% { text-shadow: 0 0 16px #00c3ff; }
   100% { text-shadow: 0 0 8px #1e90ff; }
 }
+/* Hamburger animation */
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(6px, 6px);
+}
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* Slide menu open */
+.menu-active {
+    right: 0 !important;
+}
+nav a.active {
+     background: #24314d;
+  color: #58a6ff;
+  font-weight: bold;
+  border-left: 4px solid #58a6ff;
+  transform: translateX(5px);
+}
+
 </style>
 
 </head>
 
 <body>
+    <header style="text-align:center;padding:15px;background:#0b1220;position:absolute;top:0;width:100%;">
+    <a href="index.html">
+        <img src="logo.png" id="logo" alt="BOOKStore" style="height:50px;">
+    </a>
+
+    <div class="hamburger" id="hamburger" style="
+        position:absolute;top:18px;right:25px;width:30px;height:24px;
+        display:flex;flex-direction:column;justify-content:space-between;
+        cursor:pointer;">
+        <span style="height:4px;width:100%;background:#fff;border-radius:2px;transition:0.4s;"></span>
+        <span style="height:4px;width:100%;background:#fff;border-radius:2px;transition:0.4s;"></span>
+        <span style="height:4px;width:100%;background:#fff;border-radius:2px;transition:0.4s;"></span>
+    </div>
+</header>
+<nav id="menu" style="
+    position:fixed;top:0;right:-260px;width:220px;height:100%;
+    background:#1c2940;display:flex;flex-direction:column;
+    padding-top:80px;transition:0.4s;z-index:1000;
+    box-shadow:-5px 0 15px rgba(0,0,0,0.6);">
     
+    <a href="index.html" style="padding:14px 20px;color:white;text-decoration:none;border-bottom:1px solid #2e3a55;display:flex;align-items:center;gap:10px;">
+        <img src="home.svg" style="width:22px;height:22px;"> Home
+    </a>
+
+    <a href="games.html" style="padding:14px 20px;color:white;text-decoration:none;border-bottom:1px solid #2e3a55;display:flex;align-items:center;gap:10px;">
+        <img src="game.svg" style="width:22px;height:22px;"> Games Zone
+    </a>
+
+    <a href="profile.html" style="padding:14px 20px;color:white;text-decoration:none;border-bottom:1px solid #2e3a55;display:flex;align-items:center;gap:10px;">
+        <img src="profile.svg" style="width:22px;height:22px;"> Profile
+    </a>
+
+   <a href="link.html" class="active" style="padding:14px 20px;color:white;text-decoration:none;border-bottom:1px solid #2e3a55;display:flex;align-items:center;gap:10px;">
+    <img src="link.svg" style="width:22px;height:22px;"> Link Processor
+</a>
+
+
+</nav>
+
 <div class="container">
     
     <h1>Link Processor</h1>
@@ -171,6 +232,27 @@
 
 
 <script>
+    // HAMBURGER + MENU
+const hamburger = document.getElementById("hamburger");
+const menu = document.getElementById("menu");
+
+hamburger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    hamburger.classList.toggle("active");
+    if (menu.classList.contains("menu-active")) {
+        menu.classList.remove("menu-active");
+    } else {
+        menu.classList.add("menu-active");
+    }
+});
+
+document.addEventListener("click", (e) => {
+    if (!menu.contains(e.target) && !hamburger.contains(e.target)) {
+        menu.classList.remove("menu-active");
+        hamburger.classList.remove("active");
+    }
+});
+
     async function pasteLink() {
     try {
         const text = await navigator.clipboard.readText();
