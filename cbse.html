@@ -99,6 +99,19 @@
   transition: background 0.3s, transform 0.2s;
   border-bottom: 1px solid #2e3a55;
 }
+/* Fix menu icon alignment */
+.menu a {
+  display: flex;
+  align-items: center; /* vertically center SVGs */
+  gap: 12px; /* space between icon and text */
+}
+
+.menu-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  vertical-align: middle;
+}
 
 .menu a:hover {
   background: #24314d;
@@ -290,6 +303,9 @@
   </a>
   <a href="profile.html">
     <img src="profile.svg" alt="Profile" class="menu-icon"> Profile
+  </a>
+  <a href="link.html">
+    <img src="link.svg" alt="Link-Processor" class="menu-icon"> Link Processer
   </a>
 </nav>
 
