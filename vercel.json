@@ -12,6 +12,7 @@
     { "source": "/Home", "destination": "/index.html" },
 
     { "source": "/Games", "destination": "/games.html" },
+    { "source": "/Link", "destination": "/link.html" },
     { "source": "/100x-Josh", "destination": "/josh.html" },
     { "source": "/Soduko", "destination": "/Soduko.html" },
     { "source": "/Oswaal", "destination": "/oswaal.html" },
