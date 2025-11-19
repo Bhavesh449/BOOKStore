@@ -236,18 +236,18 @@
     }
 
     .option:hover {
-        background: #1b2236;
+        background: #1b223680;
     }
 
     .option.active {
-        background: #2c3e6f;
+        background: #2c3e6f6b;
         color: #fff;
     }
 
     .divider {
         width: 100%;
         height: 1px;
-        background: #222a3d;
+        background: #222a3dad;
         margin: 3px 0;
     }
     
@@ -356,10 +356,55 @@
 
 .drop-box {
     display: none;
-    background: #151a2c;
+    background: rgba(15, 20, 35, 0.45);
     padding-bottom: 6px;
     margin-bottom: 4px;
     border-radius: 10px;
+}
+.settings-menu {
+    position: absolute;
+    bottom: 45px;
+    right: 0;
+    width: 170px;
+
+    /* ✨ Glowing transparent style */
+    background: rgba(15, 20, 35, 0.45);
+    backdrop-filter: blur(14px) saturate(160%);
+
+    padding: 12px 0;
+    border-radius: 14px;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.55);
+
+    display: none;
+    z-index: 10050;
+    overflow: hidden;
+    animation: fadeSettings 0.25s ease;
+}
+
+@keyframes fadeSettings {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.main-setting-btn {
+    padding: 10px 14px;
+    font-size: 15px;
+    cursor: pointer;
+    color: #e6e6e6;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    transition: 0.2s;
+}
+
+.main-setting-btn::after {
+    content: attr(data-current);   /* pulls value dynamically */
+    font-size: 13px;
+    color: #9bb3ff;
+    opacity: 0.9;
 }
 
 </style>
@@ -396,7 +441,7 @@
                 <div class="settings-menu" id="settingsMenu">
 
     <!-- SPEED BUTTON -->
-    <div class="main-setting-btn" data-open="speedBox"><b>Speed</b></div>
+    <div class="main-setting-btn" data-open="speedBox" id="speedLabel" data-current="Normal"><b>Speed</b></div>
 
     <div class="setting-section drop-box" id="speedBox">
         
@@ -411,7 +456,7 @@
     <div class="divider"></div>
 
     <!-- QUALITY BUTTON -->
-    <div class="main-setting-btn" data-open="qualityBox"><b>Quality</b></div>
+    <div class="main-setting-btn" data-open="qualityBox" id="qualityLabel" data-current="Auto (480p)"><b>Quality</b></div>
 
     <div class="setting-section drop-box" id="qualityBox">
         
@@ -549,6 +594,43 @@ document.querySelectorAll(".main-setting-btn").forEach(btn => {
             video.playbackRate = parseFloat(item.dataset.speed);
         });
     });
+const speedLabel = document.getElementById("speedLabel");
+
+settingsMenu.querySelectorAll("[data-speed]").forEach(item => {
+    item.addEventListener("click", () => {
+        settingsMenu.querySelectorAll("[data-speed]").forEach(i => i.classList.remove("active"));
+        item.classList.add("active");
+
+        video.playbackRate = parseFloat(item.dataset.speed);
+
+        speedLabel.dataset.current = item.innerText; // ← updates label
+    });
+});
+const qualityLabel = document.getElementById("qualityLabel");
+
+settingsMenu.querySelectorAll("[data-quality]").forEach(item => {
+    item.addEventListener("click", () => {
+
+        settingsMenu.querySelectorAll("[data-quality]").forEach(i => i.classList.remove("active"));
+        item.classList.add("active");
+
+        const q = item.dataset.quality;
+
+        if (hls) {
+            if (q === "auto") hls.currentLevel = -1;
+            else {
+                const levelIndex = hls.levels.findIndex(l => l.height == Number(q));
+                if (levelIndex >= 0) hls.currentLevel = levelIndex;
+            }
+        }
+
+        const displayText = 
+            q === "auto" ? "Auto" :
+            item.innerText;
+
+        qualityLabel.dataset.current = displayText;
+    });
+});
 
     settingsMenu.querySelectorAll("[data-quality]").forEach(item => {
         item.addEventListener("click", () => {
