@@ -208,6 +208,113 @@
   margin-right: 8px;
 }
 
+/* Breadcrumb – neon soft glow */
+.top-bar {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    background: #0b1220;
+}
+
+.top-bar span {
+    opacity: 0.8;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.top-bar span:hover {
+    opacity: 1;
+    color: #66e0ff;
+}
+
+.breadcrumb-active {
+    color: #ffa63d;
+    font-weight: 700;
+    text-shadow: 0 0 10px rgba(255,165,60,0.5);
+}
+
+/* Video Card – modern glowing card */
+.video-card {
+    background: #1c2940;
+    padding: 18px;
+    margin: 25px auto;
+    width: 90%;
+    border-radius: 16px;
+
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4),
+                0 0 12px rgba(0, 200, 255, 0.08);
+
+    border: 1px solid rgba(255,255,255,0.05);
+
+    transition: transform 0.25s ease, box-shadow 0.3s ease;
+}
+
+.video-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 25px rgba(0,0,0,0.55),
+                0 0 15px rgba(0, 200, 255, 0.18);
+}
+
+/* Video Thumbnail */
+.video-card img {
+    width: 90px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+/* Title – glowing text */
+.video-title {
+    font-size: 20px;
+    font-weight: 700;
+    background: linear-gradient(90deg, #66f2ff, #33cfff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    text-shadow: 0 0 14px rgba(0,200,255,0.35);
+}
+
+/* Watch Button – premium neon */
+.watch-btn {
+    margin-left: auto;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 10px;
+
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+
+    background: linear-gradient(90deg, #0094d8, #00c6ff);
+    color: white;
+
+    box-shadow: 0 4px 12px rgba(0, 160, 255, 0.4);
+
+    transition: 0.25s ease;
+}
+
+.watch-btn:hover {
+    background: linear-gradient(90deg, #0075a8, #00a6db);
+    box-shadow: 0 4px 18px rgba(0, 200, 255, 0.6);
+    transform: translateY(-2px);
+}
+
+/* Video Player Box – smooth rounded */
+.player-box {
+    width: 90%;
+    aspect-ratio: 16/9;
+    margin: 25px auto;
+    background: black;
+    border-radius: 14px;
+    overflow: hidden;
+
+    box-shadow: 0 4px 18px rgba(0,0,0,0.5);
+}
 
 </style>
 
