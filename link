@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Link Processor</title>
+<style>
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #0b1220;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .container {
+        background: #1a1f38;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 0 40px rgba(0, 255, 255, 0.2);
+        max-width: 600px;
+        width: 90%;
+        text-align: center;
+    }
+
+    h1 {
+        margin-bottom: 30px;
+        font-size: 2rem;
+        color: #00ffff;
+        text-shadow: 0 0 10px #00ffff;
+    }
+
+    input, textarea {
+        width: 100%;
+        padding: 15px;
+        margin: 15px 0;
+        border-radius: 10px;
+        border: none;
+        font-size: 16px;
+        background: #0b1220;
+        color: #fff;
+        border: 2px solid #00ffff;
+        outline: none;
+        transition: 0.3s;
+    }
+
+    input:focus, textarea:focus {
+        box-shadow: 0 0 10px #00ffff;
+        border-color: #00ffff;
+    }
+
+    button {
+        padding: 15px 25px;
+        margin: 10px 0;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(45deg, #00ffff, #007bff);
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s;
+        box-shadow: 0 0 10px rgba(0,255,255,0.4);
+    }
+
+    button:hover {
+        box-shadow: 0 0 20px rgba(0,255,255,0.8);
+        transform: scale(1.05);
+    }
+
+    .output {
+        position: relative;
+    }
+
+    .copy-btn {
+    position: absolute;
+    right: -31px;
+    top: 20%;
+    transform: translateY(-50%);
+    background: #007bff;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    transition: 0.3s;
+}
+
+.copy-btn:hover {
+    transform: translateY(-50%) scale(1.15);
+}
+
+
+
+    ::placeholder {
+        color: #aaa;
+    }
+    .input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.paste-btn {
+    position: absolute;
+    right: -25px;
+    top: 42%;
+    transform: translateY(-50%);
+    background: #007bff;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    transition: 0.3s;
+}
+
+.paste-btn:hover {
+    transform: translateY(-50%) scale(1.15);
+}
+.madeby {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 6px;
+  background: linear-gradient(90deg, #6dd5fa, #2980b9, #6dd5fa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 10px rgba(0,153,255,0.6);
+  animation: glowMove 3s infinite linear;
+}
+
+@keyframes glowMove {
+  0% { text-shadow: 0 0 8px #1e90ff; }
+  50% { text-shadow: 0 0 16px #00c3ff; }
+  100% { text-shadow: 0 0 8px #1e90ff; }
+}
+</style>
+
+</head>
+
+<body>
+    
+<div class="container">
+    
+    <h1>Link Processor</h1>
+   <div class="input-wrapper">
+    <input type="text" id="linkInput" placeholder="Paste your Video link here">
+    <button class="paste-btn" onclick="pasteLink()">
+        <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="#e3e3e3">
+            <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h167q11-35 43-57.5t70-22.5q40 0 71.5 22.5T594-840h166q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560h-80v120H280v-120h-80v560Zm280-560q17 0 28.5-11.5T520-800q0-17-11.5-28.5T480-840q-17 0-28.5 11.5T440-800q0 17 11.5 28.5T480-760Z"/>
+        </svg>
+    </button>
+</div>
+
+    <button onclick="cleanLink()">Generate Clean Link</button>
+    <div class="output">
+        <textarea id="outputLink" rows="3" readonly placeholder="Processed link will appear here"></textarea>
+       <button class="copy-btn" onclick="copyLink()">
+    <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="#e3e3e3">
+        <path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"/>
+    </svg>
+</button>
+
+    </div>
+    <footer style="color:white;text-align:center;padding:20px 10px;font-size:14px;">
+  <div class="madeby">Made by Bhavesh </div>
+    <p>© 2025 BOOKStore. All rights reserved.</p>
+  <p>
+    <a href="privacy.html" style="color:#58a6ff;text-decoration:none;">Privacy Policy</a> |
+    <a href="about.html" style="color:#58a6ff;text-decoration:none;">About Us</a>
+  </p>
+</footer>
+</div>
+
+
+<script>
+    async function pasteLink() {
+    try {
+        const text = await navigator.clipboard.readText();
+        document.getElementById("linkInput").value = text;
+    } catch (e) {
+        alert("Unable to paste! Browser permission needed.");
+    }
+}
+
+function cleanLink() {
+    let link = document.getElementById('linkInput').value;
+    if(!link) return alert("Please paste a link first!");
+
+    // Extract the file_url part
+    let fileUrlPart = link.match(/file_url=([^&]+)/);
+    if(!fileUrlPart) return alert("Invalid link format!");
+
+    let cleanedLink = decodeURIComponent(fileUrlPart[1]);
+
+    // Ensure it starts with https://
+    if(!cleanedLink.startsWith('https://')) {
+        cleanedLink = cleanedLink.replace(/^:\//, '://');
+    }
+
+    document.getElementById('outputLink').value = cleanedLink;
+}
+
+
+function copyLink() {
+    const output = document.getElementById('outputLink');
+    output.select();
+    output.setSelectionRange(0, 99999); // For mobile devices
+    navigator.clipboard.writeText(output.value).then(() => {
+       ;
+    });
+}
+</script>
+</body>
+</html>
