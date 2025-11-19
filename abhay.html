@@ -17,23 +17,55 @@
     /* Top Section */
     .header {
         padding: 30px 20px;
-        background: 1c2940;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+         background: #0b1220;
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+        
     }
 
-    .title {
-        font-size: 28px;
-        font-weight: 700;
-        margin-bottom: 8px;
-    }
+   /* Title – Premium Glow */
+.title {
+    font-size: 32px;
+    font-weight: 800;
+    text-align: center;
+    letter-spacing: 1px;
 
-    .validity {
-        font-size: 14px;
-        opacity: 0.7;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
+    background: linear-gradient(90deg, #33cfff, #66f2ff, #33cfff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    text-shadow: 0 0 26px rgba(0, 180, 255, 0.45);
+
+    animation: titleGlow 4s infinite linear;
+}
+
+/* Title animation */
+@keyframes titleGlow {
+    0% { text-shadow: 0 0 10px #00c8ff; }
+    50% { text-shadow: 0 0 18px #66f2ff; }
+    100% { text-shadow: 0 0 10px #00c8ff; }
+}
+
+/* Validity Text – Clean Neon Look */
+.validity {
+    margin-top: 8px;
+    text-align: center;
+    font-size: 15px;
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+
+    padding: 6px 18px;
+    border-radius: 50px;
+
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(5px);
+
+    color: #b8eaff;
+    border: 1px solid rgba(0, 200, 255, 0.3);
+    box-shadow: 0 0 10px rgba(0, 200, 255, 0.3);
+}
+
 
     /* Tabs */
     .tabs {
@@ -51,6 +83,8 @@
         cursor: pointer;
         transition: 0.2s;
         opacity: 0.6;
+        position: relative;
+
     }
 
     .tab.active {
@@ -58,15 +92,38 @@
         border-bottom: 3px solid #ffffff;
         font-weight: bold;
     }
+.tab:hover {
+    opacity: 1;
+    color: #58a6ff;
+}
+.tab::after {
+    content: "";
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    width: 0;
+    height: 3px;
+    background: #58a6ff;
+    transition: 0.3s ease;
+    transform: translateX(-50%);
+}
 
+.tab.active::after {
+    width: 50%;
+}
     /* Content Boxes */
     .content {
         padding: 25px;
         display: none;
+          opacity: 0;
+    transform: translateY(10px);
+    transition: 0.3s ease;
     }
 
     .content.active {
         display: block;
+         opacity: 1;
+    transform: translateY(0);
     }
 
     /* Overview List */
@@ -93,10 +150,18 @@
         cursor: pointer;
         box-shadow: 0 3px 10px rgba(0,0,0,0.08);
         transition: 0.2s;
-    }
+            animation: popIn 0.6s ease forwards;
+    opacity: 0;
 
+    }
+@keyframes popIn {
+    0% { transform: translateY(20px) scale(0.95); opacity: 0; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+}
     .folder-card:hover {
-        transform: scale(1.02);
+       transform: scale(1.03);
+    box-shadow: 0 0 15px rgba(0, 180, 255, 0.4);
+        
     }
 
     .folder-img {
@@ -233,6 +298,43 @@
   height: 22px;
   vertical-align: middle;
   margin-right: 8px;}
+html {
+    scroll-behavior: smooth;
+}
+/* Abhay Image Box */
+.abhay-box {
+    width: 240px;
+    height: 120px;
+    margin: 0 auto 12px auto;
+    background: rgba(255,255,255,0.07);
+    border-radius: 18px;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    box-shadow:
+        0 0 12px rgba(0, 200, 255, 0.4),
+        0 0 30px rgba(0, 130, 255, 0.25);
+
+    backdrop-filter: blur(6px);
+
+    animation: floatBox 3s ease-in-out infinite;
+}
+
+.abhay-img {
+    width: 200%;
+    height: 100%;
+    border-radius: 14px;
+    object-fit: cover;
+}
+
+/* Floating animation */
+@keyframes floatBox {
+    0%   { transform: translateY(0); }
+    50%  { transform: translateY(-6px); }
+    100% { transform: translateY(0); }
+}
 
 </style>
 
@@ -267,11 +369,18 @@
 
 <!-- Header -->
 <div class="header">
+
+    <div class="abhay-box">
+        <img src="abhay.png" alt="Abhay" class="abhay-img">
+    </div>
+
     <div class="title">Abhay 10th Batch 2026</div>
+
     <div class="validity">
         📄 Validity: 15/Nov/2025 - 30/04/2026
     </div>
 </div>
+
 
 <!-- Tabs -->
 <div class="tabs">
@@ -317,6 +426,7 @@
   </p>
 </footer>
 <script>
+  
     const hamburger = document.getElementById("hamburger");
 const menu = document.getElementById("menu");
 
