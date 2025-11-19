@@ -343,6 +343,24 @@
     background: white;
     transform: scale(1.2);
 }
+.main-setting-btn {
+    padding: 10px 14px;
+    font-size: 15px;
+    cursor: pointer;
+    color: #d9d9d9;
+    transition: 0.2s;
+}
+.main-setting-btn:hover {
+    background: #1b2236;
+}
+
+.drop-box {
+    display: none;
+    background: #151a2c;
+    padding-bottom: 6px;
+    margin-bottom: 4px;
+    border-radius: 10px;
+}
 
 </style>
 
@@ -376,27 +394,36 @@
                 <img src="fullscreen.svg" id="fullscreenBtn" class="ctrl-icon" title="Toggle Fullscreen">
                 
                 <div class="settings-menu" id="settingsMenu">
-                    <div class="setting-section">
-                        <div class="setting-title">Speed</div>
-                        <div class="option" data-speed="0.25">0.25x</div>
-                        <div class="option" data-speed="0.5">0.5x</div>
-                        <div class="option active" data-speed="1">1x</div>
-                        <div class="option" data-speed="1.25">1.25x</div>
-                        <div class="option" data-speed="1.5">1.5x</div>
-                        <div class="option" data-speed="2">2x</div>
-                    </div>
 
-                    <div class="divider"></div>
+    <!-- SPEED BUTTON -->
+    <div class="main-setting-btn" data-open="speedBox"><b>Speed</b></div>
 
-                    <div class="setting-section">
-                        <div class="setting-title">Quality</div>
-                        <div class="option active" data-quality="auto">Auto</div>
-                        <div class="option" data-quality="240">240p</div>
-                        <div class="option" data-quality="360">360p</div>
-                        <div class="option" data-quality="480">480p</div>
-                        <div class="option" data-quality="720">720p</div>
-                    </div>
-                </div>
+    <div class="setting-section drop-box" id="speedBox">
+        
+        <div class="option" data-speed="0.25">0.25x</div>
+        <div class="option" data-speed="0.5">0.5x</div>
+        <div class="option active" data-speed="1">1x</div>
+        <div class="option" data-speed="1.25">1.25x</div>
+        <div class="option" data-speed="1.5">1.5x</div>
+        <div class="option" data-speed="2">2x</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- QUALITY BUTTON -->
+    <div class="main-setting-btn" data-open="qualityBox"><b>Quality</b></div>
+
+    <div class="setting-section drop-box" id="qualityBox">
+        
+        <div class="option active" data-quality="auto">Auto</div>
+        <div class="option" data-quality="240">240p</div>
+        <div class="option" data-quality="360">360p</div>
+        <div class="option" data-quality="480">480p</div>
+        <div class="option" data-quality="720">720p</div>
+    </div>
+
+</div>
+
             </div>
         </div>
 
@@ -489,6 +516,27 @@ volumeSlider.addEventListener("input", (e) => {
         e.stopPropagation();
         settingsMenu.style.display = (settingsMenu.style.display === 'block') ? 'none' : 'block';
     });
+// OPEN/CLOSE DROPDOWN SECTIONS
+document.querySelectorAll(".main-setting-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+
+        const id = btn.dataset.open;
+        const box = document.getElementById(id);
+
+        // Close if already open
+        if (box.style.display === "block") {
+            box.style.display = "none";
+            return;
+        }
+
+        // Close all other boxes
+        document.querySelectorAll(".drop-box").forEach(b => b.style.display = "none");
+
+        // Open selected one
+        box.style.display = "block";
+    });
+});
 
     document.addEventListener('click', () => {
         settingsMenu.style.display = 'none';
