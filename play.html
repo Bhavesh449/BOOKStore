@@ -194,9 +194,9 @@
         position: absolute;
         top: 12px;
         right: 12px;
-        width: 48px;
+        width: 60px;
         height: auto;
-        opacity: 0.5;
+        opacity: 0.8;
         z-index: 10005;
         pointer-events: none;
     }
@@ -406,6 +406,34 @@
     color: #9bb3ff;
     opacity: 0.9;
 }
+/* Skip Intro Button */
+#skipIntro {
+    position: absolute;
+    bottom: 120px;
+    left: 91%;
+    transform: translateX(-50%);
+    padding: 10px 22px;
+    background: rgba(0,0,0,0.55);
+    color: white;
+    font-size: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.15);
+    z-index: 99999;
+}
+
+#skipIntro.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-4px);
+}
+
+#skipIntro.hide {
+    opacity: 0;
+    pointer-events: none;
+}
 
 </style>
 
@@ -420,6 +448,7 @@
     <video id="video" autoplay></video>
     
     <div class="bottom-progress" id="bottomProgress"></div>
+<div id="skipIntro">Skip Intro</div>
 
     <div class="controls-and-seek-container" id="controlsContainer">
         <div class="controls" id="controls">
@@ -435,6 +464,14 @@
             </div>
 
             <div class="controls-right">
+                <span id="timeDisplay" style="
+    font-size:14px;
+    color:#cfd3ff;
+    margin-right:4px;
+    cursor:pointer;
+    user-select:none;
+"></span>
+
                 <img src="settings.svg" id="settingsBtn" class="ctrl-icon">
                 <img src="fullscreen.svg" id="fullscreenBtn" class="ctrl-icon" title="Toggle Fullscreen">
                 
@@ -477,21 +514,147 @@
         </div>
     </div>
 </div>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCcpG-oEqkDprgTwWXKt5CFsttjAQAZFNg",
+  authDomain: "bookstore-6ab08.firebaseapp.com",
+  databaseURL: "https://bookstore-6ab08-default-rtdb.firebaseio.com",
+  projectId: "bookstore-6ab08",
+  storageBucket: "bookstore-6ab08.firebasestorage.app",
+  messagingSenderId: "102226032749",
+  appId: "1:102226032749:web:f7090175d2e53c2f522764"
+};
+firebase.initializeApp(firebaseConfig);
+</script>
+
+<script>
+// Read ID from URL
+const params = new URLSearchParams(window.location.search);
+const vid = params.get("video") || "0";
+
+// Firebase reference: videos/{id}/url
+firebase.database().ref("videos/" + vid + "/url").once("value")
+.then(snapshot => {
+    const url = snapshot.val();
+
+    if (!url) {
+        alert("Video not found in database!");
+        return;
+    }
+
+    loadVideo(url);
+});
+function loadVideo(videoURL) {
+    if (Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(videoURL);
+        hls.attachMedia(video);
+        window.hls = hls;
+    } else {
+        video.src = videoURL;
+    }
+}
+let introTime = null;
+
+// Read skip intro time from Firebase
+firebase.database().ref("videos/" + vid + "/skip").once("value")
+.then(snap => {
+    if (snap.exists()) {
+        const timeStr = snap.val(); // example: "08:25"
+        introTime = convertTimeToSeconds(timeStr);
+        skipIntroBtn.style.display = "block";
+    } else {
+        skipIntroBtn.style.display = "none";
+    }
+});
+
+function convertTimeToSeconds(t){
+    const [m, s] = t.split(":").map(Number);
+    return m * 60 + s;
+}
+
     const video = document.getElementById("video");
     const seekBar = document.getElementById("seekBar");
     const bottomProgress = document.getElementById("bottomProgress");
     const playerContainer = document.getElementById("playerContainer");
     const controlsContainer = document.getElementById("controlsContainer");
-    
+    const timeDisplay = document.getElementById("timeDisplay");
+    let showRemaining = false;
+// ---- SKIP INTRO (Only for video1) ----
+const skipIntroBtn = document.getElementById("skipIntro");
+const INTRO_TIME = 8 * 60 + 52; // 08:52
+
+if (vid === "1") {
+    skipIntroBtn.style.display = "block";
+} else {
+    skipIntroBtn.style.display = "none";
+}
+
+// Show/hide based on time
+video.addEventListener("timeupdate", () => {
+    if (vid !== "1") return;
+
+    if (video.currentTime < INTRO_TIME) {
+        skipIntroBtn.classList.add("show");
+        skipIntroBtn.classList.remove("hide");
+    } else {
+        skipIntroBtn.classList.add("hide");
+        skipIntroBtn.classList.remove("show");
+    }
+});
+video.addEventListener("timeupdate", () => {
+    if (!video.duration) return;
+
+    // Slider follows the real time (seconds)
+    seekBar.value = video.currentTime;
+
+    // Color fill still uses percentage
+    const percent = (video.currentTime / video.duration) * 100;
+    seekBar.style.setProperty("--seek-pos", percent + "%");
+
+    bottomProgress.style.width = percent + "%";
+});
+
+
+skipIntroBtn.addEventListener("click", () => {
+    const wasPaused = video.paused;
+
+    video.currentTime = INTRO_TIME;
+
+    // Update seekbar instantly
+    const percent = (INTRO_TIME / video.duration) * 100;
+    seekBar.value = percent;
+    seekBar.style.setProperty("--seek-pos", percent + "%");
+
+    if (wasPaused) video.pause();
+    else video.play();
+
+    skipIntroBtn.classList.add("hide");
+});
+
+
     // Volume Elements
     const volumeBtn = document.getElementById("volumeBtn");
     const volumeSlider = document.getElementById("volumeSlider");
 // Update Seek Bar fill color position
 video.addEventListener("timeupdate", () => {
-    const progress = (video.currentTime / video.duration) * 100;
-    seekBar.style.setProperty("--seek-pos", progress + "%");
+    if (!video.duration) return;
+
+    const cur = video.currentTime;
+    const dur = video.duration;
+
+    if (!showRemaining) {
+        timeDisplay.textContent = `${formatTime(cur)} / ${formatTime(dur)}`;
+    } else {
+        const remain = dur - cur;
+        timeDisplay.textContent = `-${formatTime(remain)} / ${formatTime(dur)}`;
+    }
+});
+timeDisplay.addEventListener("click", () => {
+    showRemaining = !showRemaining; // toggle
 });
 
 // Update volume bar fill color
@@ -501,16 +664,9 @@ volumeSlider.addEventListener("input", (e) => {
 });
 
     // HLS setup
-    const url = "https://d3cx6qbbd4cbso.cloudfront.net/file_library/videos/vod_non_drm_ios/4603299/1763294304_8192435093590433/sunny/1763294300828_380976912071675500_video_VOD.m3u8";
-    let hls = null;
+       let hls = null;
 
-    if (Hls.isSupported()) {
-        hls = new Hls();
-        hls.loadSource(url);
-        hls.attachMedia(video);
-    } else {
-        video.src = url;
-    }
+   
 
     // --- VOLUME & MUTE LOGIC ---
     let lastVolume = 1; // Store volume before muting
@@ -616,13 +772,14 @@ settingsMenu.querySelectorAll("[data-quality]").forEach(item => {
 
         const q = item.dataset.quality;
 
-        if (hls) {
-            if (q === "auto") hls.currentLevel = -1;
-            else {
-                const levelIndex = hls.levels.findIndex(l => l.height == Number(q));
-                if (levelIndex >= 0) hls.currentLevel = levelIndex;
-            }
-        }
+        if (window.hls) {
+    if (q === "auto") window.hls.currentLevel = -1;
+    else {
+        const levelIndex = window.hls.levels.findIndex(l => l.height == Number(q));
+        if (levelIndex >= 0) window.hls.currentLevel = levelIndex;
+    }
+}
+
 
         const displayText = 
             q === "auto" ? "Auto" :
@@ -637,13 +794,14 @@ settingsMenu.querySelectorAll("[data-quality]").forEach(item => {
             settingsMenu.querySelectorAll("[data-quality]").forEach(i => i.classList.remove("active"));
             item.classList.add("active");
             const q = item.dataset.quality;
-            if (hls) {
-                if (q === "auto") hls.currentLevel = -1;
-                else {
-                    const levelIndex = hls.levels.findIndex(l => l.height == Number(q));
-                    if (levelIndex >= 0) hls.currentLevel = levelIndex;
-                }
-            }
+            if (window.hls) {
+    if (q === "auto") window.hls.currentLevel = -1;
+    else {
+        const levelIndex = window.hls.levels.findIndex(l => l.height == Number(q));
+        if (levelIndex >= 0) window.hls.currentLevel = levelIndex;
+    }
+}
+
         });
     });
 
@@ -652,20 +810,57 @@ settingsMenu.querySelectorAll("[data-quality]").forEach(item => {
         if (!isNaN(video.duration)) seekBar.max = video.duration;
     });
 
-    video.addEventListener("timeupdate", () => {
-        if (!isNaN(video.duration)) {
-            seekBar.value = video.currentTime;
-            bottomProgress.style.width = ((video.currentTime / video.duration) * 100) + "%";
-        }
-    });
+   video.addEventListener("timeupdate", () => {
+    if (introTime === null) return;
+
+    if (video.currentTime < introTime) {
+        skipIntroBtn.classList.add("show");
+        skipIntroBtn.classList.remove("hide");
+    } else {
+        skipIntroBtn.classList.add("hide");
+        skipIntroBtn.classList.remove("show");
+    }
+});
+
+skipIntroBtn.addEventListener("click", () => {
+    if (introTime === null) return;
+
+    const wasPaused = video.paused;
+    video.currentTime = introTime;
+
+    if (!wasPaused) video.play();
+    skipIntroBtn.classList.add("hide");
+});
+
+video.addEventListener("loadedmetadata", () => {
+    const cur = video.currentTime;
+    const dur = video.duration;
+
+    if (!showRemaining) {
+        timeDisplay.textContent = `${formatTime(cur)} / ${formatTime(dur)}`;
+    } else {
+        const remain = dur - cur;
+        timeDisplay.textContent = `-${formatTime(remain)} / ${formatTime(dur)}`;
+    }
+});
+
+video.addEventListener("pause", () => {
+    const cur = video.currentTime;
+    const dur = video.duration;
+
+    if (!showRemaining) {
+        timeDisplay.textContent = `${formatTime(cur)} / ${formatTime(dur)}`;
+    } else {
+        const remain = dur - cur;
+        timeDisplay.textContent = `-${formatTime(remain)} / ${formatTime(dur)}`;
+    }
+});
 
     seekBar.addEventListener("input", () => {
         video.currentTime = Number(seekBar.value);
         bottomProgress.style.width = ((seekBar.value / video.duration) * 100) + "%";
     });
-    seekBar.addEventListener("change", () => {
-        video.currentTime = Number(seekBar.value);
-    });
+    
 
     // --- PLAY/PAUSE & SKIP ---
     document.getElementById("back5").onclick = () => video.currentTime = Math.max(0, video.currentTime - 5);
@@ -698,12 +893,19 @@ settingsMenu.querySelectorAll("[data-quality]").forEach(item => {
 
     function showControls() {
         controlsContainer.classList.remove("hidden");
+        if (vid === "1" && video.currentTime < INTRO_TIME) {
+    skipIntroBtn.classList.remove("hide");
+    skipIntroBtn.classList.add("show");
+}
+
         clearTimeout(inactivityTimer);
         document.body.style.cursor = 'default';
 
         if (!video.paused) {
             inactivityTimer = setTimeout(() => {
                 controlsContainer.classList.add("hidden");
+                skipIntroBtn.classList.add("hide");
+
                 document.body.style.cursor = 'none'; // Hide cursor in fullscreen feeling
             }, INACTIVITY_MS);
         }
@@ -787,6 +989,27 @@ settingsMenu.querySelectorAll("[data-quality]").forEach(item => {
             showControls();
         }
     });
+
+
+function formatTime(time) {
+    time = Math.floor(time);
+
+    let hours = Math.floor(time / 3600);
+    let minutes = Math.floor((time % 3600) / 60);
+    let seconds = time % 60;
+
+    // Pad numbers
+    const hh = hours.toString().padStart(2, "0");
+    const mm = minutes.toString().padStart(2, "0");
+    const ss = seconds.toString().padStart(2, "0");
+
+    // If video is less than 1 hour → show MM:SS
+    if (hours === 0) return `${mm}:${ss}`;
+
+    // If video has hours → show HH:MM:SS
+    return `${hh}:${mm}:${ss}`;
+}
+
 
     // --- MOBILE LANDSCAPE ENFORCEMENT ---
     function forceLandscape() {
