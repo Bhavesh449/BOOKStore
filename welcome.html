@@ -70,17 +70,6 @@
         font-size:14px;
     }
 
-    /* Video Player Box */
-    .player-box {
-        width:90%;
-        aspect-ratio:16/9;
-        margin:20px auto;
-        background:black;
-        border-radius:12px;
-        overflow:hidden;
-        display:none;
-    }
-
     video {
         width:100%;
         height:100%;
@@ -208,6 +197,12 @@
   margin-right: 8px;
 }
 
+.menu-logo {
+  width: 50px;
+  height: 32px;
+  object-fit: contain;
+  vertical-align: middle;
+}
 /* Breadcrumb – neon soft glow */
 .top-bar {
     padding: 20px;
@@ -304,18 +299,6 @@
     transform: translateY(-2px);
 }
 
-/* Video Player Box – smooth rounded */
-.player-box {
-    width: 90%;
-    aspect-ratio: 16/9;
-    margin: 25px auto;
-    background: black;
-    border-radius: 14px;
-    overflow: hidden;
-
-    box-shadow: 0 4px 18px rgba(0,0,0,0.5);
-}
-
 </style>
 
 </head>
@@ -335,6 +318,9 @@
 <nav class="menu" id="menu">
    <a href="index.html" class="active">
     <img src="home.svg" alt="Home" class="menu-icon"> Home
+  </a>
+  <a href="edupie.html">
+    <img src="edupie.png" alt="Edupie" class="menu-logo">EduPie
   </a>
   <a href="games.html">
     <img src="game.svg" alt="Games" class="menu-icon"> Games Zone
@@ -358,18 +344,12 @@
 <div class="video-card">
     <img src="https://play-lh.googleusercontent.com/-tLt6jjKIAtTLDpeIYkQrZ-mLr0xAi1UICQ-Xhw_psDWHLF7hSnl80wqBA2ckKdjF7aU=w240-h480-rw">
     <div class="video-title">Welcome</div>
-   <a href="play.html" style="text-decoration:none;">
+   <a href="play.html?video0" style="text-decoration:none;">
     <button class="watch-btn">Watch Now</button>
 </a>
 
 </div>
 
-<!-- Video Player -->
-<div class="player-box" id="playerBox">
-    <video id="player" controls>
-        <source src="https://d3cx6qbbd4cbso.cloudfront.net/file_library/videos/vod_non_drm_ios/4603299/1763294304_8192435093590433/sunny/1763294300828_380976912071675500_video_VOD.m3u8" type="application/x-mpegURL">
-    </video>
-</div>
 <footer style="background:#0b1220;color:white;text-align:center;padding:20px 10px;font-size:14px;">
   <div class="madeby">Made by Bhavesh </div>
     <p>© 2025 BOOKStore. All rights reserved.</p>
@@ -403,10 +383,6 @@ function goBack() {
     window.location.href = "abhay.html";
 }
 
-function showPlayer() {
-    document.getElementById("playerBox").style.display = "block";
-    document.getElementById("player").play();
-}
 </script>
 
 </body>
