@@ -1,249 +1,452 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOOKStore-Games</title>
-    <style>
-        body {
-            background-color: #0b1220;
-            color: white;
-            font-family: sans-serif;
-            text-align: center;
-        }
-        #logo {height: 66px;
-      max-width: 90%;
-            display: block;
-            margin: 20px auto;
-        }
-        .tabs {
-            margin: 20px 0;
-        }
-        /* Cool Tab Buttons */
-.tab-button {
-    background: rgba(25, 37, 56, 0.6);
-    border: 1px solid rgba(90, 120, 200, 0.25);
-    color: #cfe9ff;
-    padding: 10px 26px;
-    cursor: pointer;
-    border-radius: 10px;
-    font-size: 17px;
-    font-weight: 600;
-    letter-spacing: 0.6px;
-    transition: 0.3s ease;
-    text-shadow: 0 0 6px rgba(88, 166, 255, 0.4);
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BOOKStore - Free Books, PDFs, PYQs & More</title>
 
-/* Hover Glow */
-.tab-button:hover {
-    background: rgba(40, 57, 87, 0.7);
-    box-shadow: 0 0 10px rgba(88, 166, 255, 0.4);
-    transform: translateY(-2px);
-}
+<meta name="description" content="BOOKStore offers Oswaal PDFs, solved papers, sample papers, 100x-Josh videos, science notes, SST notes and more for Class 10 students.">
 
-/* Active Tab – Glowing Blue */
-.tab-button.active {
-    background: linear-gradient(135deg, rgba(77,171,255,0.25), rgba(155,89,255,0.18));
-    border: 1px solid rgba(90,150,255,0.35);
-    color: #ffffff;
-    box-shadow: 0 0 12px rgba(0,153,255,0.6);
-    text-shadow: 0 0 10px rgba(0,180,255,0.8);
-    transform: scale(1.04);
-}
+<meta name="keywords" content="bookstore, class 10, ncert, oswaal, pdfs, books, study material, cbse, sample papers, solved papers, study website">
+<meta property="og:title" content="BOOKStore – Your Study Partner">
+<meta property="og:description" content="Get free books, notes, PDFs, Oswaal, CBSE study material and more.">
+<meta property="og:image" content="/logo.png">
+<meta property="og:url" content="https://bookstore-study.vercel.app/">
+<meta property="og:type" content="website">
 
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        #play-sudoku {
-            padding: 20px;
-        }
-        #create-new-btn {
-          border-radius: 8px;
-            background-color: rgb(0, 90, 187);
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-        }
-        #create-new-btn {
-          border-radius: 8px;
-            background-color: rgb(0, 90, 187);
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-        }
-        #create-josh-btn {
-          border-radius: 8px;
-            background-color: rgb(0, 90, 187);
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-        }
-        #leaderboard-table {
-            margin: 20px auto;
-            border-collapse: collapse;
-            width: 80%;
-        }
-        #leaderboard-table th, #leaderboard-table td {
-            border: 1px solid #555;
-            padding: 10px;
-        }
-        /* Box around page title */
-     .section-box {
-       width: 72%;
-       max-width: 820px;
-       margin: 14px auto;
-       padding: 14px 20px;
-       border-radius: 14px;
-       background: linear-gradient(135deg, rgba(77,171,255,0.06), rgba(155,89,255,0.03));
-       border: 1px solid rgba(77,171,255,0.14);
-       box-shadow: 0 10px 30px rgba(4,25,50,0.55), inset 0 1px 0 rgba(255,255,255,0.02);
-       display: flex;
-       flex-direction: column;
-       align-items: center;
-       justify-content: center;
-       text-align: center;
-       backdrop-filter: blur(6px) saturate(120%);
-     } 
-     .section-box h1 {
-       margin: 0;
-       font-size: 20px;
-       color: #e8f7ff;
-       letter-spacing: 0.6px;
-       text-shadow: 0 6px 18px rgba(4,85,160,0.06);
-     }
-     .section-box .subtitle {
-       margin-top: -8px;
-       margin-bottom: 20px;
-       font-size: 13px;
-       color: #c3d7ef;
-       opacity: 0.95;
-     }/* thin divider between game cards */
-       .game-divider {
-         width: 100%;
-         height: 2px;
-         background: rgba(255,255,255,0.06);
-         margin: 18px 0;
-         border-radius: 1px;
-       }
-  
-/* Leaderboard list styles */
-    .leaderboard-list {
-      width: 100%;
-      max-width: 720px;
-      margin: 12px auto 28px;
+  <link rel="icon" type="image/png" href="https://png.pngtree.com/png-vector/20240515/ourmid/pngtree-open-book-logo-png-image_12467719.png">
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <!-- Google Fonts for the 'G' logo -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b1220;
+      color: #e8edf6;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      padding: 4px 6px;
-      box-sizing: border-box;
+      min-height: 100vh;
     }
-    .leader-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 12px 14px;
-     background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.03);
-      border-radius: 12px;
-      color: #e8f7ff;
+    header {
+      background: #0b1220;
+      padding: 15px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      
     }
-    /* scale / sizing by rank: 1 is largest, then 2, then 3, then normal */
-    .leaderboard-list .leader-row { transition: all .18s ease, transform .18s ease; }
-
-    /* Rank 1 - largest */
-    .leaderboard-list .leader-row:nth-child(1) {
-      padding: 20px 18px;
-      transform: scale(1.05);
-      background: linear-gradient(90deg, rgba(77,171,255,0.10), rgba(155,89,255,0.04));
-      border-color: rgba(77,171,255,0.18);
-    }
-    .leaderboard-list .leader-row:nth-child(1) .rank-img,
-    .leaderboard-list .leader-row:nth-child(1) .rank-badge {
-      width: 64px;
-      height: 64px;
-    }
-    .leaderboard-list .leader-row:nth-child(1) .player-name { font-size: 18px; font-weight: 800; }
-
-    /* Rank 2 - slightly smaller */
-    .leaderboard-list .leader-row:nth-child(2) {
-      padding: 18px 16px;
-      transform: scale(1.03);
-      border-color: rgba(155,155,255,0.10);
-    }
-    .leaderboard-list .leader-row:nth-child(2) .rank-img,
-    .leaderboard-list .leader-row:nth-child(2) .rank-badge { width: 54px; height: 54px; }
-    .leaderboard-list .leader-row:nth-child(2) .player-name { font-size: 16px; font-weight: 700; }
-
-    /* Rank 3 - a bit smaller again */
-    .leaderboard-list .leader-row:nth-child(3) {
-      padding: 16px 14px;
-      transform: scale(1.02);
-    }
-    .leaderboard-list .leader-row:nth-child(3) .rank-img,
-    .leaderboard-list .leader-row:nth-child(3) .rank-badge { width: 46px; height: 46px; }
-    .leaderboard-list .leader-row:nth-child(3) .player-name { font-size: 15px; }
-
-   /* Ranks 4+ normal size */
-    .leaderboard-list .leader-row:nth-child(n+4) {
-      padding: 12px 14px;
-      transform: scale(1);
-    }
-    .leaderboard-list .leader-row .rank-badge { width: 40px; height: 40px; }
- 
-    .leader-left {
-      display:flex;
-    align-items:center;
-      gap:12px;
-    }
-    /* leaderboard header with trophy */
-    .leaderboard-header {
-      display: flex;
-      align-items: center;
-      justify-content: center; /* keep centered with page */
-      gap: 12px;
-      margin-bottom: 8px;
-    }
-    .leaderboard-header .trophy {
-      width: 25px;
-      height: 25px;
+    /* logo image in header */
+    #logo {
+      height: 66px;
+      max-width: 90%;
       object-fit: contain;
-      display: block;
+      display: inline-block;
+      vertical-align: middle;
     }
-    .rank-img {
-      width:24px;
-      height:24px;
-      object-fit:contain;
-      display:block;
+      #searchBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: #0b1220;
+}
+
+#searchInput {
+  width: 90%;
+  max-width: 600px;
+  padding: 12px 45px;
+  border-radius: 50px;
+  border: 1px solid #3c4a66;
+  background-color: #1c2940;
+  color: #e8edf6;
+  font-size: 16px;
+  outline: none;
+  transition: all 0.3s ease;
+  background-image: url('https://cdn-icons-png.flaticon.com/512/622/622669.png');
+  background-size: 20px;
+  background-repeat: no-repeat;
+  background-position: 15px center;
+}
+
+#searchInput:focus {
+  background-color: #24314d;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.4);
+  border-color: #007bff;
+}
+    .books {
+      display: grid;
+      gap: 20px;
+      padding: 20px;
+      justify-content: center;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     }
-    .rank-badge {
-      width:44px;
-      height:44px;
-      border-radius:50%;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      background: rgba(77,171,255,0.14);
-      color:#cfe9ff;
-      font-weight:700;
-      font-size:16px;
+    .book {
+      background: #1c2940;
+      padding: 10px;
+      border-radius: 12px;
+      text-align: center;
     }
-   .player-name {
-      font-weight:600;
-      color:#dff3ff;
+    .book img {
+      width: 100%;
+      height: auto;
+      max-width: 178px;
+      border-radius: 8px;
     }
-    .matches {
-      font-weight:700;
-      color:#9fd1ff;
-      min-width:56px;
-      text-align:right;
+    .price {
+      margin: 8px 0;
+      font-weight: bold;
     }
+    .price .old {
+      text-decoration: line-through;
+      color: #ccc;
+      margin-right: 6px;
+    }
+    .price .new {
+      font-weight: bold;
+      color: limegreen;
+    }
+    .year {
+      font-style: none;
+      font-size: 14px;
+      margin-bottom: 5px;
+      color: #aaa;
+    }
+    .author {
+      font-style: none;
+      font-size: 14px;
+      margin-bottom: 5px;
+      color: #aaa;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    footer {
+      background: #121a2a;
+      padding: 8px;
+      text-align: center;
+      font-size: 14px;
+      color: #7a8aa0;
+      flex-shrink: 0;
+    }
+    #loginPopup {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      transition: 0.6s ease;
+    }
+    #loginBox {
+      background: #1c2940;
+      /* Increased top padding to give space for the 'X' button and H2 */
+      padding: 40px 20px 20px 20px; 
+      border-radius: 10px;
+      text-align: center;
+      position: relative;
+      width: 100%;
+      max-width: 350px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    /* Style H2 to prevent default top margin from causing overlap */
+    #loginBox h2 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-size: 24px;
+    }
+    #loginBox input {
+      width: 90%;
+      max-width: 280px;
+      margin: 8px 0;
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+      background-color: #0b1220; /* Darker input background */
+      color: #e8edf6;
+    }
+    #loginBox button {
+      width: 90%;
+      max-width: 250px;
+      margin: 5px 0;
+      padding: 10px;
+      border: none;
+      border-radius: 9px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    /* Professional close button */
+    #closeLogin {
+      position: absolute;
+      top: 10px;
+      left: 220px;
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: bold;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    
+    #loginBox #emailLoginBtn {
+      background: #007bff;
+      color: white;
+    }
+    #loginBox #emailLoginBtn:hover {
+      background: #0056b3;
+    }
+    /* Google Login Button Style */
+    #googleLoginBtn {
+      background: white;
+      color: #4a4a4a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    #googleLoginBtn:hover {
+      background: #f0f0f0;
+    }
+    /* Google 'G' Logo Style */
+    #googleLoginBtn .material-icons {
+      color: #4285F4; /* Blue */
+      font-size: 20px;
+    }
+    #google {
+      margin-top: -10px;
+      margin-left: 2px;
+    }
+    /* Style for Create Account button - looks like a text link with 'or' logic */
+    #createAccountBtn {
+      width: auto; 
+      max-width: none;
+      background: none;
+      color: #aaa; /* Default text color */
+      padding: 0;
+      margin-top: 15px; 
+      border: none;
+      cursor: pointer;
+      font-weight: normal;
+      font-size: 14px;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    
+    #createAccountBtn:hover {
+      color: #fff;
+      background: none;
+    }
+    
+    /* Style for the dynamic error box (Red banner as requested) */
+    #authErrorBox {
+        background: #dc3545; 
+        color: white; 
+        padding: 10px; 
+        border-radius: 6px; 
+        margin-bottom: 10px; 
+        text-align: left; 
+        width: 90%; 
+        max-width: 280px; 
+        transition: opacity 0.5s, max-height 0.5s; 
+        opacity: 1; 
+        overflow: hidden; 
+        max-height: 100px; 
+        box-sizing: border-box;
+    }
+
+
+    /* Banner Carousel */
+    .banner-container {
+      position: relative;
+      overflow: hidden;
+      margin: 20px auto;
+      width: 95%;
+      border-radius: 20px;
+    }
+    .banner-slide {
+      display: flex;
+      transition: transform 0.8s ease-in-out;
+    }
+    .banner-item {
+      min-width: 100%;
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .banner-item img {
+      width: 100%;
+      height: auto;
+      border-radius: 20px;
+      object-fit: cover;
+    }
+    /* Desktop ratio 5:1 */
+    @media (min-width: 768px) {
+      .banner-container {
+        aspect-ratio: 5/1;
+      }
+      .banner-item:nth-child(1) img {
+        content: url('abhaypc.png');
+      }
+      .banner-item:nth-child(2) img {
+        content: url('edupiepc.png');
+      }
+    }
+  /* Mobile ratio 9:5 (cropped) */
+    @media (max-width: 767px) {
+      .banner-container {
+        aspect-ratio: 9/5;
+      }
+      .banner-item img {
+        object-fit: cover;
+        object-position: center;
+      }
+      .banner-item:nth-child(1) img {
+        content: url('abhay.png');
+      }
+      .banner-item:nth-child(2) img {
+        content: url('edupiemobile.png');
+      }
+      
+    }
+    #previewOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      display: none;
+      flex-direction: column;
+    }
+    #previewHeader {
+      background: #121a2a;
+      padding: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    #pdfFrame {
+      flex: 1;
+      width: 100%;
+      border: none;
+    }
+    #greeting {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    /* small tick image next to Admin greeting */
+    #greeting img {
+      width: 30px;
+      height: 30px;
+      object-fit: contain;
+      display: inline-block;
+    }
+    /* color the Admin tag red */
+    #greeting .Admin {
+      color: rgb(255, 0, 0);
+      font-weight: bold;
+    }
+    #fakeAddBtn {
+      display: none;
+      margin: 10px auto;
+      background: #2264ff;
+    }
+    @media (max-width: 600px) {
+      header {
+        font-size: 20px;
+      }
+      .books {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (min-width: 1024px) {
+      .books {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
+      /* Dots */
+    .dots {
+      text-align: center;
+      margin-top: 10px;
+    }
+    .dot {
+      height: 12px;
+      width: 12px;
+      margin: 0 5px;
+      background-color: #bbb;
+      border-radius: 50%;
+      display: inline-block;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .dot.active {
+      background-color: #fff;
+    }
+/* ensure cards always fill their grid cell */
+.card{
+  background: #1c2940;
+  padding: 20px;
+  border-radius: 18px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  text-decoration: none;
+  color: #fff;
+}
+
+/* responsive image containers */
+.cover,
+.oswaal {
+  width: 100%;
+  max-width: 340px; /* reasonable max on wide screens */
+  height: 140px;
+  background: #1c2940;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* make images fluid and preserve aspect */
+.cover img,
+.oswaal img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
     /* Hamburger Button */
    /* Hamburger Button */
 .hamburger {
@@ -306,11 +509,17 @@
   font-weight: 500;
   transition: background 0.3s, transform 0.2s;
   border-bottom: 1px solid #2e3a55;
-   text-align: left;
 }
 
 .menu a:hover {
   background: #24314d;
+  transform: translateX(5px);
+}
+.menu a.active {
+  background: #24314d;
+  color: #58a6ff;
+  font-weight: bold;
+  border-left: 4px solid #58a6ff;
   transform: translateX(5px);
 }
 
@@ -330,32 +539,152 @@
   width: 22px;
   height: 22px;
   vertical-align: middle;
-  margin-right: 8px;
-}
+  margin-right: 8px;}
 
+  
 .menu-logo {
   width: 50px;
   height: 32px;
   object-fit: contain;
   vertical-align: middle;
 }
-.menu a.active {
-  background: #24314d;
-  color: #58a6ff;
+.folders{
+  display: grid;
+  gap: 20px;
+  /* auto-fit + minmax will make items take full row on small screens
+     and create columns as space allows (desktop will show 2+ columns) */
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  padding: 20px;
+  margin: 0 auto;
+  max-width: 1200px;
+  box-sizing: border-box;
+}
+
+/* ensure cards always fill their grid cell */
+.card{
+  background: #1c2940;
+  padding: 20px;
+  border-radius: 18px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  text-decoration: none;
+  color: #fff;
+}
+
+/* responsive image containers */
+.cover,
+.oswaal {
+  width: 100%;
+  max-width: 340px; /* reasonable max on wide screens */
+  height: 140px;
+  background: #1c2940;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* make images fluid and preserve aspect */
+.cover img,
+.oswaal img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* tighten layout on very small screens */
+@media (max-width: 420px) {
+  .folders {
+    grid-template-columns: 1fr; /* force single column for very small devices */
+    padding: 12px;
+    gap: 12px;
+  }
+  .cover,
+  .oswaal {
+    max-width: 220px;
+    height: 120px;
+  }
+}
+/* VIP golden animated text */
+.vip {
+  color: gold;
   font-weight: bold;
-  border-left: 4px solid #58a6ff;
-  transform: translateX(5px);
+  font-size: 22px;
+  animation: shine 1.5s infinite alternate;
 }
 
-.player-icon {
-  width: 34px;
-  height: 34px;
-  margin-left: 6px;
+/* Simple shimmer/glow effect */
+@keyframes shine {
+  0% { text-shadow: 0 0 5px gold, 0 0 10px gold, 0 0 15px orange; }
+  50% { text-shadow: 0 0 10px gold, 0 0 20px gold, 0 0 25px orange; }
+  100% { text-shadow: 0 0 5px gold, 0 0 10px gold, 0 0 15px orange; }
+}
+/* Admin red glowing text */
+.Admin {
+  color: red;
+  font-weight: bold;
+  font-size: 18px;
+  animation: redGlow 1.5s infinite alternate;
+}
+
+@keyframes redGlow {
+  0% { text-shadow: 0 0 5px red, 0 0 10px red, 0 0 15px darkred; }
+  50% { text-shadow: 0 0 10px red, 0 0 20px red, 0 0 25px darkred; }
+  100% { text-shadow: 0 0 5px red, 0 0 10px red, 0 0 15px darkred; }
+}
+.input-group {
+  position: relative;
+  width: 90%;
+  max-width: 280px;
+  margin: 12px 0;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 14px 12px 6px 12px;
+  border: 1px solid #3c4a66;
+  background: #0b1220;
+  color: #e8edf6;
+  border-radius: 8px;
+  font-size: 16px;
+  outline: none;
+  transition: 0.3s ease;
+}
+
+.input-group label {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  background: #0b1220; 
+  padding: 0 4px;
+  color: #8fa2c8;
+  font-size: 16px;
+  pointer-events: none;
+  transition: 0.3s ease;
   border-radius: 4px;
-  object-fit: cover; /* ensures it fills the box without distortion */
-  margin-bottom: -12px;
+  user-select: none; /* ← fixes the highlight issue */
 }
 
+
+.input-group input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.4);
+}
+
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label {
+  top: -4px;
+  font-size: 12px;
+  color: #58a6ff;
+}
 .madeby {
   font-size: 18px;
   font-weight: bold;
@@ -372,15 +701,181 @@
   50% { text-shadow: 0 0 16px #00c3ff; }
   100% { text-shadow: 0 0 8px #1e90ff; }
 }
+/* COLLECTION BOXES – NEW COOL DESIGN */
+.collection-box {
+  background: linear-gradient(145deg, #162238, #0d1525);
+  border-radius: 18px;
+  padding: 22px;
+  text-align: center;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.6),
+              inset 0 0 0 2px rgba(255,255,255,0.05);
+  transition: 0.4s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glow ring animation */
+.collection-box::before {
+  content: "";
+  position: absolute;
+  width: 180%;
+  height: 180%;
+  left: -40%;
+  top: -40%;
+  background: conic-gradient(#007bff, #00d4ff, #007bff);
+  animation: rotateGlow 6s linear infinite;
+  opacity: 0.15;
+  z-index: 0;
+}
+
+@keyframes rotateGlow {
+  100% { transform: rotate(360deg); }
+}
+
+/* Inner dark layer */
+.collection-box::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  background: #121a2b;
+  border-radius: 14px;
+  z-index: 1;
+}
+
+/* Actual content (text + images) */
+.collection-content {
+  position: relative;
+  z-index: 10;
+}
+
+/* Title style */
+.collection-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  background: linear-gradient(90deg, #6dd5fa, #2980b9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Preview image */
+.collection-img {
+  width: 100%;
+  max-width: 260px;
+  height: 130px;
+  border-radius: 10px;
+  object-fit: contain;
+  margin-bottom: 10px;
+  transition: 0.3s ease;
+}
+
+/* Hover effects */
+.collection-box:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 35px rgba(0,0,0,0.7),
+              inset 0 0 0 2px rgba(0,132,255,0.2);
+}
+
+.collection-box:hover .collection-img {
+  transform: scale(1.05);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .collection-img {
+    height: 110px;
+  }
+}
+/* BATCH BOX – PREMIUM STYLE */
+.batch-box {
+  background: linear-gradient(145deg, #1b2a44, #101a2b);
+  border-radius: 20px;
+  padding: 25px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.7),
+              inset 0 0 0 2px rgba(255,255,255,0.05);
+  transition: 0.4s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 35px; /* Show above Collections */
+}
+
+/* Glow Ring */
+.batch-box::before {
+  content: "";
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  left: -50%;
+  top: -50%;
+  background: conic-gradient(#00d0ff, #0077ff, #00d0ff);
+  animation: rotateBatchGlow 6s linear infinite;
+  opacity: 0.18;
+  z-index: 0;
+}
+
+@keyframes rotateBatchGlow {
+  100% { transform: rotate(360deg); }
+}
+
+/* Inner Layer */
+.batch-box::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  background: #121a2b;
+  border-radius: 16px;
+  z-index: 1;
+}
+
+/* Content */
+.batch-content {
+  position: relative;
+  z-index: 10;
+}
+
+/* Title */
+.batch-title {
+  font-size: 23px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  background: linear-gradient(90deg, #4ecbff, #2979ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Image */
+.batch-img {
+  width: 100%;
+  max-width: 450px;
+  height: 230px; /* You will replace with 677h × 1203w image, auto-fit */
+  border-radius: 14px;
+  object-fit: contain;
+  margin-bottom: 12px;
+  transition: 0.3s ease;
+}
+
+/* Hover */
+.batch-box:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.75),
+              inset 0 0 0 2px rgba(0,132,255,0.25);
+}
+
+.batch-box:hover .batch-img {
+  transform: scale(1.05);
+}
 
     </style>
+    
 </head>
 <body>
- <!-- Header -->
-<header>
-   <a href="index.html">
-    <img src="logo.png" alt="BOOKStore" id="logo" style="height:50px;">
-  </a>
+   <!-- Header -->
+<header style="text-align:center;padding:15px;background:#0b1220;position:relative;">
+  <img src="logo.png" alt="BOOKStore Logo" style="height:50px;">
+
   <!-- Hamburger Button -->
   <div class="hamburger" id="hamburger">
     <span></span>
@@ -391,13 +886,13 @@
 
 <!-- Slide Menu -->
 <nav class="menu" id="menu">
-  <a href="index.html">
+  <a href="index.html" class="active">
     <img src="home.svg" alt="Home" class="menu-icon"> Home
   </a>
-  <a href="edupie.html">
+   <a href="edupie.html">
     <img src="edupie.png" alt="Edupie" class="menu-logo">EduPie
   </a>
-  <a href="games.html" class="active">
+  <a href="games.html">
     <img src="game.svg" alt="Games" class="menu-icon"> Games Zone
   </a>
   <a href="profile.html">
@@ -409,51 +904,236 @@
 </nav>
 
 
-
-    <h1>Mini-Games</h1>
-
-    <div class="tabs">
-        <button class="tab-button active" onclick="openTab('play')">Play</button>
-        <button class="tab-button" onclick="openTab('leaderboard')">Leaderboard</button>
-    </div>
-
-<div class="section-box">
-    <div id="play" class="tab-content active">
-    <div class="game-card">
-      <h2>Play Sudoku</h2>
-      <button id="create-new-btn">Create New</button>
-    </div>
-<div class="game-divider" role="separator" aria-hidden="true"></div>
-    <div class="game-card" style="margin-top:18px;">
-      <h2>Play 100x Josh</h2>
-      <button id="create-josh-btn">Create New</button>
+<!-- Search Bar --> <div id="searchBar"> <input type="text" id="searchInput" placeholder="Search by Title, Author, or Year..." onkeyup="searchBooks()"> </div>
+  <div id="greeting"></div>
+  <button id="fakeAddBtn">+ Add New Book</button>
+  <!-- Moving Banners -->
+  <div class="banner-container" id="bannerContainer">
+    <div class="banner-slide" id="bannerSlide">
+      <div class="banner-item">
+         <a href="abhay.html"><img src="abhaypc.png" alt="Abhay"></a>
+      </div>
+      <div class="banner-item">
+         <a href="edupie.html"><img src="edupiepc.png" alt="EduPie"></a>
+      </div>
     </div>
   </div>
-
-  <div id="leaderboard" class="tab-content">
-   <div class="leaderboard-header">
-      <img src="https://www.pngplay.com/wp-content/uploads/6/Gold-Trophy-Vector-Transparent-PNG.png" alt="Trophy" class="trophy" />
-      <h2>Leaderboard</h2>
+  <div class="dots">
+    <span class="dot active" onclick="setSlide(0)"></span>
+    <span class="dot" onclick="setSlide(1)"></span>
     </div>
-    <div class="subtitle"><b>Do you know:</b> Rank 1 get Rewards</div>
-    <!-- New leaderboard list: rows per user, top-3 use images https://cdn.pixabay.com/photo/2023/08/23/03/14/award-8207550_1280.png / https://png.pngtree.com/png-clipart/20230811/original/pngtree-ranking-medal-icon-illustration-2nd-place-silver-set-success-graphic-vector-picture-image_10347047.png / https://cdn-icons-png.flaticon.com/512/2249/2249022.png -->
-    <div id="leaderboard-list" class="leaderboard-list" aria-live="polite"></div>
-  </div>
+
+  <!-- Login -->
+  <div id="loginPopup">
+    <div id="loginBox">
+      <button id="closeLogin">X</button> 
+      <h2>Login</h2>
+      <div class="input-group">
+  <input type="email" id="email" required placeholder=" ">
+
+  <label for="email">Email Address</label>
 </div>
-<footer style="background:#0b1220;color:white;text-align:center;padding:20px 10px;font-size:14px;">
+
+<div class="input-group">
+  <input type="password" id="password" required placeholder=" ">
+  <label for="password">Password</label>
+</div>
+
+      <button id="emailLoginBtn">Login</button>
+      <p style="margin: 10px 0; font-size: 14px; color: #aaa;">OR</p>
+      <!-- Google Login Button with Logo -->
+      <button id="googleLoginBtn">
+        <span class="material-icons">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Google_Favicon_2025.svg/120px-Google_Favicon_2025.svg.png" 
+           id="google" style="width:20px;height:20px;vertical-align:middle;" viewBox="0 0 24 24" >
+        </img>
+        </span>
+        Continue with Google
+      </button>
+      <!-- Toggle button for Create Account/Back to Login -->
+      <button id="createAccountBtn"></button>
+      
+    </div>
+  </div>
+
+  <!-- Books -->
+    <div class="books">
+
+    <div class="book">
+      <img src="RD.jpg" onerror="this.onerror=null;this.src='error.jpg';">
+      <h3>RD Sharma</h3>
+      <div class="year">Class: X</div>
+      <div class="year">Edition: 2023-2024</div>
+      <div class="author">Author: RD Sharma</div>
+      <div class="price" style="color:limegreen;">Free</div>
+      <button onclick="previewPDF('https://drive.google.com/file/d/1sKoawaJf2PUk8dWSFvrcoGjC_0V0k8GS/preview')">Preview</button>
+    </div>
+    <div class="book">
+      <img src="unbarbaad.jpg"  onerror="this.onerror=null;this.src='error.jpg';">
+      <h3>Unbarbaad</h3>
+      <div class="author">Author: Shobit Nirwan</div>
+      <div class="price" style="color:limegreen;">Free</div>
+      <button onclick="previewPDF('https://drive.google.com/file/d/1KVuKBojVZLSi-dnjfVM1BkOp93w_1o4l/preview')">Preview</button>
+    </div>
+  </div>
+   <h2 style="text-align:center; margin-top:20px;">Batches</h2>
+
+  <a href="abhay.html" class="batch-box">
+  <div class="batch-content">
+    <img src="abhay.png" class="batch-img" alt="Abhay Batch">
+    <div class="batch-title">Abhay Batch (2025–26)</div>
+    <div style="color:#a8c4e9;font-size:15px;">Comeback Batch • Notes • Study Material</div>
+  </div>
+</a>
+
+   <h2 style="text-align:center; margin-top:20px;">All Publishers</h2>
+
+   <div class="folders">
+
+  <!-- OSWAAL COLLECTION -->
+  <a href="oswaal.html" class="collection-box">
+    <div class="collection-content">
+      <img src="https://ebooks.oswaalbooks.com/assets/oswaal/oswaal-logo-icon-5b53538829e0bfbe5be442c684abe649.png" class="collection-img" alt="Oswaal Books">
+      <div class="collection-title">Oswaal Books</div>
+      <div style="color:#9bb4d8;font-size:14px;">Latest PDFs • Sample papers</div>
+    </div>
+  </a>
+
+  <!-- CBSE COLLECTION -->
+  <a href="cbse.html" class="collection-box">
+    <div class="collection-content">
+      <img src="cbse.png" class="collection-img" alt="CBSE Material">
+      <div class="collection-title">CBSE Syllabus</div>
+      <div style="color:#9bb4d8;font-size:14px;">Syllabus • PYQs</div>
+    </div>
+  </a>
+
+</div>
+
+  <!-- Preview -->
+  <div id="previewOverlay">
+    <div id="previewHeader">
+      <span style="font-weight:bold;">PDF Preview</span>
+      <div>
+        <button onclick="openFullscreen()">Fullscreen</button>
+        <button onclick="closePreview()">Close</button>
+      </div>
+    </div>
+    <iframe id="pdfFrame" sandbox="allow-scripts allow-same-origin"></iframe>
+  </div>
+  
+   <footer style="background:#0b1220;color:white;text-align:center;padding:20px 10px;font-size:14px;">
   <div class="madeby">Made by Bhavesh </div>
-  <p>© 2025 BOOKStore. All rights reserved.</p>
+    <p>© 2025 BOOKStore. All rights reserved.</p>
   <p>
     <a href="privacy.html" style="color:#58a6ff;text-decoration:none;">Privacy Policy</a> |
     <a href="about.html" style="color:#58a6ff;text-decoration:none;">About Us</a>
   </p>
 </footer>
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-database-compat.js"></script>
+<script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/sw.js")
+      .catch(err => console.log("SW failed:", err));
+  }
+</script>
 
-    <script>
- const hamburger = document.getElementById("hamburger");
+
+ <script>
+  
+   function showToast(message, duration = 3000) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.style.display = "block";
+  toast.style.opacity = "1";
+
+  setTimeout(() => {
+    toast.style.transition = "opacity 0.5s ease";
+    toast.style.opacity = "0";
+    setTimeout(() => {
+      toast.style.display = "none";
+      toast.style.transition = "";
+    }, 500);
+  }, duration);
+}
+window.addEventListener("load", () => {
+  const topToast = document.getElementById("topToast");
+  topToast.style.display = "flex";
+  topToast.style.opacity = "1";
+
+  setTimeout(() => {
+    topToast.style.transition = "opacity 0.5s ease";
+    topToast.style.opacity = "0";
+    setTimeout(() => {
+      topToast.style.display = "none";
+      topToast.style.transition = "";
+    }, 500);
+  }, 2000); // 3 seconds
+});
+
+    // 1. Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCcpG-oEqkDprgTwWXKt5CFsttjAQAZFNg",
+      authDomain: "bookstore-6ab08.firebaseapp.com",
+      projectId: "bookstore-6ab08",
+      storageBucket: "bookstore-6ab08.firebasestorage.app",
+      messagingSenderId: "102226032749",
+      appId: "1:102226032749:web:f7090175d2e53c2f522764",
+      measurementId: "G-R9N7YSCMY0"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = app.auth();
+
+    // The UID Collection
+    const ADMIN_UID = "F9UxJ3W6CVUVIIgwByuHQxscQab2";
+    const VIP_UID = "KGi3N6UPRic9tlRZOfwp6giIoGt1";
+
+    // 2. Element References
+    const loginPopup = document.getElementById("loginPopup");
+    const loginBox = document.getElementById("loginBox"); 
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const emailLoginBtn = document.getElementById("emailLoginBtn");
+    const googleLoginBtn = document.getElementById("googleLoginBtn");
+    const closeLogin = document.getElementById("closeLogin");
+    const greeting = document.getElementById("greeting");
+    const fakeAddBtn = document.getElementById("fakeAddBtn");
+    const previewOverlay = document.getElementById("previewOverlay");
+    const pdfFrame = document.getElementById("pdfFrame");
+    const createAccountBtn = document.getElementById("createAccountBtn"); 
+
+    let isCreatingAccount = false; 
+    
+    closeLogin.onclick = () => loginPopup.style.display = "none";
+    
+    // Helper to display errors without using alert()
+    function displayError(message) {
+        let errorBox = document.getElementById('authErrorBox');
+        if (!errorBox) {
+            errorBox = document.createElement('div');
+            errorBox.id = 'authErrorBox';
+            
+            // Apply the CSS defined in the <style> block
+            errorBox.style.cssText = 'background: #dc3545; color: white; padding: 10px; border-radius: 6px; margin-bottom: 10px; text-align: left; width: 90%; max-width: 280px; transition: opacity 0.5s, max-height 0.5s; opacity: 1; overflow: hidden; max-height: 100px; box-sizing: border-box;';
+            
+            // Insert after the H2 element
+            const h2 = loginBox.querySelector('h2');
+            loginBox.insertBefore(errorBox, h2.nextElementSibling);
+        }
+        
+        errorBox.textContent = message;
+        errorBox.style.opacity = '1';
+        errorBox.style.maxHeight = '100px';
+        
+        // Hide after 5 seconds
+        setTimeout(() => {
+            errorBox.style.opacity = '0';
+            errorBox.style.maxHeight = '0';
+        }, 5000);
+    }
+    
+const hamburger = document.getElementById("hamburger");
 const menu = document.getElementById("menu");
 
 // Toggle menu open/close
@@ -478,165 +1158,299 @@ document.addEventListener("click", (event) => {
 menu.addEventListener("click", (event) => {
   event.stopPropagation();
 });
-
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-             apiKey: "AIzaSyCcpG-oEqkDprgTwWXKt5CFsttjAQAZFNg",
-             authDomain: "bookstore-6ab08.firebaseapp.com",
-             projectId: "bookstore-6ab08",
-             storageBucket: "bookstore-6ab08.appspot.com",
-             messagingSenderId: "102226032749",
-             appId: "1:102226032749:web:428129ff9e000450522764",
-             measurementId: "G-QKHR0B3MCY"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        function openTab(tabName) {
-  const tabButtons = document.querySelectorAll(".tab-button");
-  const tabContents = document.querySelectorAll(".tab-content");
-
-  tabButtons.forEach(btn => btn.classList.remove("active"));
-  tabContents.forEach(content => content.classList.remove("active"));
-
-  document.querySelector(`[onclick="openTab('${tabName}')"]`).classList.add("active");
-  document.getElementById(tabName).classList.add("active");
-}
-
- const leaderboardList = document.getElementById('leaderboard-list');
-       const playersRef = database.ref('leaderboard');
-
-        // --- Firebase Leaderboard Code ---
-
-       
-
-        // Function to add a new player (for testing)
-        function addPlayer(name, matches) {
-            const newPlayerRef = playersRef.push();
-            newPlayerRef.set({
-                name: name,
-                matches: matches
-            });
+ const currentPage = window.location.pathname.split('/').pop();
+  document.querySelectorAll('.menu a').forEach(link => {
+    if (link.getAttribute('href') === currentPage) {
+      link.classList.add('active');
+    }
+  });
+    // Helper to switch mode display (Login <-> Create Account)
+    function toggleMode(isCreate) {
+        isCreatingAccount = isCreate;
+        emailInput.value = ''; // Clear inputs when switching mode
+        passwordInput.value = '';
+        
+        // Hide existing error box when switching mode
+        const errorBox = document.getElementById('authErrorBox');
+        if (errorBox) {
+            errorBox.style.opacity = '0';
+            errorBox.style.maxHeight = '0';
         }
 
-        const leaderboardRef = database.ref('leaderboard');
-// Update or add player on leaderboard
-function updateLeaderboard(playerName) {
-  const leaderboardRef = database.ref('leaderboard');
+        document.querySelector('#loginBox h2').textContent = isCreate ? "Create Account" : "Login";
+        emailLoginBtn.textContent = isCreate ? "Sign Up" : "Login";
+        emailLoginBtn.style.background = isCreate ? '#007bff' : '#007bff'; // Blue for both actions
 
-  leaderboardRef.once('value', (snapshot) => {
-    let playerExists = false;
+        // Apply the "or" prefix logic for the toggle button
+        if (isCreate) {
+            createAccountBtn.innerHTML = 'or <span style="font-weight: bold; color: #4dabff;">Back to Login</span>';
+        } else {
+            createAccountBtn.innerHTML = 'or <span style="font-weight: bold; color: #4dabff;">Create new account</span>';
+        }
+    }
 
-    snapshot.forEach((childSnapshot) => {
-      const player = childSnapshot.val();
-      const key = childSnapshot.key;
+    /**
+     * Updates the user's display name in Firebase and re-renders the greeting.
+     */
+    async function saveDisplayName(user, newName) {
+        const input = document.getElementById('userNameInput');
+        const oldNameSpan = document.createElement('span');
+        
+        // Use a temporary span element while updating
+        oldNameSpan.id = 'userNameDisplay';
+        oldNameSpan.title = "Double-click to edit";
+        
+        // Optimistic update
+        oldNameSpan.textContent = newName;
+        input.parentNode.replaceChild(oldNameSpan, input);
+        
+        try {
+            await user.updateProfile({
+                displayName: newName
+            });
+            console.log("Display name updated to:", newName);
+            // Re-attach dblclick listener to the new span element
+            setupGreetingEdit(user); 
+        } catch (error) {
+            console.error("Error updating display name:", error);
+            // Revert to old name if update failed (use the latest from Firebase if available)
+            oldNameSpan.textContent = user.displayName || 'Error';
+            displayError("Failed to save name: " + error.message);
+            setupGreetingEdit(user); // Re-attach listener anyway
+        }
+    }
+    
+    /**
+     * Sets up the double-click handler to allow editing the display name.
+     */
+    function setupGreetingEdit(user) {
+        const nameSpan = document.getElementById('userNameDisplay');
+        if (!nameSpan) return;
 
-      if (player.name === playerName) {
-        // Player already exists → update their matches
-        playerExists = true;
-        const newMatches = (player.matches || 0) + 1;
-        database.ref('leaderboard/' + key).update({
-          matches: newMatches
-        });
+        // Attach double-click listener
+        nameSpan.ondblclick = () => {
+            // Check if user is not the admin UID (optional restriction, can be removed)
+            // if (user.uid === ADMIN_UID) return; 
+
+            // Create an input field
+            const currentName = nameSpan.textContent.trim();
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentName;
+            input.id = 'userNameInput';
+            
+            // Inline styling for the input to blend with the greeting text
+            input.style.cssText = 'background: #0b1220; border: 1px solid #4dabff; color: #e8edf6; padding: 2px 4px; border-radius: 4px; font-size: 18px; width: 150px;';
+
+            // Replace the span with the input
+            nameSpan.parentNode.replaceChild(input, nameSpan);
+            input.focus();
+
+            // Function to save the name
+            const saveEdit = async () => {
+                const newName = input.value.trim();
+                // Check if name has changed and is not empty
+                if (newName && newName !== currentName) {
+                    await saveDisplayName(user, newName);
+                } else {
+                    // Revert if cancelled, empty, or unchanged
+                    // Create a new span element to replace the input
+                    const revertSpan = document.createElement('span');
+                    revertSpan.id = 'userNameDisplay';
+                    revertSpan.title = "Double-click to edit";
+                    revertSpan.textContent = currentName;
+                    
+                    input.parentNode.replaceChild(revertSpan, input);
+                    setupGreetingEdit(user); // Re-attach listener
+                }
+            };
+
+            // Save on blur (when input loses focus)
+            input.onblur = saveEdit;
+            
+            // Save on Enter key press
+            input.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); 
+                    saveEdit();
+                }
+            };
+        };
+    }
+
+    // 3. User Initialization and Admin Greeting
+    function initUser(user) {
+  loginPopup.style.display = "none";
+  fakeAddBtn.style.display = "none"; // Hide by default
+
+  if (user) {
+    let displayName = user.displayName;
+    const defaultName = user.email ? user.email.split('@')[0] : 'User';
+    
+    if (!displayName) {
+      displayName = defaultName;
+      user.updateProfile({ displayName: displayName })
+          .catch(error => console.error("Error setting default display name:", error));
+    }
+
+    // VIP user greeting
+    if (user.uid === VIP_UID) {
+      greeting.innerHTML = `Welcome <span id="userNameDisplay">${displayName}</span> <span class="vip">VIP</span>`;
+      fakeAddBtn.style.display = "none";
+    } 
+    // Admin user greeting
+    else if (user.uid === ADMIN_UID) {
+      greeting.innerHTML = `Welcome <span id="userNameDisplay">${displayName}</span> <span class="Admin">(Admin)</span>
+                            <img src="https://static.vecteezy.com/system/resources/thumbnails/034/211/380/small_2x/blue-checkmark-validation-social-media-png.png" alt="Admin tick">`;
+      fakeAddBtn.style.display = "block";
+    } 
+    // Regular user greeting
+    else {
+      greeting.innerHTML = `Welcome <span id="userNameDisplay">${displayName}</span>`;
+    }
+
+    setupGreetingEdit(user);
+  } else {
+    greeting.innerHTML = '';
+  }
+}
+
+
+    // 4. Firebase Authentication Handlers
+
+    // Listen for auth state changes
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        // User is signed in.
+        initUser(user);
+        toggleMode(false); // Reset to login mode on successful auth
+      } else {
+        // User is signed out.
+        initUser(null);
+        // Automatically show the login popup if no user is signed in
+        loginPopup.style.display = "flex";
       }
     });
 
-    // If player not found, add a new one
-    if (!playerExists) {
-      leaderboardRef.push({
-        name: playerName,
-        matches: 1
+    // Email/Password Action (handles both Login and Signup)
+    emailLoginBtn.onclick = async () => {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+      
+      // Basic client-side validation
+      if (!email || !password) {
+        displayError("Please enter both email and password.");
+        return;
+      }
+
+      try {
+        if (isCreatingAccount) {
+            // New account creation (This will automatically log the user in)
+            await auth.createUserWithEmailAndPassword(email, password);
+            console.log("Account created successfully and user logged in.");
+        } else {
+            // Login
+            await auth.signInWithEmailAndPassword(email, password);
+        }
+        // auth.onAuthStateChanged will handle hiding the popup and initializing the user
+      } catch (error) {
+        displayError((isCreatingAccount ? "Sign Up" : "Login") + " failed: " + error.message);
+      }
+    };
+
+    // Toggle between Login and Create Account mode
+    createAccountBtn.onclick = () => {
+        toggleMode(!isCreatingAccount);
+    };
+    
+    // Google Sign-In
+    googleLoginBtn.onclick = async () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      try {
+        await auth.signInWithPopup(provider);
+        // auth.onAuthStateChanged will handle initUser
+      } catch (error) {
+        displayError("Google Login failed: " + error.message);
+      }
+    };
+    
+    // Initialize the mode when the script loads
+    toggleMode(false);
+
+
+    // Placeholder for searchBooks and other functions
+    
+    // Simple Auto Carousel
+    let index = 0;
+    const slides = document.getElementById("bannerSlide");
+    const totalSlides = slides.children.length;
+    const dots = document.querySelectorAll(".dot"); // Get dots here
+
+    function updateDots() {
+      dots.forEach((dot, i) => {
+        dot.classList.toggle("active", i === index);
       });
     }
-  });
-}
 
-// Function to add a player and their matches to the database
-function addPlayerToLeaderboard(playerName, matchesPlayed, iconURL = '') {
-    const newPlayerRef = leaderboardRef.push();
-    newPlayerRef.set({
-        name: playerName,
-        matches: matchesPlayed,
-        icon: iconURL // optional icon
+    function showSlide() {
+      index = (index + 1) % totalSlides;
+      slides.style.transform = `translateX(-${index * 100}%)`;
+      updateDots(); // Update dots on slide change
+    }
+
+    function setSlide(n) {
+      index = n;
+      slides.style.transform = `translateX(-${index * 100}%)`;
+      updateDots();
+    }
+
+    setInterval(showSlide, 4000);
+    // ... (rest of carousel/swipe code) ...
+    let startX = 0;
+    let endX = 0;
+    const bannerContainer = document.getElementById("bannerContainer");
+
+    bannerContainer.addEventListener("touchstart", (e) => {
+      startX = e.touches[0].clientX;
     });
-}
 
-        // Helper: simple escape to avoid injecting HTML from DB
-        function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-
-        playersRef.on('value', (snapshot) => {
-    leaderboardList.innerHTML = '';
-    const players = [];
-    snapshot.forEach((childSnapshot) => {
-        const playerData = childSnapshot.val();
-        players.push(playerData);
+    bannerContainer.addEventListener("touchend", (e) => {
+      endX = e.changedTouches[0].clientX;
+      handleSwipe();
     });
 
-    // Sort descending by matches
-    players.sort((a, b) => (b.matches || 0) - (a.matches || 0));
+    function handleSwipe() {
+      const diff = endX - startX;
+      if (Math.abs(diff) > 50) { // swipe threshold
+        if (diff > 0) {
+          index = (index - 1 + totalSlides) % totalSlides; // swipe right
+        } else {
+          index = (index + 1) % totalSlides; // swipe left
+        }
+        slides.style.transform = `translateX(-${index * 100}%)`;
+        updateDots();
+      }
+    }
 
-    let rank = 1;
-    players.forEach((player) => {
-        const row = document.createElement('div');
-        row.className = 'leader-row';
+    function toggleMenu(){
+      document.getElementById("sidebar")?.classList.toggle("active");
+    }
 
-        // Rank visuals
-        let rankHTML = '';
-        if (rank === 1) rankHTML = `<img src="https://cdn.pixabay.com/photo/2023/08/23/03/14/award-8207550_1280.png" alt="1st" class="rank-img">`;
-        else if (rank === 2) rankHTML = `<img src="https://png.pngtree.com/png-clipart/20230811/original/pngtree-ranking-medal-icon-illustration-2nd-place-silver-set-success-graphic-vector-picture-image_10347047.png" alt="2nd" class="rank-img">`;
-        else if (rank === 3) rankHTML = `<img src="https://cdn-icons-png.flaticon.com/512/2249/2249022.png" alt="3rd" class="rank-img">`;
-        else rankHTML = `<div class="rank-badge">${rank}</div>`;
+    function previewPDF(file) {
+      pdfFrame.src = file + "#toolbar=0&navpanes=0&scrollbar=0";
+      previewOverlay.style.display = "flex";
+    }
 
-        // Optional icon next to name
-        const iconHTML = player.icon ? `<img src="${player.icon}" alt="icon" class="player-icon">` : '';
+    function closePreview() {
+      previewOverlay.style.display = "none";
+      pdfFrame.src = "";
+    }
 
+    function openFullscreen() {
+      if (pdfFrame.requestFullscreen) pdfFrame.requestFullscreen();
+    }
 
-        row.innerHTML = `
-            <div class="leader-left">
-                ${rankHTML}
-                <div class="player-name">${escapeHtml(player.name || 'Unknown')}${iconHTML}</div>
-            </div>
-            <div class="matches">${Number(player.matches || 0)}</div>
-        `;
-        leaderboardList.appendChild(row);
-        rank++;
-    });
-});
-
-// Move root player object into /leaderboard as a child with a push-id
-const rootRef = database.ref('/');
-rootRef.once('value').then(snap => {
-  const data = snap.val();
-  // If name & matches exist at root, push them under /leaderboard
-  if (data && data.name && data.matches !== undefined) {
-    const lbRef = database.ref('leaderboard');
-    lbRef.push({
-      name: data.name,
-      matches: Number(data.matches) // ensure numeric
-    }).then(() => {
-      // Optionally remove old root fields so migration is clean:
-      rootRef.child('name').remove();
-      rootRef.child('matches').remove();
-      console.log('Migrated root player into /leaderboard');
-    });
-  } else {
-    console.log('No player found at root to migrate.');
-  }
-});
-// Redirect to Sudoku.html when clicking "Create New"
-document.getElementById("create-new-btn").addEventListener("click", () => {
-  window.location.href = "Sudoku.html";
-});
-// Redirect to 100x Josh game page
-const joshBtn = document.getElementById("create-josh-btn");
-if (joshBtn) {
-  joshBtn.addEventListener("click", () => {
-    window.location.href = "josh.html";
-  });
-}
-// Disable right-click
+    // Disable right-click
     document.addEventListener("contextmenu", e => e.preventDefault());
 
     // Block common shortcut keys
@@ -647,10 +1461,47 @@ if (joshBtn) {
         (e.key === "PrintScreen")
       ) {
         e.preventDefault();
-        alert("Export/Download is disabled!");
+        displayError("Export/Download is disabled!");
       }
     });
-    </script>
+
+    function searchBooks() { 
+      let input = document.getElementById('searchInput').value.toLowerCase(); 
+      let books = document.getElementsByClassName('book'); 
+      for (let i = 0; i < books.length; i++) { 
+        let title = books[i].getElementsByTagName("h3")[0].innerText.toLowerCase(); 
+        let author = books[i].getElementsByClassName("author")[0]?.innerText.toLowerCase() || ""; 
+        let year = books[i].getElementsByClassName("year")[0]?.innerText.toLowerCase() || ""; 
+        if (title.includes(input) || author.includes(input) || year.includes(input)) { 
+          books[i].style.display = "block"; 
+        } else { 
+          books[i].style.display = "none"; 
+        } 
+      } 
+    }
+   
+
+  </script>
+<!-- Top Toast Notification -->
+<div id="topToast" style="
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #17305a;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-weight: bold;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  z-index: 100000;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+">
+  <img src="book.png" alt="Logo" style="height:24px; width:24px;"> 
+  EduPie is now Available!
+</div>
 
 </body>
 </html>
