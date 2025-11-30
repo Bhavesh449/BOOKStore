@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduPie | Master Your Knowledge</title>
+    <title>EduPie | Your GameChanger</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
@@ -320,6 +320,21 @@ nav {
   50% { text-shadow: 0 0 16px #00c3ff; }
   100% { text-shadow: 0 0 8px #1e90ff; }
 }
+.question-img-box {
+    background: linear-gradient(135deg, rgba(0,240,255,0.2), rgba(255,0,240,0.2));
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(0,240,255,0.3);
+}
+
+.question-img-box img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
     </style>
 </head>
 <body>
@@ -360,10 +375,15 @@ nav {
             </div>
 
             <div class="question-box">
-                <h3 id="question-text">Question goes here?</h3>
-                <div class="options-grid" id="options-container">
-                </div>
-            </div>
+    <!-- Cool Image Box -->
+    <div id="question-img-box" class="question-img-box hidden">
+        <img id="question-img" src="" alt="Question Image">
+    </div>
+
+    <h3 id="question-text">Question goes here?</h3>
+    <div class="options-grid" id="options-container"></div>
+</div>
+
 
             <div class="quiz-controls">
                 <button id="prev-btn" class="btn-secondary" disabled>Previous</button>
@@ -472,6 +492,19 @@ const provider = new GoogleAuthProvider();
 
 // --- DATA: QUIZZES ---
 const quizzes = [
+    {
+        id: "electricity_01",
+        title: "Electricity Quiz",
+        subject: "Class 10th",
+        questions: [
+            { q: "Calculate the current flows through the 10 Ω resistor in the following circuit.", options: ["(a) 1.2 A", "(b) 0.6 A", "(c) 0.2 A", "(d) 2.0 A"], ans: 1 },
+            { q: "The least resistance obtained by using 2 Ω, 4 Ω, 1 Ω and 100 Ω is", options: ["(a) < 100 Ω", "(b) < 4 Ω", "(c) < 1 Ω", "(d) > 2 Ω"], ans: 2 },
+            { q: "A wire of length l, made of material resistivity ρ is cut into two equal parts. the resistivity of the two parts are equal to,", options: ["(a) ρ", "(b) ρ/2", "(c) 2ρ", "(d) 4ρ"], ans: 0 },
+            { q: "The effective resistance between A and B is", options: ["(a) 4 Ω", "(b) 6 Ω", "(c) May be 10 Ω", "(d) Must be 10 Ω"], ans: 0 },
+            { q: "A student carries out an experiment and plots the V-I graphs of three samples of nichrome wire with resistances R1, R2 and R3 respectively. Which of the following is true ?", 
+            options: ["(a) R1 = R2 = R3", "(b) R1 > R2 > R3", "(c) R3 > R2 > R1", "(d) R2 > R3 > R1"], ans: 2 }
+        ]
+    },
     {
         id: "science_01",
         title: "Science Quiz",
@@ -764,7 +797,7 @@ function renderQuestion() {
     const qData = currentQuiz.questions[currentQuestionIndex];
     els.questionText.textContent = `${currentQuestionIndex + 1}. ${qData.q}`;
     els.qCurrent.textContent = currentQuestionIndex + 1;
-    
+
     const progress = ((currentQuestionIndex) / currentQuiz.questions.length) * 100;
     els.progressBar.style.width = `${progress}%`;
 
@@ -773,16 +806,39 @@ function renderQuestion() {
         const btn = document.createElement('button');
         btn.className = 'option-btn';
         btn.textContent = opt;
-        if (userAnswers[currentQuestionIndex] === index) {
-            btn.classList.add('selected');
-        }
+        if (userAnswers[currentQuestionIndex] === index) btn.classList.add('selected');
         btn.addEventListener('click', () => selectOption(index));
         els.optionsContainer.appendChild(btn);
     });
 
+    // Show image only for Q1 of Electricity
+   // Show image only for specific questions of Electricity
+const imgBox = document.getElementById('question-img-box');
+const imgEl = document.getElementById('question-img');
+
+// Electricity quiz images
+if (currentQuiz.id === "electricity_01") {
+    if (currentQuestionIndex === 0) {
+        imgEl.src = "https://hi-static.z-dn.net/files/df4/ddbf79a5e9465403f35c4d17ffa04ba9.jpg"; // Q1 image
+        imgBox.classList.remove('hidden');
+    } else if (currentQuestionIndex === 3) {
+        imgEl.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTu_idWQOdzi4EwUghp49StygI6kMjoLrqrJaXbG5dN-v2DJD_7PxYKBnp_O3JGXVdy3gs&usqp=CAU"; // Q4 image
+        imgBox.classList.remove('hidden');
+    } else if (currentQuestionIndex === 4) {
+        imgEl.src = "data:image/png;base64,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"; // Q5 image
+        imgBox.classList.remove('hidden');
+    } else {
+        imgBox.classList.add('hidden');
+        imgEl.src = "";
+    }
+} else {
+    imgBox.classList.add('hidden');
+    imgEl.src = "";
+}
+
+
     els.prevBtn.disabled = currentQuestionIndex === 0;
     els.nextBtn.textContent = (currentQuestionIndex === currentQuiz.questions.length - 1) ? "Submit" : "Next";
-    // Next button is disabled until an answer is selected for the current question
     els.nextBtn.disabled = userAnswers[currentQuestionIndex] === undefined;
 }
 
