@@ -226,39 +226,106 @@
       color: #7a8aa0;
       flex-shrink: 0;
     }
-    #previewOverlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.9);
-      display: none;
-      flex-direction: column;
-    }
-    #previewHeader {
-      background: #121a2a;
-      padding: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    #pdfFrame {
-      flex: 1;
-      width: 100%;
-      border: none;
-    }
-    @media (max-width: 600px) {
-      header {
-        font-size: 20px;
-      }
-      .books {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-    @media (min-width: 1024px) {
-      .books {
-        grid-template-columns: repeat(5, 1fr);
-      }
-    }
+   /* ====== PDF PREVIEW – COOL STYLES ====== */
+
+#previewOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 14, 25, 0.85);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    display: none;
+    flex-direction: column;
+    animation: fadeIn 0.4s ease forwards;
+    z-index: 99999;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* HEADER BAR */
+#previewHeader {
+    background: rgba(18, 26, 42, 0.7);
+    backdrop-filter: blur(10px);
+    padding: 12px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 4px 25px rgba(0,0,0,0.4);
+}
+
+/* PDF TITLE TEXT */
+#previewHeader h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #e8edf6;
+    letter-spacing: 0.5px;
+}
+
+/* CLOSE BUTTON */
+#closePreview {
+    background: #ff3b3b;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: 0.25s;
+    box-shadow: 0 4px 14px rgba(255, 0, 0, 0.35);
+}
+
+#closePreview:hover {
+    background: #ff1f1f;
+    transform: scale(1.07);
+}
+
+/* PDF IFRAME */
+#pdfFrame {
+    flex: 1;
+    width: 100%;
+    border: none;
+    background: linear-gradient(135deg, #0b1220, #182236);
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
+    animation: slideUp 0.4s ease forwards;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* ZOOM EFFECT ON HOVER */
+#pdfFrame:hover {
+    filter: brightness(1.05);
+}
+
+/* TOP BORDER GLOW */
+#previewHeader {
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+}
+
+/* SCROLLBAR CUSTOM (Chrome/Edge) */
+#pdfFrame::-webkit-scrollbar {
+    width: 10px;
+}
+#pdfFrame::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.05);
+}
+#pdfFrame::-webkit-scrollbar-thumb {
+    background: #3d4e72;
+    border-radius: 8px;
+}
+#pdfFrame::-webkit-scrollbar-thumb:hover {
+    background: #4b66a8;
+}
+
     
 .madeby {
   font-size: 18px;
@@ -275,6 +342,50 @@
   0% { text-shadow: 0 0 8px #1e90ff; }
   50% { text-shadow: 0 0 16px #00c3ff; }
   100% { text-shadow: 0 0 8px #1e90ff; }
+}
+.preview-btn {
+  background: linear-gradient(135deg, #007bff, #00c6ff);
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 150, 255, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glow line animation */
+.preview-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,0.5),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.preview-btn:hover::before {
+  left: 100%;
+}
+
+.preview-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 150, 255, 0.6);
+}
+
+.preview-btn:active {
+  transform: scale(0.95);
 }
 
     </style>
@@ -398,7 +509,7 @@ function loadBooks() {
         const image = book.image ? `<img src="${book.image}" onerror="this.onerror=null;this.src='error.jpg';">` : `<img src="error.jpg">`;
 
         // PDF preview button only if PDF link exists
-        const previewBtn = book.pdf ? `<button onclick="previewPDF('${book.pdf}')">Preview</button>` : "";
+        const previewBtn = book.pdf ? `<button class="preview-btn" onclick="previewPDF('${book.pdf}')">Preview</button>` : "";
 
         bookDiv.innerHTML = `
           ${image}
