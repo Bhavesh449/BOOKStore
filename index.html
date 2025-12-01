@@ -867,6 +867,32 @@
 .batch-box:hover .batch-img {
   transform: scale(1.05);
 }
+/* When PDF Preview is open → hide ALL overlays */
+#previewOverlay.active ~ .hamburger,
+#previewOverlay.active ~ .menu,
+#previewOverlay.active ~ header,
+#previewOverlay.active ~ #searchBar,
+#previewOverlay.active ~ .banner-container,
+#previewOverlay.active ~ .folders,
+#previewOverlay.active ~ .books,
+#previewOverlay.active ~ footer {
+  display: none !important;
+}
+/* When PDF preview is open — block everything else */
+#previewOverlay.active {
+  display: flex !important;
+  z-index: 999999; /* highest */
+}
+
+/* Hide hamburger + menu when preview is open */
+#previewOverlay.active ~ .hamburger,
+#previewOverlay.active ~ .menu {
+  display: none !important;
+}
+/* Hide elements ONLY during PDF preview */
+.hide-during-preview {
+  display: none !important;
+}
 
     </style>
     
@@ -959,6 +985,15 @@
   <!-- Books -->
     <div class="books">
 
+      <div class="book">
+      <img src="booklet.png" onerror="this.onerror=null;this.src='error.jpg';">
+      <h3>Brahmastra Booklet</h3>
+      <div class="year">Class: X</div>
+      <div class="year">Edition: 2025-2026</div>
+      <div class="author">Author: Next Toppers</div>
+      <div class="price" style="color:limegreen;">Free</div>
+      <button onclick="previewPDF('https://drive.google.com/file/d/1uxeKiDwiw3GDAkPTyDOe5uJ3ZLuOELOw/preview')">Preview</button>
+    </div>
     <div class="book">
       <img src="RD.jpg" onerror="this.onerror=null;this.src='error.jpg';">
       <h3>RD Sharma</h3>
@@ -978,7 +1013,7 @@
   </div>
    <h2 style="text-align:center; margin-top:20px;">Batches</h2>
 
-  <a href="abhay.html" class="batch-box">
+  <a href="abhay.html" class="batch-box" class="card hide-during-preview">
   <div class="batch-content">
     <img src="abhay.png" class="batch-img" alt="Abhay Batch">
     <div class="batch-title">Abhay Batch (2025–26)</div>
@@ -991,7 +1026,7 @@
    <div class="folders">
 
   <!-- OSWAAL COLLECTION -->
-  <a href="oswaal.html" class="collection-box">
+  <a href="oswaal.html" class="collection-box" class="folders hide-during-preview">
     <div class="collection-content">
       <img src="https://ebooks.oswaalbooks.com/assets/oswaal/oswaal-logo-icon-5b53538829e0bfbe5be442c684abe649.png" class="collection-img" alt="Oswaal Books">
       <div class="collection-title">Oswaal Books</div>
@@ -1000,7 +1035,7 @@
   </a>
 
   <!-- CBSE COLLECTION -->
-  <a href="cbse.html" class="collection-box">
+  <a href="cbse.html" class="collection-box" class="folders hide-during-preview">
     <div class="collection-content">
       <img src="cbse.png" class="collection-img" alt="CBSE Material">
       <div class="collection-title">CBSE Syllabus</div>
@@ -1445,10 +1480,39 @@ menu.addEventListener("click", (event) => {
       previewOverlay.style.display = "none";
       pdfFrame.src = "";
     }
+function openPDF(url) {
+  document.getElementById("pdfFrame").src = url;
+  const overlay = document.getElementById("previewOverlay");
+  overlay.style.display = "flex";
+  overlay.classList.add("active");  // <<< IMPORTANT
+}
+
+
+function closePDF() {
+  const overlay = document.getElementById("previewOverlay");
+  overlay.style.display = "none";
+  overlay.classList.remove("active"); // <<< IMPORTANT
+}
+function openPreview(url) {
+  document.getElementById("pdfFrame").src = url;
+  document.getElementById("previewOverlay").style.display = "flex";
+
+  // Hide boxes
+  document.querySelectorAll(".hide-during-preview")
+    .forEach(el => el.style.display = "none");
+}
+
 
     function openFullscreen() {
       if (pdfFrame.requestFullscreen) pdfFrame.requestFullscreen();
     }
+function closePreview() {
+  document.getElementById("previewOverlay").style.display = "none";
+
+  // Show boxes again
+  document.querySelectorAll(".hide-during-preview")
+    .forEach(el => el.style.display = "");
+}
 
     // Disable right-click
     document.addEventListener("contextmenu", e => e.preventDefault());
@@ -1500,7 +1564,7 @@ menu.addEventListener("click", (event) => {
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 ">
   <img src="book.png" alt="Logo" style="height:24px; width:24px;"> 
-  EduPie is now Available!
+  Abhay Batch On BOOKStore Watch Now!
 </div>
 
 </body>
