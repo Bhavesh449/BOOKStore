@@ -421,7 +421,9 @@ html {
 <div class="tabs">
     <div class="tab active" onclick="showTab('overview')">Overview</div>
     <div class="tab" onclick="showTab('video')">Lectures</div>
+    <div class="tab" onclick="showTab('notes')">Notes</div>
 </div>
+
 
 <!-- Overview Tab -->
 <div id="overview" class="content active">
@@ -443,15 +445,37 @@ html {
 <div id="video" class="content">
 
     <div class="folder-card" onclick="location.href='science.html'">
-        <img class="folder-img" src="https://play-lh.googleusercontent.com/-tLt6jjKIAtTLDpeIYkQrZ-mLr0xAi1UICQ-Xhw_psDWHLF7hSnl80wqBA2ckKdjF7aU=w240-h480-rw" alt="Folder">
+        <img class="folder-img" src="https://dxixtlyravvxx.cloudfront.net/540/admin_v1/category_management/subject/28070448615_WhatsApp%20Image%202025-04-25%20at%204.25.51%20PM.jpeg" alt="Science">
         <div class="folder-right">
             <div class="folder-title">Science</div>
-            <div class="folder-topics">1 Topics</div>
+            <div class="folder-topics">1 Topic</div>
         </div>
         <div class="arrow">➤</div>
     </div>
+<div class="folder-card" onclick="location.href='sst.html'">
+        <img class="folder-img" src="https://dxixtlyravvxx.cloudfront.net/540/admin_v1/category_management/subject/60137688614_Social%20Science.jpeg" alt="SST">
+        <div class="folder-right">
+            <div class="folder-title">SST</div>
+            <div class="folder-topics">1 Topic</div>
+        </div>
+        <div class="arrow">➤</div>
+    </div>
+</div>
+<!-- Notes Tab -->
+<div id="notes" class="content">
+
+    <div class="folder-card" onclick="location.href='science.html?notes'">
+        <img class="folder-img" src="https://dxixtlyravvxx.cloudfront.net/540/admin_v1/category_management/subject/28070448615_WhatsApp%20Image%202025-04-25%20at%204.25.51%20PM.jpeg" alt="Folder">
+        <div class="folder-right">
+            <div class="folder-title">Science Notes</div>
+            <div class="folder-topics">1 Topic</div>
+        </div>
+        <div class="arrow">➤</div>
+    </div>
+    
 
 </div>
+
 <footer style="background:#0b1220;color:white;text-align:center;padding:20px 10px;font-size:14px;">
   <div class="madeby">Made by Bhavesh </div>
     <p>© 2025 BOOKStore. All rights reserved.</p>
@@ -482,14 +506,15 @@ document.addEventListener("click", (event) => {
     hamburger.classList.remove("active");
   }
 });
-    function showTab(tab) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+function showTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
 
-        event.target.classList.add('active');
-        document.getElementById(tab).classList.add('active');
-    }
+    event.target.classList.add('active');
+    document.getElementById(tab).classList.add('active');
+}
 </script>
+
 
 </body>
 </html>
