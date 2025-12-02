@@ -335,15 +335,17 @@
 
 
 <!-- Breadcrumb Navigation -->
-<div class="top-bar">
+<!-- Breadcrumb Navigation -->
+<div class="top-bar" id="breadcrumb">
+
     <span onclick="goBack()">Lectures</span> ›
     <span class="breadcrumb-active">Science</span>
 </div>
 
 <!-- Card -->
-<div class="video-card">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/e/ef/Youtube_logo.png">
-    <div class="video-title">Life Processes</div>
+<div id="content-area">
+    <img src="https://i.ytimg.com/vi/CTFuXmQsVdA/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLCX1t73X2o7KAKK0sdBI94rdmCJTA">
+    <div class="video-title">Life Processes L1</div>
    <a href="https://www.youtube.com/live/CTFuXmQsVdA?si=UHcHF6WoELP00UDy" style="text-decoration:none;">
     <button class="watch-btn">Watch Now</button>
 </a>
@@ -381,6 +383,67 @@ document.addEventListener("click", (event) => {
 });
 function goBack() {
     window.location.href = "abhay.html";
+}
+// Detect mode (Lectures or Notes)
+const isNotes = window.location.search.includes("notes");
+
+const breadcrumb = document.getElementById("breadcrumb");
+const contentArea = document.getElementById("content-area");
+
+// NOTES MODE UI
+if (isNotes) {
+    breadcrumb.innerHTML = `
+        <span onclick="window.location.href='science.html'">Notes</span> ›
+        <span class="breadcrumb-active">Science</span>
+    `;
+
+    contentArea.innerHTML = `
+        <div class="video-card">
+            <img src="https://i.pinimg.com/564x/42/1f/d0/421fd0b6e0d56e289bab2eeb7be62e06.jpg">
+            <div class="video-title">Life Processes L1 – Notes</div>
+            <a href="notes.html?science/LifeProcesses-L1" target="_blank" style="text-decoration:none;">
+                <button class="watch-btn">View</button>
+            </a>
+        </div>
+    `;
+
+// LECTURES MODE UI
+// LECTURES MODE UI
+} else {
+    breadcrumb.innerHTML = `
+        <span onclick="goBack()">Lectures</span> ›
+        <span class="breadcrumb-active">Science</span>
+    `;
+
+    contentArea.innerHTML = `
+        <div class="video-card">
+            <img src="https://i.ytimg.com/vi/CTFuXmQsVdA/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLCX1t73X2o7KAKK0sdBI94rdmCJTA">
+            
+            <div>
+                <div class="video-title">Life Processes L1</div>
+
+                <div style="
+                    display:inline-block;
+                    margin-top:4px;
+                    padding:4px 10px;
+                    font-size:12px;
+                    font-weight:600;
+                    border-radius:8px;
+                    background: linear-gradient(90deg, #1f3b73, #275b9a);
+                    color:#b7d9ff;
+                    box-shadow:0 0 8px rgba(0,150,255,0.4);
+                    border:1px solid rgba(255,255,255,0.1);
+                ">
+                    📅 1 Dec 2025
+                </div>
+
+            </div>
+
+            <a href="https://www.youtube.com/live/CTFuXmQsVdA?si=UHcHF6WoELP00UDy" style="text-decoration:none;">
+                <button class="watch-btn">Watch Now</button>
+            </a>
+        </div>
+    `;
 }
 
 </script>
