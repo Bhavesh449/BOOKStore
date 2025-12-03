@@ -242,8 +242,11 @@ if (!window.location.search || window.location.search.trim() === "") {
         // --- Configuration ---
         
         const MAPPING = {
-            'science/LifeProcesses-L1': "https://dxixtlyravvxx.cloudfront.net/540admin_v1/file_manager/pdf/477102786289055700.pdf"
-        };
+    'science/LifeProcesses-L1': "https://dxixtlyravvxx.cloudfront.net/540admin_v1/file_manager/pdf/477102786289055700.pdf",
+
+    'sst/Devlopment': "https://dxixtlyravvxx.cloudfront.net/540admin_v1/file_manager/pdf/365223900581407600.pdf"
+};
+
 
         let pdfDoc = null;
         let pageNum = 1;
@@ -373,6 +376,12 @@ if (!window.location.search || window.location.search.trim() === "") {
 // Show lesson title for science/LifeProcesses-L1
 if (window.location.search.includes("science/LifeProcesses-L1")) {
     document.getElementById("note-title").style.display = "block";
+}
+// Show title for SST Development
+if (window.location.search.includes("sst/Devlopment")) {
+    const t = document.getElementById("note-title");
+    t.innerText = "Development L1";
+    t.style.display = "block";
 }
 
         // --- Window Resize Handling ---
