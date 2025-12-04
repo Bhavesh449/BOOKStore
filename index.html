@@ -912,6 +912,81 @@
 .preview-btn:active {
   transform: scale(0.95);
 }
+/* FOLLOW US POPUP */
+#followPopup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+  animation: fadeInPopup 0.6s ease forwards;
+}
+
+@keyframes fadeInPopup {
+  from { opacity: 0; transform: scale(0.9);}
+  to { opacity: 1; transform: scale(1);}
+}
+
+#followBox {
+  background: #1a1a2e;
+  border: 2px solid #ff3399;
+  border-radius: 20px;
+  padding: 30px 25px;
+  max-width: 350px;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 0 20px #ff3399, 0 0 40px #ff66cc inset;
+  font-family: 'Courier New', monospace;
+  animation: neonGlow 1.5s infinite alternate;
+}
+
+@keyframes neonGlow {
+  0% { box-shadow: 0 0 15px #ff3399, 0 0 30px #ff66cc inset; }
+  50% { box-shadow: 0 0 25px #ff66cc, 0 0 50px #ff99ff inset; }
+  100% { box-shadow: 0 0 15px #ff3399, 0 0 30px #ff66cc inset; }
+}
+
+#followBox h2 {
+  font-size: 26px;
+  color: #ff66cc;
+  margin-bottom: 15px;
+  text-shadow: 0 0 5px #ff66cc, 0 0 10px #ff99ff;
+}
+
+#followBox p {
+  font-size: 15px;
+  margin-bottom: 20px;
+  color: #ddd;
+}
+
+#instagramBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  padding: 12px 20px;
+  border-radius: 50px;
+  color: #fff;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 16px;
+  box-shadow: 0 0 15px #ff3399, 0 0 30px #ff66cc inset;
+  transition: transform 0.2s, box-shadow 0.3s;
+}
+
+#instagramBtn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px #ff3399, 0 0 50px #ff66cc inset;
+}
+
+#instagramBtn img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
 
     </style>
     
@@ -1055,6 +1130,17 @@
   </a>
 
 </div>
+<!-- Follow Us Popup -->
+<div id="followPopup">
+  <div id="followBox">
+    <h2>✨ Follow Us!</h2>
+    <p>Stay updated with our latest content on Instagram.</p>
+    <a href="https://www.instagram.com/syntaxbhavesh/" target="_blank" id="instagramBtn">
+      <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram Logo">
+      Follow @syntaxbhavesh
+    </a>
+  </div>
+</div>
 
   <!-- Preview -->
   <div id="previewOverlay">
@@ -1085,7 +1171,26 @@
 
 
  <script>
+  // Show popup on page load
+window.addEventListener('load', () => {
+  const popup = document.getElementById('followPopup');
   
+  // Show popup
+  popup.style.display = 'flex';
+  
+  // Close popup when clicking Instagram button
+  document.getElementById('instagramBtn').addEventListener('click', () => {
+    popup.style.display = 'none';
+  });
+
+  // Optional: click outside to close
+  popup.addEventListener('click', (e) => {
+    if(e.target === popup){
+      popup.style.display = 'none';
+    }
+  });
+});
+
    function showToast(message, duration = 3000) {
   const toast = document.getElementById("toast");
   toast.textContent = message;
