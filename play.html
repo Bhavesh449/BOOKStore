@@ -630,7 +630,6 @@
 </div>
 
 <script>
-    
 // Read ID from URL
 const params = new URLSearchParams(window.location.search);
 const vid = params.get("video") || "0";
@@ -638,12 +637,6 @@ const vid = params.get("video") || "0";
 // --- Global Player State ---
   
 let showRemaining = false; 
-let userInteracted = false;
-['mousedown', 'touchstart', 'keydown'].forEach(evt => {
-    document.addEventListener(evt, () => {
-        userInteracted = true;
-    }, { once: true });
-});
 
 
 // --- DOM Elements ---
@@ -665,12 +658,6 @@ function convertTimeToSeconds(t){
 timeDisplay.addEventListener("click", () => {
     showRemaining = !showRemaining;
 });
-function isUIInteraction(e) {
-    return e.target.closest(
-        '#controlsContainer, .settings-menu, .ctrl-icon, .option, .main-setting-btn'
-    );
-}
-
 // Update seekbar visuals (CSS variable + bottom progress)
 function updateSeekVisuals(currentTime, duration) {
     const percent = (currentTime / duration) * 100;
@@ -928,10 +915,8 @@ settingsMenu.querySelectorAll("[data-speed]").forEach(item => {
 
         const speed = parseFloat(item.dataset.speed);
         video.playbackRate = speed;
-previousSpeed = speed; // remember manual speed
 
         speedLabel.dataset.current = item.innerText;
-        
     });
 });
 
@@ -1065,14 +1050,10 @@ document.addEventListener('keydown', (e) => {
         document.getElementById("back5").click();
         showControls();
     } else if (e.code === 'ArrowRight') {
-    // tap = skip, hold = speed handled separately
-    if (!holdSpeed) {
         e.preventDefault();
         document.getElementById("forward5").click();
         showControls();
     }
-}
-
 });
 /* ===============================
    WATCH BY LINK + HISTORY SYSTEM
@@ -1239,93 +1220,6 @@ function renderHistory() {
     });
 }
 
-/* ===============================
-   HOLD TO 2X SPEED (YouTube-like)
-================================ */
-
-let holdSpeed = false;
-let previousSpeed = 1;
-function setSpeedUI(speed) {
-    // remove all active
-    settingsMenu.querySelectorAll("[data-speed]")
-        .forEach(i => i.classList.remove("active"));
-
-    // find matching option
-    const option = settingsMenu.querySelector(`[data-speed="${speed}"]`);
-    if (option) {
-        option.classList.add("active");
-        speedLabel.dataset.current = option.innerText;
-    }
-}
-
-// --- Helpers ---
-function startHoldSpeed() {
-    if (!userInteracted) return;
-    if (holdSpeed) return;
-
-    holdSpeed = true;
-    previousSpeed = video.playbackRate || 1;
-
-    video.playbackRate = 2;
-    setSpeedUI(2);   // 🔥 highlight 2x
-}
-
-
-
-function stopHoldSpeed() {
-    if (!holdSpeed) return;
-
-    holdSpeed = false;
-
-    video.playbackRate = 1;   // force back to 1x
-    setSpeedUI(1);            // 🔥 select 1x in menu
-}
-
-// =====================
-// DESKTOP: RIGHT ARROW
-// =====================
-document.addEventListener("keydown", (e) => {
-    if (e.code === "ArrowRight" && !e.repeat) {
-        startHoldSpeed();
-    }
-});
-
-document.addEventListener("keyup", (e) => {
-    if (e.code === "ArrowRight") {
-        stopHoldSpeed();
-    }
-});
-
-// =====================
-// MOUSE + TOUCH (Right Half)
-// =====================
-playerContainer.addEventListener("mousedown", (e) => {
-    if (isUIInteraction(e)) return; // 🔒 ignore UI clicks
-
-    const rect = playerContainer.getBoundingClientRect();
-    const isRightHalf = (e.clientX - rect.left) > rect.width / 2;
-
-    if (isRightHalf) startHoldSpeed();
-});
-
-playerContainer.addEventListener("mouseup", stopHoldSpeed);
-playerContainer.addEventListener("mouseleave", stopHoldSpeed);
-
-// =====================
-// TOUCH SUPPORT (Mobile)
-// =====================
-playerContainer.addEventListener("touchstart", (e) => {
-    if (isUIInteraction(e)) return; // 🔒 ignore UI touches
-
-    const touch = e.touches[0];
-    const rect = playerContainer.getBoundingClientRect();
-    const isRightHalf = (touch.clientX - rect.left) > rect.width / 2;
-
-    if (isRightHalf) startHoldSpeed();
-}, { passive: true });
-
-playerContainer.addEventListener("touchend", stopHoldSpeed);
-playerContainer.addEventListener("touchcancel", stopHoldSpeed);
 
 </script>
 </body>
