@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lecture Player</title>
+<title>Custom Player by BOOKStore</title>
 
 <style>
     body {
@@ -256,7 +256,7 @@
         outline: none;
     }
 /* ============================= */
-/*  COOL DUAL-COLOR SEEKBAR      */
+/* COOL DUAL-COLOR SEEKBAR      */
 /* ============================= */
 .seek-bar {
     width: 100%;
@@ -296,8 +296,10 @@
     transform: scale(1.2);
 }
 
+
+
 /* ============================= */
-/*  COOL DUAL-COLOR VOLUME BAR   */
+/* COOL DUAL-COLOR VOLUME BAR   */
 /* ============================= */
 
 #volumeSlider {
@@ -406,33 +408,127 @@
     color: #9bb3ff;
     opacity: 0.9;
 }
-/* Skip Intro Button */
-#skipIntro {
-    position: absolute;
-    bottom: 120px;
-    left: 91%;
-    transform: translateX(-50%);
-    padding: 10px 22px;
+/* ===== Glass Popups ===== */
+.glass-overlay {
+    position: fixed;
+    inset: 0;
     background: rgba(0,0,0,0.55);
-    color: white;
-    font-size: 15px;
-    border-radius: 8px;
-    cursor: pointer;
-    opacity: 0;
-    transition: opacity 0.35s ease, transform 0.35s ease;
-    backdrop-filter: blur(6px);
-    border: 1px solid rgba(255,255,255,0.15);
-    z-index: 99999;
-}
-
-#skipIntro.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(-4px);
-}
-
-#skipIntro.hide {
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20000;
     opacity: 0;
     pointer-events: none;
+    transition: 0.35s ease;
+}
+.glass-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.glass-overlay.right {
+    justify-content: flex-end;
+}
+
+.glass-popup {
+    width: 360px;
+    background: rgba(20,25,45,0.65);
+    backdrop-filter: blur(18px) saturate(160%);
+    border-radius: 18px;
+    padding: 22px;
+    color: white;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    animation: popupIn 0.35s ease;
+}
+
+@keyframes popupIn {
+    from { transform: scale(0.9) translateY(10px); opacity: 0; }
+    to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.glass-popup h2 {
+    margin: 0 0 8px;
+    font-size: 20px;
+}
+.glass-popup p {
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+.glass-popup input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    background: rgba(255,255,255,0.12);
+    color: white;
+    margin: 12px 0;
+}
+
+.glass-popup button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(90deg,#00d2ff,#3a7bd5);
+    color: white;
+    font-weight: 600;
+}
+
+.error-text {
+    font-size: 12px;
+    color: #ff8080;
+    min-height: 16px;
+}
+
+/* History */
+.glass-popup.history {
+    height: 100%;
+    max-width: 420px;
+    border-radius: 18px 0 0 18px;
+}
+#historyList {
+    margin-top: 14px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+.history-item {
+    padding: 12px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.08);
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.history-item:hover {
+    background: rgba(255,255,255,0.15);
+}
+.history-item small {
+    opacity: 0.7;
+}
+.history-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rename-btn {
+    font-size: 14px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: 0.2s;
+}
+.rename-btn:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.history-title[contenteditable="true"] {
+    outline: none;
+    border-bottom: 1px dashed #7aa2ff;
 }
 
 </style>
@@ -448,9 +544,12 @@
     <video id="video" autoplay></video>
     
     <div class="bottom-progress" id="bottomProgress"></div>
-<div id="skipIntro">Skip Intro</div>
+ 
 
     <div class="controls-and-seek-container" id="controlsContainer">
+        <div class="seek-wrapper">
+            <input type="range" id="seekBar" value="0" min="0" max="100" step="0.1" class="seek-bar">
+        </div>
         <div class="controls" id="controls">
             <div class="controls-left">
                 <img src="backward.svg" id="back5" class="ctrl-icon">
@@ -464,6 +563,8 @@
             </div>
 
             <div class="controls-right">
+                <img src="history.svg" id="historyBtn" class="ctrl-icon" title="History">
+
                 <span id="timeDisplay" style="
     font-size:14px;
     color:#cfd3ff;
@@ -471,13 +572,11 @@
     cursor:pointer;
     user-select:none;
 "></span>
-
                 <img src="settings.svg" id="settingsBtn" class="ctrl-icon">
                 <img src="fullscreen.svg" id="fullscreenBtn" class="ctrl-icon" title="Toggle Fullscreen">
                 
                 <div class="settings-menu" id="settingsMenu">
 
-    <!-- SPEED BUTTON -->
     <div class="main-setting-btn" data-open="speedBox" id="speedLabel" data-current="Normal"><b>Speed</b></div>
 
     <div class="setting-section drop-box" id="speedBox">
@@ -492,7 +591,6 @@
 
     <div class="divider"></div>
 
-    <!-- QUALITY BUTTON -->
     <div class="main-setting-btn" data-open="qualityBox" id="qualityLabel" data-current="Auto (480p)"><b>Quality</b></div>
 
     <div class="setting-section drop-box" id="qualityBox">
@@ -508,170 +606,252 @@
 
             </div>
         </div>
-
-        <div class="seek-wrapper">
-            <input type="range" id="seekBar" value="0" min="0" max="100" step="0.1" class="seek-bar">
-        </div>
     </div>
 </div>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+ <!-- Watch By Link Popup -->
+<div class="glass-overlay" id="linkOverlay">
+  <div class="glass-popup">
+    <h2>Watch by Link</h2>
+    <p>Paste a video URL (.mp4 or .m3u8)</p>
+
+    <input type="text" id="videoLinkInput" placeholder="https://example.com/video.m3u8">
+    <div class="error-text" id="linkError"></div>
+
+    <button id="playLinkBtn">Play Video</button>
+  </div>
+</div>
+
+<!-- History Panel -->
+<div class="glass-overlay right" id="historyOverlay">
+  <div class="glass-popup history">
+    <h2>Watch History</h2>
+    <div id="historyList"></div>
+  </div>
+</div>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyCcpG-oEqkDprgTwWXKt5CFsttjAQAZFNg",
-  authDomain: "bookstore-6ab08.firebaseapp.com",
-  databaseURL: "https://bookstore-6ab08-default-rtdb.firebaseio.com",
-  projectId: "bookstore-6ab08",
-  storageBucket: "bookstore-6ab08.firebasestorage.app",
-  messagingSenderId: "102226032749",
-  appId: "1:102226032749:web:f7090175d2e53c2f522764"
-};
-firebase.initializeApp(firebaseConfig);
-</script>
-
-<script>
+    
 // Read ID from URL
 const params = new URLSearchParams(window.location.search);
 const vid = params.get("video") || "0";
 
-// Firebase reference: videos/{id}/url
-firebase.database().ref("videos/" + vid + "/url").once("value")
-.then(snapshot => {
-    const url = snapshot.val();
-
-    if (!url) {
-        alert("Video not found in database!");
-        return;
-    }
-
-    loadVideo(url);
+// --- Global Player State ---
+  
+let showRemaining = false; 
+let userInteracted = false;
+['mousedown', 'touchstart', 'keydown'].forEach(evt => {
+    document.addEventListener(evt, () => {
+        userInteracted = true;
+    }, { once: true });
 });
+
+
+// --- DOM Elements ---
+const video = document.getElementById("video");
+const seekBar = document.getElementById("seekBar");
+const bottomProgress = document.getElementById("bottomProgress");
+const playerContainer = document.getElementById("playerContainer");
+const controlsContainer = document.getElementById("controlsContainer");
+const timeDisplay = document.getElementById("timeDisplay");
+const playBtn = document.getElementById("playPauseBtn");
+const back5Btn = document.getElementById("back5");
+const forward5Btn = document.getElementById("forward5");
+const speedLabel = document.getElementById("speedLabel");
+let isDragging = false;
+function convertTimeToSeconds(t){
+    const [m, s] = t.split(":").map(Number);
+    return m * 60 + s;
+}
+timeDisplay.addEventListener("click", () => {
+    showRemaining = !showRemaining;
+});
+function isUIInteraction(e) {
+    return e.target.closest(
+        '#controlsContainer, .settings-menu, .ctrl-icon, .option, .main-setting-btn'
+    );
+}
+
+// Update seekbar visuals (CSS variable + bottom progress)
+function updateSeekVisuals(currentTime, duration) {
+    const percent = (currentTime / duration) * 100;
+    seekBar.style.setProperty("--seek-pos", percent + "%");
+    bottomProgress.style.width = percent + "%";
+    if (showRemaining) {
+    const remaining = Math.max(0, duration - currentTime);
+    timeDisplay.textContent = `-${formatTime(remaining)} / ${formatTime(duration)}`;
+} else {
+    timeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
+}
+}
 function loadVideo(videoURL) {
     if (Hls.isSupported()) {
         const hls = new Hls();
         hls.loadSource(videoURL);
         hls.attachMedia(video);
         window.hls = hls;
+
+        hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
+            
+            
+            handleVideoType();
+        });
+        
     } else {
         video.src = videoURL;
+        video.onloadedmetadata = handleVideoType;
     }
 }
-let introTime = null;
 
-// Read skip intro time from Firebase
-firebase.database().ref("videos/" + vid + "/skip").once("value")
-.then(snap => {
-    if (snap.exists()) {
-        const timeStr = snap.val(); // example: "08:25"
-        introTime = convertTimeToSeconds(timeStr);
-        skipIntroBtn.style.display = "block";
-    } else {
-        skipIntroBtn.style.display = "none";
-    }
+back5Btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    video.currentTime = Math.max(0, video.currentTime - 5);
+    showControls();
 });
 
-function convertTimeToSeconds(t){
-    const [m, s] = t.split(":").map(Number);
-    return m * 60 + s;
+forward5Btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    video.currentTime = Math.min(video.duration, video.currentTime + 5);
+    showControls();
+});
+
+
+
+// Helper function to format time
+function formatTime(time) {
+    time = Math.floor(time);
+    let hours = Math.floor(time / 3600);
+    let minutes = Math.floor((time % 3600) / 60);
+    let seconds = time % 60;
+    const hh = hours.toString().padStart(2, "0");
+    const mm = minutes.toString().padStart(2, "0");
+    const ss = seconds.toString().padStart(2, "0");
+    if (hours === 0) return `${mm}:${ss}`;
+    return `${hh}:${mm}:${ss}`;
 }
-
-    const video = document.getElementById("video");
-    const seekBar = document.getElementById("seekBar");
-    const bottomProgress = document.getElementById("bottomProgress");
-    const playerContainer = document.getElementById("playerContainer");
-    const controlsContainer = document.getElementById("controlsContainer");
-    const timeDisplay = document.getElementById("timeDisplay");
-    let showRemaining = false;
-// ---- SKIP INTRO (Only for video1) ----
-const skipIntroBtn = document.getElementById("skipIntro");
-const INTRO_TIME = 8 * 60 + 52; // 08:52
-
-if (vid === "1") {
-    skipIntroBtn.style.display = "block";
-} else {
-    skipIntroBtn.style.display = "none";
-}
-
-// Show/hide based on time
+// ---------------------------
+// VIDEO TIMEUPDATE (Playback)
+// ---------------------------
 video.addEventListener("timeupdate", () => {
-    if (vid !== "1") return;
-
-    if (video.currentTime < INTRO_TIME) {
-        skipIntroBtn.classList.add("show");
-        skipIntroBtn.classList.remove("hide");
-    } else {
-        skipIntroBtn.classList.add("hide");
-        skipIntroBtn.classList.remove("show");
+    if (!isDragging) {
+        const dur = video.duration || 1;
+        updateSeekVisuals(video.currentTime, dur);
+        seekBar.value = video.currentTime;
     }
 });
+
+// ---------------------------
+// SEEKBAR DRAGGING
+// ---------------------------
+function onSeekStart() {
+    isDragging = true;
+}
+
+function onSeekEnd() {
+    if (isDragging) {
+        video.currentTime = parseFloat(seekBar.value);
+        isDragging = false;
+    }
+}
+
+function onSeekInput() {
+    if (!isDragging) return;
+
+    const value = parseFloat(seekBar.value);
+    const dur = video.duration || 1;
+   updateSeekVisuals(value, dur);
+}
+// ----------------------------------------------------
+// TIMEUPDATE AND SEEKBAR LOGIC
+// ----------------------------------------------------
 video.addEventListener("timeupdate", () => {
-    if (!video.duration) return;
-
-    // Slider follows the real time (seconds)
-    seekBar.value = video.currentTime;
-
-    // Color fill still uses percentage
-    const percent = (video.currentTime / video.duration) * 100;
-    seekBar.style.setProperty("--seek-pos", percent + "%");
-
-    bottomProgress.style.width = percent + "%";
+    if (!isDragging) {
+        const dur = video.duration || 1;
+        updateSeekVisuals(video.currentTime, dur);
+        seekBar.value = video.currentTime;
+    }
 });
 
 
-skipIntroBtn.addEventListener("click", () => {
-    const wasPaused = video.paused;
+// ----------------------------------------------------
+// SEEKBAR DRAGGING LOGIC
+// ----------------------------------------------------
 
-    video.currentTime = INTRO_TIME;
+seekBar.addEventListener("mousedown", () => seekBar.isDragging = true);
+seekBar.addEventListener("touchstart", () => seekBar.isDragging = true);
 
-    // Update seekbar instantly
-    const percent = (INTRO_TIME / video.duration) * 100;
-    seekBar.value = percent;
-    seekBar.style.setProperty("--seek-pos", percent + "%");
+seekBar.addEventListener("mouseup", () => {
+    if (seekBar.isDragging) video.currentTime = Number(seekBar.value);
+    });
+seekBar.addEventListener("touchend", () => {
+    if (seekBar.isDragging) video.currentTime = Number(seekBar.value);
+    });
 
-    if (wasPaused) video.pause();
-    else video.play();
 
-    skipIntroBtn.classList.add("hide");
+// Mouse events
+seekBar.addEventListener("mousedown", onSeekStart);
+seekBar.addEventListener("mouseup", onSeekEnd);
+seekBar.addEventListener("mousemove", onSeekInput);
+
+// Touch events
+seekBar.addEventListener("touchstart", onSeekStart, { passive: true });
+seekBar.addEventListener("touchend", onSeekEnd);
+seekBar.addEventListener("touchmove", onSeekInput, { passive: true });
+
+// Keyboard support
+seekBar.addEventListener("keydown", (e) => {
+    if (e.code === "ArrowLeft" || e.code === "ArrowRight") {
+        onSeekStart();
+        const step = video.duration * 0.01; // 1% step
+        if (e.code === "ArrowLeft") seekBar.value = Math.max(0, seekBar.value - step);
+        else seekBar.value = Math.min(video.duration, parseFloat(seekBar.value) + step);
+        onSeekInput();
+        onSeekEnd();
+    }
+});
+
+// ---------------------------
+// INITIALIZE SEEKBAR
+// ---------------------------
+video.addEventListener("loadedmetadata", () => {
+    seekBar.max = video.duration;
+    updateSeekVisuals(video.currentTime, video.duration);
+});
+// ----------------------------------------------------
+// SEEKBAR DRAGGING FIX (Applies to both VOD and DVR)
+// ----------------------------------------------------
+seekBar.isDragging = false; 
+
+seekBar.addEventListener("mouseup", () => { 
+    if (seekBar.isDragging) video.currentTime = Number(seekBar.value);
+    seekBar.isDragging = false; 
+});
+seekBar.addEventListener("touchend", () => { 
+    if (seekBar.isDragging) video.currentTime = Number(seekBar.value);
+    seekBar.isDragging = false; 
+});
+
+seekBar.addEventListener("input", () => {
+    // Only update visuals while dragging
+    if (seekBar.isDragging) {
+        const value = Number(seekBar.value);
+        let cur_time = value;
+        
+        
+        
+
+        
+        seekBar.style.setProperty("--seek-pos", percent + "%");
+        bottomProgress.style.width = percent + "%";
+    }
 });
 
 
-    // Volume Elements
-    const volumeBtn = document.getElementById("volumeBtn");
+
+// --- VOLUME & MUTE LOGIC ---
+    let lastVolume = 1;
     const volumeSlider = document.getElementById("volumeSlider");
-// Update Seek Bar fill color position
-video.addEventListener("timeupdate", () => {
-    if (!video.duration) return;
+    const volumeBtn = document.getElementById("volumeBtn");
 
-    const cur = video.currentTime;
-    const dur = video.duration;
-
-    if (!showRemaining) {
-        timeDisplay.textContent = `${formatTime(cur)} / ${formatTime(dur)}`;
-    } else {
-        const remain = dur - cur;
-        timeDisplay.textContent = `-${formatTime(remain)} / ${formatTime(dur)}`;
-    }
-});
-timeDisplay.addEventListener("click", () => {
-    showRemaining = !showRemaining; // toggle
-});
-
-// Update volume bar fill color
-volumeSlider.addEventListener("input", (e) => {
-    const progress = (e.target.value * 100);
-    volumeSlider.style.setProperty("--vol-pos", progress + "%");
-});
-
-    // HLS setup
-       let hls = null;
-
-   
-
-    // --- VOLUME & MUTE LOGIC ---
-    let lastVolume = 1; // Store volume before muting
-
-    // 1. Handle Slider Change
     volumeSlider.addEventListener("input", (e) => {
         const val = parseFloat(e.target.value);
         video.volume = val;
@@ -682,32 +862,31 @@ volumeSlider.addEventListener("input", (e) => {
         } else {
             video.muted = false;
             volumeBtn.src = "volume.svg";
-            lastVolume = val; // Update last volume memory
+            lastVolume = val; 
         }
+        const progress = (e.target.value * 100);
+        volumeSlider.style.setProperty("--vol-pos", progress + "%");
     });
 
-    // 2. Handle Mute Toggle Click
     volumeBtn.addEventListener("click", (e) => {
-        e.stopPropagation(); // Prevent clicking behind
+        e.stopPropagation();
         
         if (video.muted || video.volume === 0) {
-            // Unmute
             video.muted = false;
-            video.volume = lastVolume || 0.5; // Restore to last known or 50%
+            video.volume = lastVolume || 0.5;
             volumeSlider.value = video.volume;
             volumeBtn.src = "volume.svg";
         } else {
-            // Mute
-            lastVolume = video.volume; // Save current
+            lastVolume = video.volume;
             video.muted = true;
             video.volume = 0;
             volumeSlider.value = 0;
             volumeBtn.src = "mute.svg";
         }
+        volumeSlider.dispatchEvent(new Event('input')); 
     });
 
-
-    // --- SETTINGS MENU ---
+// --- Settings Menu Logic ---
     const settingsBtn = document.getElementById("settingsBtn");
     const settingsMenu = document.getElementById("settingsMenu");
 
@@ -717,53 +896,48 @@ volumeSlider.addEventListener("input", (e) => {
         e.stopPropagation();
         settingsMenu.style.display = (settingsMenu.style.display === 'block') ? 'none' : 'block';
     });
-// OPEN/CLOSE DROPDOWN SECTIONS
+
 document.querySelectorAll(".main-setting-btn").forEach(btn => {
     btn.addEventListener("click", (e) => {
         e.stopPropagation();
-
         const id = btn.dataset.open;
         const box = document.getElementById(id);
 
-        // Close if already open
         if (box.style.display === "block") {
             box.style.display = "none";
             return;
         }
-
-        // Close all other boxes
         document.querySelectorAll(".drop-box").forEach(b => b.style.display = "none");
-
-        // Open selected one
         box.style.display = "block";
     });
 });
 
-    document.addEventListener('click', () => {
-        settingsMenu.style.display = 'none';
-    });
+document.addEventListener('click', () => {
+    settingsMenu.style.display = 'none';
+});
 
-    settingsMenu.querySelectorAll("[data-speed]").forEach(item => {
-        item.addEventListener("click", () => {
-            settingsMenu.querySelectorAll("[data-speed]").forEach(i => i.classList.remove("active"));
-            item.classList.add("active");
-            video.playbackRate = parseFloat(item.dataset.speed);
-        });
-    });
-const speedLabel = document.getElementById("speedLabel");
-
+// Speed Controls
 settingsMenu.querySelectorAll("[data-speed]").forEach(item => {
-    item.addEventListener("click", () => {
-        settingsMenu.querySelectorAll("[data-speed]").forEach(i => i.classList.remove("active"));
+    item.addEventListener("click", (e) => {
+        e.stopPropagation();
+
+        settingsMenu.querySelectorAll("[data-speed]")
+            .forEach(i => i.classList.remove("active"));
+
         item.classList.add("active");
 
-        video.playbackRate = parseFloat(item.dataset.speed);
+        const speed = parseFloat(item.dataset.speed);
+        video.playbackRate = speed;
+previousSpeed = speed; // remember manual speed
 
-        speedLabel.dataset.current = item.innerText; // ← updates label
+        speedLabel.dataset.current = item.innerText;
+        
     });
 });
-const qualityLabel = document.getElementById("qualityLabel");
 
+
+// Quality Controls
+const qualityLabel = document.getElementById("qualityLabel");
 settingsMenu.querySelectorAll("[data-quality]").forEach(item => {
     item.addEventListener("click", () => {
 
@@ -773,255 +947,385 @@ settingsMenu.querySelectorAll("[data-quality]").forEach(item => {
         const q = item.dataset.quality;
 
         if (window.hls) {
-    if (q === "auto") window.hls.currentLevel = -1;
-    else {
-        const levelIndex = window.hls.levels.findIndex(l => l.height == Number(q));
-        if (levelIndex >= 0) window.hls.currentLevel = levelIndex;
-    }
-}
+            if (q === "auto") window.hls.currentLevel = -1;
+            else {
+                const levelIndex = window.hls.levels.findIndex(l => l.height == Number(q));
+                if (levelIndex >= 0) window.hls.currentLevel = levelIndex;
+            }
+        }
 
-
-        const displayText = 
-            q === "auto" ? "Auto" :
-            item.innerText;
-
+        const displayText = q === "auto" ? "Auto" : item.innerText;
         qualityLabel.dataset.current = displayText;
     });
 });
 
-    settingsMenu.querySelectorAll("[data-quality]").forEach(item => {
-        item.addEventListener("click", () => {
-            settingsMenu.querySelectorAll("[data-quality]").forEach(i => i.classList.remove("active"));
-            item.classList.add("active");
-            const q = item.dataset.quality;
-            if (window.hls) {
-    if (q === "auto") window.hls.currentLevel = -1;
-    else {
-        const levelIndex = window.hls.levels.findIndex(l => l.height == Number(q));
-        if (levelIndex >= 0) window.hls.currentLevel = levelIndex;
+// --- PLAY/PAUSE & CONTROLS HIDE/SHOW ---
+
+function togglePlayPause() {
+    if (video.paused || video.ended) { 
+        video.play(); 
+        playBtn.src = "pause.svg"; 
+    } else { 
+        video.pause(); 
+        playBtn.src = "play.svg"; 
     }
-}
-
-        });
-    });
-
-    // --- VIDEO TIME UPDATE ---
-    video.addEventListener("loadedmetadata", () => {
-        if (!isNaN(video.duration)) seekBar.max = video.duration;
-    });
-
-   video.addEventListener("timeupdate", () => {
-    if (introTime === null) return;
-
-    if (video.currentTime < introTime) {
-        skipIntroBtn.classList.add("show");
-        skipIntroBtn.classList.remove("hide");
-    } else {
-        skipIntroBtn.classList.add("hide");
-        skipIntroBtn.classList.remove("show");
-    }
-});
-
-skipIntroBtn.addEventListener("click", () => {
-    if (introTime === null) return;
-
-    const wasPaused = video.paused;
-    video.currentTime = introTime;
-
-    if (!wasPaused) video.play();
-    skipIntroBtn.classList.add("hide");
-});
-
-video.addEventListener("loadedmetadata", () => {
-    const cur = video.currentTime;
-    const dur = video.duration;
-
-    if (!showRemaining) {
-        timeDisplay.textContent = `${formatTime(cur)} / ${formatTime(dur)}`;
-    } else {
-        const remain = dur - cur;
-        timeDisplay.textContent = `-${formatTime(remain)} / ${formatTime(dur)}`;
-    }
-});
-
-video.addEventListener("pause", () => {
-    const cur = video.currentTime;
-    const dur = video.duration;
-
-    if (!showRemaining) {
-        timeDisplay.textContent = `${formatTime(cur)} / ${formatTime(dur)}`;
-    } else {
-        const remain = dur - cur;
-        timeDisplay.textContent = `-${formatTime(remain)} / ${formatTime(dur)}`;
-    }
-});
-
-    seekBar.addEventListener("input", () => {
-        video.currentTime = Number(seekBar.value);
-        bottomProgress.style.width = ((seekBar.value / video.duration) * 100) + "%";
-    });
-    
-
-    // --- PLAY/PAUSE & SKIP ---
-    document.getElementById("back5").onclick = () => video.currentTime = Math.max(0, video.currentTime - 5);
-    document.getElementById("forward5").onclick = () => video.currentTime = Math.min(video.duration || Infinity, video.currentTime + 5);
-
-    const playBtn = document.getElementById("playPauseBtn");
-    
-    function togglePlayPause() {
-        if (video.paused || video.ended) { 
-            video.play(); 
-            playBtn.src = "pause.svg"; 
-        } else { 
-            video.pause(); 
-            playBtn.src = "play.svg"; 
-        }
-        showControls();
-    }
-
-    playBtn.onclick = (e) => {
-        e.stopPropagation();
-        togglePlayPause();
-    };
-    
-    video.onplay = () => { playBtn.src = "pause.svg"; showControls(); };
-    video.onpause = () => { playBtn.src = "play.svg"; showControls(); };
-
-    // --- SHOW/HIDE CONTROLS ---
-    let inactivityTimer;
-    const INACTIVITY_MS = 3000;
-
-    function showControls() {
-        controlsContainer.classList.remove("hidden");
-        if (vid === "1" && video.currentTime < INTRO_TIME) {
-    skipIntroBtn.classList.remove("hide");
-    skipIntroBtn.classList.add("show");
-}
-
-        clearTimeout(inactivityTimer);
-        document.body.style.cursor = 'default';
-
-        if (!video.paused) {
-            inactivityTimer = setTimeout(() => {
-                controlsContainer.classList.add("hidden");
-                skipIntroBtn.classList.add("hide");
-
-                document.body.style.cursor = 'none'; // Hide cursor in fullscreen feeling
-            }, INACTIVITY_MS);
-        }
-    }
-
-    function attachActivityListeners(el) {
-        ['mousemove','mousedown','touchstart','touchmove','keydown'].forEach(evt => {
-            el.addEventListener(evt, showControls, { passive: true });
-        });
-    }
-
-    attachActivityListeners(document);
-    attachActivityListeners(playerContainer);
     showControls();
+}
 
-    controlsContainer.addEventListener('mouseenter', () => {
-        clearTimeout(inactivityTimer);
-        controlsContainer.classList.remove('hidden');
-    });
+playBtn.onclick = (e) => {
+    e.stopPropagation();
+    togglePlayPause();
+};
+
+video.onplay = () => { playBtn.src = "pause.svg"; showControls(); };
+video.onpause = () => { playBtn.src = "play.svg"; showControls(); };
+
+let inactivityTimer;
+const INACTIVITY_MS = 3000;
+
+function showControls() {
+    controlsContainer.classList.remove("hidden");
     
-    controlsContainer.addEventListener('mouseleave', () => {
-        if (!video.paused) {
-            inactivityTimer = setTimeout(() => {
-                controlsContainer.classList.add('hidden');
-            }, INACTIVITY_MS);
-        }
-    });
+   
 
-    // Click anywhere to Play/Pause
-    playerContainer.addEventListener('click', (e) => {
-        if (e.target.closest('#controlsContainer')) return;
+    clearTimeout(inactivityTimer);
+    document.body.style.cursor = 'default';
+
+    if (!video.paused) {
+        inactivityTimer = setTimeout(() => {
+            controlsContainer.classList.add("hidden");
+            document.body.style.cursor = 'none'; 
+        }, INACTIVITY_MS);
+    }
+}
+
+function attachActivityListeners(el) {
+    ['mousemove','mousedown','touchstart','touchmove','keydown'].forEach(evt => {
+        el.addEventListener(evt, showControls, { passive: true });
+    });
+}
+
+attachActivityListeners(document);
+attachActivityListeners(playerContainer);
+showControls();
+
+controlsContainer.addEventListener('mouseenter', () => {
+    clearTimeout(inactivityTimer);
+    controlsContainer.classList.remove('hidden');
+});
+
+controlsContainer.addEventListener('mouseleave', () => {
+    if (!video.paused) {
+        inactivityTimer = setTimeout(() => {
+            controlsContainer.classList.add('hidden');
+        }, INACTIVITY_MS);
+    }
+});
+
+playerContainer.addEventListener('click', (e) => {
+    if (e.target.closest('#controlsContainer')) return;
+    togglePlayPause();
+});
+
+// --- FULLSCREEN & KEYBOARD SHORTCUTS ---
+const fullscreenBtn = document.getElementById("fullscreenBtn");
+
+function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+        if (playerContainer.requestFullscreen) playerContainer.requestFullscreen();
+        else if (playerContainer.webkitRequestFullscreen) playerContainer.webkitRequestFullscreen();
+    } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+    }
+}
+
+fullscreenBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleFullscreen();
+});
+
+document.addEventListener('fullscreenchange', () => {
+    const fs = !!document.fullscreenElement;
+    fullscreenBtn.src = fs ? "exit.svg" : "fullscreen.svg";
+    fullscreenBtn.title = fs ? "Exit Fullscreen" : "Enter Fullscreen";
+    showControls();
+});
+
+video.addEventListener('dblclick', () => toggleFullscreen());
+
+document.addEventListener('keydown', (e) => {
+    const tag = document.activeElement && document.activeElement.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+
+    if (e.code === 'Space') {
+        e.preventDefault();
         togglePlayPause();
-    });
+    } else if (e.code === 'ArrowLeft') {
+        e.preventDefault();
+        document.getElementById("back5").click();
+        showControls();
+    } else if (e.code === 'ArrowRight') {
+    // tap = skip, hold = speed handled separately
+    if (!holdSpeed) {
+        e.preventDefault();
+        document.getElementById("forward5").click();
+        showControls();
+    }
+}
 
-    // --- FULLSCREEN ---
-    const fullscreenBtn = document.getElementById("fullscreenBtn");
-    
-    function toggleFullscreen() {
-        if (!document.fullscreenElement) {
-            if (playerContainer.requestFullscreen) playerContainer.requestFullscreen();
-            else if (playerContainer.webkitRequestFullscreen) playerContainer.webkitRequestFullscreen();
-        } else {
-            if (document.exitFullscreen) document.exitFullscreen();
-        }
+});
+/* ===============================
+   WATCH BY LINK + HISTORY SYSTEM
+================================ */
+const linkOverlay = document.getElementById("linkOverlay");
+const historyOverlay = document.getElementById("historyOverlay");
+const playLinkBtn = document.getElementById("playLinkBtn");
+const videoLinkInput = document.getElementById("videoLinkInput");
+const linkError = document.getElementById("linkError");
+const historyBtn = document.getElementById("historyBtn");
+const historyList = document.getElementById("historyList");
+
+let currentVideoURL = "";
+
+/* --- Utilities --- */
+function isValidVideo(url) {
+    return url.endsWith(".mp4") || url.endsWith(".m3u8");
+}
+
+function getHistory() {
+    return JSON.parse(localStorage.getItem("watchHistory") || "[]");
+}
+
+function saveHistory(data) {
+    localStorage.setItem("watchHistory", JSON.stringify(data));
+}
+
+/* --- Popup Logic --- */
+function openPopup(el) { el.classList.add("show"); }
+function closePopup(el) { el.classList.remove("show"); }
+
+/* Auto open on load if no video */
+window.addEventListener("load", () => {
+    openPopup(linkOverlay);   // ALWAYS show popup
+    video.pause();            // ensure nothing plays
+    video.removeAttribute("src");
+    video.load();
+});
+
+
+/* Watch by Link */
+playLinkBtn.onclick = () => {
+    const url = videoLinkInput.value.trim();
+    if (!isValidVideo(url)) {
+        linkError.textContent = "Only .mp4 or .m3u8 links are supported";
+        return;
+    }
+    linkError.textContent = "";
+    loadAndTrack(url);
+    closePopup(linkOverlay);
+};
+
+linkOverlay.addEventListener("click", e => {
+    if (e.target === linkOverlay) closePopup(linkOverlay);
+});
+
+/* --- Load + Resume --- */
+function loadAndTrack(url) {
+    if (currentVideoURL && currentVideoURL !== url) {
+        saveProgress(true); // auto-save previous video
     }
 
-    fullscreenBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggleFullscreen();
-    });
+    currentVideoURL = url;
+    loadVideo(url);
 
-    document.addEventListener('fullscreenchange', () => {
-        const fs = !!document.fullscreenElement;
-        if (fs) {
-            fullscreenBtn.src = "exit.svg";
-            fullscreenBtn.title = "Exit Fullscreen";
-        } else {
-            fullscreenBtn.src = "fullscreen.svg";
-            fullscreenBtn.title = "Enter Fullscreen";
-        }
-        showControls();
-    });
- 
-    video.addEventListener('dblclick', () => toggleFullscreen());
-
-    // --- KEYBOARD SHORTCUTS ---
-    document.addEventListener('keydown', (e) => {
-        const tag = document.activeElement && document.activeElement.tagName;
-        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-
-        if (e.code === 'Space') {
-            e.preventDefault();
-            togglePlayPause();
-        } else if (e.code === 'ArrowLeft') {
-            e.preventDefault();
-            video.currentTime = Math.max(0, (video.currentTime || 0) - 5);
-            showControls();
-        } else if (e.code === 'ArrowRight') {
-            e.preventDefault();
-            video.currentTime = Math.min(video.duration || Infinity, (video.currentTime || 0) + 5);
-            showControls();
-        }
-    });
-
-
-function formatTime(time) {
-    time = Math.floor(time);
-
-    let hours = Math.floor(time / 3600);
-    let minutes = Math.floor((time % 3600) / 60);
-    let seconds = time % 60;
-
-    // Pad numbers
-    const hh = hours.toString().padStart(2, "0");
-    const mm = minutes.toString().padStart(2, "0");
-    const ss = seconds.toString().padStart(2, "0");
-
-    // If video is less than 1 hour → show MM:SS
-    if (hours === 0) return `${mm}:${ss}`;
-
-    // If video has hours → show HH:MM:SS
-    return `${hh}:${mm}:${ss}`;
+    video.onloadedmetadata = () => {
+        video.currentTime = 0;
+        video.play();
+    };
 }
 
 
-    // --- MOBILE LANDSCAPE ENFORCEMENT ---
-    function forceLandscape() {
-        if (window.innerHeight > window.innerWidth && /Mobi|Android/i.test(navigator.userAgent)) {
-           // alert("Rotate for best view");
-        }
-    }
-    video.addEventListener("play", forceLandscape);
-    window.addEventListener("orientationchange", () => {
-        if (video.paused) return;
-        forceLandscape();
+
+/* --- Save Progress --- */
+function saveProgress(force = false) {
+    if (!currentVideoURL) return;
+    if (!force && video.currentTime < 2) return;
+
+    let history = getHistory();
+    const existing = history.find(h => h.url === currentVideoURL);
+
+    history = history.filter(h => h.url !== currentVideoURL);
+
+    history.unshift({
+        url: currentVideoURL,
+        time: video.currentTime,
+        date: new Date().toLocaleString(),
+        title: existing?.title || currentVideoURL.split("/").pop()
     });
+
+    saveHistory(history.slice(0, 50));
+}
+
+
+video.addEventListener("pause", saveProgress);
+window.addEventListener("beforeunload", saveProgress);
+
+/* --- History Panel --- */
+historyBtn.onclick = () => {
+    renderHistory();
+    openPopup(historyOverlay);
+};
+
+historyOverlay.addEventListener("click", e => {
+    if (e.target === historyOverlay) closePopup(historyOverlay);
+});
+
+function renderHistory() {
+    historyList.innerHTML = "";
+    const history = getHistory();
+
+    if (!history.length) {
+        historyList.innerHTML = "<p style='opacity:.6'>No history yet</p>";
+        return;
+    }
+
+    history.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "history-item";
+
+        div.innerHTML = `
+            <div class="history-top">
+                <b contenteditable="false" class="history-title">${item.title}</b>
+                <span class="rename-btn">✏️</span>
+            </div>
+            <small>Resume at ${formatTime(item.time)}<br>${item.date}</small>
+        `;
+
+        // Play on click (except rename)
+        div.onclick = (e) => {
+            if (e.target.classList.contains("rename-btn")) return;
+
+            closePopup(historyOverlay);
+            currentVideoURL = item.url;
+            loadVideo(item.url);
+
+            video.onloadedmetadata = () => {
+                if (item.time > 5) video.currentTime = item.time;
+                video.play();
+            };
+        };
+
+        // Rename logic
+        const titleEl = div.querySelector(".history-title");
+        const renameBtn = div.querySelector(".rename-btn");
+
+        renameBtn.onclick = (e) => {
+            e.stopPropagation();
+            titleEl.contentEditable = "true";
+            titleEl.focus();
+        };
+
+        titleEl.onblur = () => {
+            titleEl.contentEditable = "false";
+            const newTitle = titleEl.innerText.trim();
+            if (!newTitle) return;
+
+            const all = getHistory();
+            all[index].title = newTitle;
+            saveHistory(all);
+        };
+
+        historyList.appendChild(div);
+    });
+}
+
+/* ===============================
+   HOLD TO 2X SPEED (YouTube-like)
+================================ */
+
+let holdSpeed = false;
+let previousSpeed = 1;
+function setSpeedUI(speed) {
+    // remove all active
+    settingsMenu.querySelectorAll("[data-speed]")
+        .forEach(i => i.classList.remove("active"));
+
+    // find matching option
+    const option = settingsMenu.querySelector(`[data-speed="${speed}"]`);
+    if (option) {
+        option.classList.add("active");
+        speedLabel.dataset.current = option.innerText;
+    }
+}
+
+// --- Helpers ---
+function startHoldSpeed() {
+    if (!userInteracted) return;
+    if (holdSpeed) return;
+
+    holdSpeed = true;
+    previousSpeed = video.playbackRate || 1;
+
+    video.playbackRate = 2;
+    setSpeedUI(2);   // 🔥 highlight 2x
+}
+
+
+
+function stopHoldSpeed() {
+    if (!holdSpeed) return;
+
+    holdSpeed = false;
+
+    video.playbackRate = 1;   // force back to 1x
+    setSpeedUI(1);            // 🔥 select 1x in menu
+}
+
+// =====================
+// DESKTOP: RIGHT ARROW
+// =====================
+document.addEventListener("keydown", (e) => {
+    if (e.code === "ArrowRight" && !e.repeat) {
+        startHoldSpeed();
+    }
+});
+
+document.addEventListener("keyup", (e) => {
+    if (e.code === "ArrowRight") {
+        stopHoldSpeed();
+    }
+});
+
+// =====================
+// MOUSE + TOUCH (Right Half)
+// =====================
+playerContainer.addEventListener("mousedown", (e) => {
+    if (isUIInteraction(e)) return; // 🔒 ignore UI clicks
+
+    const rect = playerContainer.getBoundingClientRect();
+    const isRightHalf = (e.clientX - rect.left) > rect.width / 2;
+
+    if (isRightHalf) startHoldSpeed();
+});
+
+playerContainer.addEventListener("mouseup", stopHoldSpeed);
+playerContainer.addEventListener("mouseleave", stopHoldSpeed);
+
+// =====================
+// TOUCH SUPPORT (Mobile)
+// =====================
+playerContainer.addEventListener("touchstart", (e) => {
+    if (isUIInteraction(e)) return; // 🔒 ignore UI touches
+
+    const touch = e.touches[0];
+    const rect = playerContainer.getBoundingClientRect();
+    const isRightHalf = (touch.clientX - rect.left) > rect.width / 2;
+
+    if (isRightHalf) startHoldSpeed();
+}, { passive: true });
+
+playerContainer.addEventListener("touchend", stopHoldSpeed);
+playerContainer.addEventListener("touchcancel", stopHoldSpeed);
 
 </script>
 </body>
