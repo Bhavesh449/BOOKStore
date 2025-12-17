@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BOOKStore Player</title>
+<title>BOOKStore Player by Bhavesh</title>
 
 <style>
     body {
@@ -630,6 +630,46 @@
 </div>
 
 <script>
+function extractVideoFromURL() {
+    const path = decodeURIComponent(window.location.pathname);
+    const search = window.location.search;
+
+    // 1️⃣ Query param ?video=
+    const params = new URLSearchParams(search);
+    const qVideo = params.get("video");
+if (qVideo) {
+    const decoded = decodeURIComponent(qVideo);
+    if (isValidVideo(decoded)) {
+        return decoded;
+    }
+}
+
+
+    // 2️⃣ Path-based video
+    // Example:
+    // /play.html/https:/cdn.com/video.m3u8
+    const marker = "/play.html/";
+    if (path.includes(marker)) {
+        let after = path.split(marker)[1];
+
+        // Fix https:/ → https://
+        if (after.startsWith("https:/") && !after.startsWith("https://")) {
+            after = after.replace("https:/", "https://");
+        }
+
+        if (after.startsWith("http:/") && !after.startsWith("http://")) {
+            after = after.replace("http:/", "http://");
+        }
+
+        if (isValidVideo(after)) {
+            return after;
+        }
+    }
+
+    return null;
+}
+
+
 // Read ID from URL
 const params = new URLSearchParams(window.location.search);
 const vid = params.get("video") || "0";
@@ -1070,8 +1110,9 @@ let currentVideoURL = "";
 
 /* --- Utilities --- */
 function isValidVideo(url) {
-    return url.endsWith(".mp4") || url.endsWith(".m3u8");
+    return /\.(mp4|m3u8)(\?.*)?$/i.test(url);
 }
+
 
 function getHistory() {
     return JSON.parse(localStorage.getItem("watchHistory") || "[]");
@@ -1087,11 +1128,21 @@ function closePopup(el) { el.classList.remove("show"); }
 
 /* Auto open on load if no video */
 window.addEventListener("load", () => {
-    openPopup(linkOverlay);   // ALWAYS show popup
-    video.pause();            // ensure nothing plays
-    video.removeAttribute("src");
-    video.load();
+    const videoFromURL = extractVideoFromURL();
+
+    if (videoFromURL) {
+        // 🎯 Play directly from URL
+        loadAndTrack(videoFromURL);
+        closePopup(linkOverlay);
+    } else {
+        // ❌ No video → show popup
+        openPopup(linkOverlay);
+        video.pause();
+        video.removeAttribute("src");
+        video.load();
+    }
 });
+
 
 
 /* Watch by Link */
@@ -1224,4 +1275,3 @@ function renderHistory() {
 </script>
 </body>
 </html>
-
