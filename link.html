@@ -267,22 +267,53 @@ document.addEventListener("click", (e) => {
 }
 
 function cleanLink() {
-    let link = document.getElementById('linkInput').value;
-    if(!link) return alert("Please paste a link first!");
+    let input = document.getElementById("linkInput").value.trim();
+    if (!input) return alert("Please paste a link first!");
 
-    // Extract the file_url part
-    let fileUrlPart = link.match(/file_url=([^&]+)/);
-    if(!fileUrlPart) return alert("Invalid link format!");
+    let videoURL = "";
 
-    let cleanedLink = decodeURIComponent(fileUrlPart[1]);
-
-    // Ensure it starts with https://
-    if(!cleanedLink.startsWith('https://')) {
-        cleanedLink = cleanedLink.replace(/^:\//, '://');
+    // 1️⃣ If link contains file_url=
+    const fileMatch = input.match(/file_url=([^&]+)/);
+    if (fileMatch) {
+        videoURL = decodeURIComponent(fileMatch[1]);
     }
 
-    document.getElementById('outputLink').value = cleanedLink;
+    // 2️⃣ If it's already a raw video URL
+    else if (/^https?:\/\//i.test(input)) {
+        videoURL = input;
+    }
+
+    // 3️⃣ If it's play.html/https:/...
+    else if (input.includes("play.html/")) {
+        let after = input.split("play.html/")[1];
+
+        // Fix https:/ → https://
+        if (after.startsWith("https:/") && !after.startsWith("https://")) {
+            after = after.replace("https:/", "https://");
+        }
+        if (after.startsWith("http:/") && !after.startsWith("http://")) {
+            after = after.replace("http:/", "http://");
+        }
+
+        videoURL = after;
+    }
+
+    else {
+        return alert("Invalid or unsupported link!");
+    }
+
+    // 4️⃣ Final validation
+    if (!/\.(mp4|m3u8)(\?.*)?$/i.test(videoURL)) {
+        return alert("Not a valid video URL!");
+    }
+
+    // 5️⃣ Encode and generate final player link
+    const encoded = encodeURIComponent(videoURL);
+    const finalLink = `https://bookstore-nt.vercel.app/play.html?video=${encoded}`;
+
+    document.getElementById("outputLink").value = finalLink;
 }
+
 
 
 function copyLink() {
