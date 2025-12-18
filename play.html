@@ -85,14 +85,12 @@
         padding-bottom: 10px; /* Safe area */
     }
 
-    /* Auto-hide State */
     .controls-and-seek-container.hidden {
         opacity: 0;
         transform: translateX(-50%) translateY(20px);
         pointer-events: none;
     }
 
-    /* Glass Control Bar */
     .controls {
         width: 100%;
         background: var(--glass-bg);
@@ -131,17 +129,9 @@
         filter: drop-shadow(0 0 8px var(--accent-glow));
     }
 
-    .ctrl-icon:active {
-        transform: scale(0.95);
-    }
+    .ctrl-icon:active { transform: scale(0.95); }
+    #playPauseBtn { width: 28px; height: 28px; }
 
-    /* Play/Pause Button Specifics */
-    #playPauseBtn {
-        width: 28px;
-        height: 28px;
-    }
-
-    /* Time Display */
     #timeDisplay {
         font-family: 'Inter', monospace;
         font-size: 13px;
@@ -155,11 +145,11 @@
     #timeDisplay:hover { color: #fff; }
 
     /* =========================================
-       5. SEEK BAR (YouTube Style)
+       5. SEEK BAR & VOLUME
        ========================================= */
     .seek-wrapper {
         width: 100%;
-        height: 8px; /* Hit area */
+        height: 8px; 
         display: flex;
         align-items: center;
         cursor: pointer;
@@ -179,17 +169,14 @@
         position: relative;
         z-index: 2;
     }
-
     .seek-wrapper:hover .seek-bar { height: 6px; }
 
-    /* Progress Fill */
     .seek-bar::-webkit-slider-runnable-track {
         height: 100%;
         border-radius: 4px;
         background: linear-gradient(to right, var(--accent) var(--seek-pos, 0%), transparent var(--seek-pos, 0%));
     }
 
-    /* Thumb (Hidden by default, shows on hover) */
     .seek-bar::-webkit-slider-thumb {
         -webkit-appearance: none;
         width: 14px;
@@ -199,14 +186,10 @@
         transform: scale(0);
         transition: transform 0.1s;
         box-shadow: 0 0 10px rgba(0,0,0,0.5);
-        margin-top: -4px; /* Center thumb vertically relative to track height change */
+        margin-top: -4px;
     }
+    .seek-wrapper:hover .seek-bar::-webkit-slider-thumb { transform: scale(1); }
 
-    .seek-wrapper:hover .seek-bar::-webkit-slider-thumb {
-        transform: scale(1);
-    }
-
-    /* Bottom Line Progress (Netflix Style) */
     .bottom-progress {
         position: absolute;
         bottom: 0;
@@ -219,16 +202,12 @@
         box-shadow: 0 -1px 10px var(--accent-glow);
     }
 
-    /* =========================================
-       6. VOLUME SLIDER
-       ========================================= */
     .volume-box {
         display: flex;
         align-items: center;
         position: relative;
         height: 30px;
     }
-
     #volumeSlider {
         width: 0;
         height: 4px;
@@ -240,34 +219,22 @@
         transition: var(--transition);
         overflow: hidden;
     }
-
-    .volume-box:hover #volumeSlider {
-        width: 70px;
-        opacity: 1;
-        margin-left: 10px;
-    }
-
+    .volume-box:hover #volumeSlider { width: 70px; opacity: 1; margin-left: 10px; }
     #volumeSlider::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        height: 12px;
-        width: 12px;
-        border-radius: 50%;
-        background: #fff;
-        box-shadow: 0 0 5px rgba(0,0,0,0.3);
-        margin-top: -4px;
+        -webkit-appearance: none; height: 12px; width: 12px;
+        border-radius: 50%; background: #fff; margin-top: -4px;
     }
-
     #volumeSlider::-webkit-slider-runnable-track {
         height: 4px;
         background: linear-gradient(to right, #fff var(--vol-pos, 100%), rgba(255,255,255,0.2) var(--vol-pos, 100%));
     }
 
     /* =========================================
-       7. SETTINGS MENU
+       6. SETTINGS MENU
        ========================================= */
     .settings-menu {
         position: absolute;
-        bottom: 70px; /* Above control bar */
+        bottom: 70px; 
         right: 0;
         width: 220px;
         background: rgba(18, 24, 38, 0.95);
@@ -282,251 +249,185 @@
         animation: slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         z-index: 200;
     }
-
-    @keyframes slideUp {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     .main-setting-btn {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 12px 16px;
-        color: var(--text-secondary);
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        border-radius: 8px;
-        transition: background 0.2s;
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 12px 16px; color: var(--text-secondary);
+        font-size: 14px; font-weight: 500; cursor: pointer;
+        border-radius: 8px; transition: background 0.2s;
     }
-
     .main-setting-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
-    
     .main-setting-btn b { color: #fff; }
-    .main-setting-btn::after {
-        content: attr(data-current);
-        font-size: 12px;
-        color: var(--accent);
-        font-weight: 600;
-    }
+    .main-setting-btn::after { content: attr(data-current); font-size: 12px; color: var(--accent); font-weight: 600; }
 
-    .drop-box {
-        display: none;
-        background: rgba(0,0,0,0.2);
-        border-radius: 8px;
-        margin-top: 4px;
-    }
-
-    .option {
-        padding: 10px 16px;
-        font-size: 13px;
-        color: #ccc;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-    }
+    .drop-box { display: none; background: rgba(0,0,0,0.2); border-radius: 8px; margin-top: 4px; }
+    .option { padding: 10px 16px; font-size: 13px; color: #ccc; cursor: pointer; display: flex; align-items: center; }
     .option:hover { background: rgba(255,255,255,0.05); color: #fff; }
-    
-    .option.active {
-        color: var(--accent);
-        font-weight: 600;
-    }
-    .option.active::before {
-        content: '•';
-        margin-right: 8px;
-        font-size: 18px;
-        line-height: 0;
-    }
-
+    .option.active { color: var(--accent); font-weight: 600; }
+    .option.active::before { content: '•'; margin-right: 8px; font-size: 18px; line-height: 0; }
     .divider { height: 1px; background: rgba(255,255,255,0.1); margin: 4px 0; }
 
     /* =========================================
-       8. POPUPS (Link & History)
+       7. POPUPS (Link, History, Library)
        ========================================= */
     .glass-overlay {
-        position: fixed;
-        inset: 0;
+        position: fixed; inset: 0;
         background: rgba(0, 0, 0, 0.7);
         backdrop-filter: blur(8px);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        opacity: 0;
-        pointer-events: none;
+        display: flex; justify-content: center; align-items: center;
+        z-index: 9999; opacity: 0; pointer-events: none;
         transition: opacity 0.3s ease;
     }
-    
     .glass-overlay.show { opacity: 1; pointer-events: auto; }
 
-    /* Right-side Slide-in for History */
+    /* Right Side Slide-in (History & Library) */
     .glass-overlay.right { justify-content: flex-end; }
     .glass-overlay.right .glass-popup {
-        height: 100vh;
-        border-radius: 0;
+        height: 100vh; width: 400px; max-width: 85vw;
+        border-radius: 0; border-left: 1px solid var(--glass-border);
         transform: translateX(100%);
         transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        width: 350px;
-        max-width: 80vw;
-        border-left: 1px solid var(--glass-border);
     }
     .glass-overlay.right.show .glass-popup { transform: translateX(0); }
 
-    /* Standard Modal */
+    /* Center Modal */
     .glass-popup {
-        background: #111827;
-        width: 400px;
-        max-width: 90%;
-        padding: 30px;
-        border-radius: 20px;
+        background: #111827; width: 420px; max-width: 90%;
+        padding: 30px; border-radius: 20px;
         border: 1px solid var(--glass-border);
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
-        transform: scale(0.95);
-        transition: transform 0.3s ease;
+        transform: scale(0.95); transition: transform 0.3s ease;
+        display: flex; flex-direction: column;
     }
     .glass-overlay.show .glass-popup { transform: scale(1); }
 
-    .glass-popup h2 {
-        margin: 0 0 10px;
-        font-size: 20px;
-        font-weight: 600;
-        color: #fff;
-    }
-    
-    .glass-popup p {
-        color: var(--text-secondary);
-        font-size: 14px;
-        margin-bottom: 20px;
-    }
+    .glass-popup h2 { margin: 0 0 8px; font-size: 20px; font-weight: 600; color: #fff; }
+    .glass-popup p { color: var(--text-secondary); font-size: 13px; margin-bottom: 20px; line-height: 1.5; }
 
-    /* Input Styling */
+    /* Inputs */
     .glass-popup input {
-        width: 100%;
-        background: rgba(255,255,255,0.05);
+        width: 100%; background: rgba(255,255,255,0.05);
         border: 1px solid var(--glass-border);
-        padding: 14px;
-        border-radius: 12px;
-        color: #fff;
-        font-size: 14px;
-        outline: none;
-        transition: border 0.2s;
+        padding: 14px; border-radius: 12px;
+        color: #fff; font-size: 14px; outline: none;
+        transition: border 0.2s; margin-bottom: 10px;
     }
-    .glass-popup input:focus { border-color: var(--accent); }
+    .glass-popup input:focus { border-color: var(--accent); background: rgba(255,255,255,0.08); }
+    .glass-popup label {
+        font-size: 12px; color: var(--accent); font-weight: 600;
+        margin-bottom: 6px; display: block; margin-top: 5px;
+    }
 
-    /* Button Styling */
+    .or-divider {
+        display: flex; align-items: center; color: var(--text-secondary);
+        font-size: 11px; margin: 15px 0; font-weight: 600; text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .or-divider::before, .or-divider::after {
+        content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1);
+    }
+    .or-divider::before { margin-right: 10px; }
+    .or-divider::after { margin-left: 10px; }
+
+    /* Buttons */
     .glass-popup button {
-        width: 100%;
-        margin-top: 15px;
-        padding: 14px;
-        background: var(--accent);
-        color: #fff;
-        border: none;
-        border-radius: 12px;
-        font-weight: 600;
-        font-size: 14px;
-        cursor: pointer;
+        width: 100%; padding: 14px; background: var(--accent);
+        color: #fff; border: none; border-radius: 12px;
+        font-weight: 600; font-size: 14px; cursor: pointer;
         transition: var(--transition);
-        box-shadow: 0 4px 15px rgba(55, 157, 253, 0.3);
+        box-shadow: 0 4px 15px rgba(55, 157, 253, 0.3); margin-top: 10px;
     }
-    .glass-popup button:hover {
-        background: #278ceb;
-        transform: translateY(-2px);
+    .glass-popup button:hover { background: #278ceb; transform: translateY(-2px); }
+
+    .error-text { color: #ff4d4d; font-size: 12px; margin-top: 8px; min-height: 18px; text-align: center; }
+
+    /* History & Library Lists */
+    #historyList, #libraryList {
+        margin-top: 10px; flex: 1; overflow-y: auto; padding-right: 5px;
     }
+    #historyList::-webkit-scrollbar, #libraryList::-webkit-scrollbar { width: 4px; }
+    #historyList::-webkit-scrollbar-thumb, #libraryList::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
 
-    .error-text { color: #ff4d4d; font-size: 12px; margin-top: 5px; min-height: 18px; }
-
-    /* History List Items */
-    #historyList {
-        margin-top: 20px;
-        height: calc(100% - 60px);
-        overflow-y: auto;
-        padding-right: 5px;
-    }
-    
-    /* Scrollbar */
-    #historyList::-webkit-scrollbar { width: 6px; }
-    #historyList::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-
+    /* History Item */
     .history-item {
-        background: rgba(255,255,255,0.03);
-        border: 1px solid transparent;
-        border-radius: 12px;
-        padding: 12px;
-        margin-bottom: 8px;
-        cursor: pointer;
-        transition: var(--transition);
+        background: rgba(255,255,255,0.03); border-radius: 12px;
+        padding: 12px; margin-bottom: 8px; cursor: pointer;
+        transition: var(--transition); border: 1px solid transparent;
     }
-    
-    .history-item:hover {
-        background: rgba(255,255,255,0.08);
-        border-color: rgba(255,255,255,0.1);
-        transform: translateX(4px);
-    }
-
+    .history-item:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.1); }
     .history-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
-    .history-title { font-weight: 500; font-size: 14px; color: #fff; outline: none; }
-    .history-title:focus { border-bottom: 1px solid var(--accent); }
+    .history-title { font-weight: 500; font-size: 14px; color: #fff; }
     .history-item small { color: #888; font-size: 11px; }
 
-    /* Mobile Tweaks */
+    /* Premium Library Cards */
+    .library-card {
+        background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        padding: 16px; margin-bottom: 12px;
+        cursor: pointer; position: relative; overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        display: flex; align-items: center; gap: 15px;
+    }
+    .library-card:hover {
+        transform: translateY(-4px);
+        background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.04));
+        border-color: rgba(55, 157, 253, 0.3);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .play-icon-bg {
+        width: 40px; height: 40px; border-radius: 50%;
+        background: rgba(55, 157, 253, 0.15);
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; color: var(--accent); transition: 0.3s;
+    }
+    .library-card:hover .play-icon-bg { background: var(--accent); color: #fff; transform: scale(1.1); }
+    .card-info { flex: 1; }
+    .card-title { font-weight: 600; font-size: 15px; color: #fff; margin-bottom: 4px; line-height: 1.4; }
+    .card-meta { font-size: 11px; color: var(--text-secondary); display: flex; gap: 10px; }
+    .card-tag { background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 4px; }
+
     @media (max-width: 600px) {
         .controls { padding: 10px 15px; }
         .controls-and-seek-container { width: 95%; bottom: 15px; }
-        #volumeBox { display: none; } /* Hide volume on mobile to save space */
+        #volumeBox { display: none; }
         .settings-menu { bottom: 60px; }
+        .glass-popup { width: 95%; padding: 25px; }
     }
-
 </style>
 </head>
 <body>
 
 <div class="player-container" id="playerContainer">
-    <!-- Brand Logo -->
     <img src="book.png" alt="BOOKStore" class="book-logo">
-
-    <!-- Video Element -->
     <video id="video" playsinline></video>
-    
-    <!-- Bottom Line Progress (Netflix Style) -->
     <div class="bottom-progress" id="bottomProgress"></div>
 
-    <!-- Controls Container -->
     <div class="controls-and-seek-container" id="controlsContainer">
-        
-        <!-- Seek Bar -->
         <div class="seek-wrapper">
             <input type="range" id="seekBar" value="0" min="0" max="100" step="0.1" class="seek-bar">
         </div>
 
-        <!-- Glass Control Bar -->
         <div class="controls" id="controls">
-            
-            <!-- Left Controls -->
             <div class="controls-left">
                 <img src="backward.svg" id="back5" class="ctrl-icon" title="-5s">
                 <img src="play.svg" id="playPauseBtn" class="ctrl-icon" title="Play/Pause">
                 <img src="forward.svg" id="forward5" class="ctrl-icon" title="+5s">
-
                 <div class="volume-box" id="volumeBox">
                     <img src="volume.svg" id="volumeBtn" class="ctrl-icon" title="Mute">
                     <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="1">
                 </div>
-                
                 <span id="timeDisplay">00:00 / 00:00</span>
             </div>
 
-            <!-- Right Controls -->
             <div class="controls-right">
                 <img src="history.svg" id="historyBtn" class="ctrl-icon" title="History">
                 <img src="settings.svg" id="settingsBtn" class="ctrl-icon" title="Settings">
                 <img src="fullscreen.svg" id="fullscreenBtn" class="ctrl-icon" title="Fullscreen">
                 
-                <!-- Settings Dropdown -->
                 <div class="settings-menu" id="settingsMenu">
-                    <div class="main-setting-btn" data-open="speedBox" id="speedLabel" data-current="Normal">
-                        <b>Speed</b>
-                    </div>
+                    <div class="main-setting-btn" data-open="speedBox" id="speedLabel" data-current="Normal"><b>Speed</b></div>
                     <div class="setting-section drop-box" id="speedBox">
                         <div class="option" data-speed="0.25">0.25x</div>
                         <div class="option" data-speed="0.5">0.5x</div>
@@ -535,12 +436,8 @@
                         <div class="option" data-speed="1.5">1.5x</div>
                         <div class="option" data-speed="2">2x</div>
                     </div>
-
                     <div class="divider"></div>
-
-                    <div class="main-setting-btn" data-open="qualityBox" id="qualityLabel" data-current="Auto">
-                        <b>Quality</b>
-                    </div>
+                    <div class="main-setting-btn" data-open="qualityBox" id="qualityLabel" data-current="Auto"><b>Quality</b></div>
                     <div class="setting-section drop-box" id="qualityBox">
                         <div class="option active" data-quality="auto">Auto</div>
                         <div class="option" data-quality="720">720p</div>
@@ -554,478 +451,571 @@
     </div>
 </div>
 
-<!-- Watch By Link Popup -->
 <div class="glass-overlay" id="linkOverlay">
   <div class="glass-popup">
-    <h2>Watch by Link</h2>
-    <p>Enter a direct video URL (.mp4 or .m3u8)</p>
+    <h2>BookStore Player</h2>
+    <p>Enter a direct link or a subject directory code to start learning.</p>
+    <label>DIRECT VIDEO URL</label>
     <input type="text" id="videoLinkInput" placeholder="https://example.com/video.m3u8">
+    <div class="or-divider">OR</div>
+    <label>DIRECTORY CODE</label>
+    <input type="text" id="directoryCodeInput" placeholder="Type a directory code">
     <div class="error-text" id="linkError"></div>
-    <button id="playLinkBtn">Start Watching</button>
+    <button id="playLinkBtn">Start Learning</button>
   </div>
 </div>
 
-<!-- History Side Panel -->
+<div class="glass-overlay right" id="libraryOverlay">
+  <div class="glass-popup">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:15px;">
+        <div id="libraryTitle">
+            <h2 style="margin:0; font-size:18px;">Subject Library</h2>
+            <small style="color:var(--accent);">Select a chapter to watch</small>
+        </div>
+        <span style="cursor:pointer; font-size:24px; padding:5px;" onclick="closePopup(libraryOverlay)">×</span>
+    </div>
+    <div id="libraryList"></div>
+  </div>
+</div>
+
 <div class="glass-overlay right" id="historyOverlay">
-  <div class="glass-popup history-panel">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+  <div class="glass-popup">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.1);">
         <h2>History</h2>
-        <span style="cursor:pointer; font-size:20px;" onclick="closePopup(historyOverlay)">×</span>
+        <span style="cursor:pointer; font-size:24px;" onclick="closePopup(historyOverlay)">×</span>
     </div>
     <div id="historyList"></div>
   </div>
 </div>
 
-<!-- JAVASCRIPT Logic (Unchanged) -->
 <script>
-function extractVideoFromURL() {
-    const path = decodeURIComponent(window.location.pathname);
-    const search = window.location.search;
-
-    const params = new URLSearchParams(search);
-    const qVideo = params.get("video");
-    if (qVideo) {
-        const decoded = decodeURIComponent(qVideo);
-        if (isValidVideo(decoded)) return decoded;
-    }
-
-    const marker = "/play.html/";
-    if (path.includes(marker)) {
-        let after = path.split(marker)[1];
-        if (after.startsWith("https:/") && !after.startsWith("https://")) after = after.replace("https:/", "https://");
-        if (after.startsWith("http:/") && !after.startsWith("http://")) after = after.replace("http:/", "http://");
-        if (isValidVideo(after)) return after;
-    }
-    return null;
-}
-
-const params = new URLSearchParams(window.location.search);
-const vid = params.get("video") || "0";
-let showRemaining = false; 
+// ==========================================
+// 1. GLOBAL DATA & STATE
+// ==========================================
+const DIRECTORY_DATA = {
+    "Nandani/SST": [
+        { title: "Power Sharing", url: "https://d274dp7v20n4nf.cloudfront.net/file_library/videos/channel_vod_non_drm_hls/4619473/176485272836577125088/176485272836577125088_7125088.m3u8", tag: "Civics" },
+        { title: "Resources and Development", url: "https://d274dp7v20n4nf.cloudfront.net/file_library/videos/channel_vod_non_drm_hls/4622695/176519912253107125088/176519912253107125088_7125088.m3u8", tag: "Geography" },
+        { title: "The Rise of Nationalism in Europe", url: "https://d274dp7v20n4nf.cloudfront.net/file_library/videos/channel_vod_non_drm_hls/4623776/176528746347517125088/176528746347517125088_7125088.m3u8", tag: "History" },
+        { title: "Sectors of the Indian Economy", url: "https://d274dp7v20n4nf.cloudfront.net/file_library/videos/channel_vod_non_drm_hls/4626135/176545874451477125088/176545874451477125088_7125088.m3u8", tag: "Economics" },
+        { title: "Federalism", url: "https://d274dp7v20n4nf.cloudfront.net/file_library/videos/channel_vod_non_drm_hls/4629350/176580427812747125088/176580427812747125088_7125088.m3u8", tag: "Civics" },
+        { title: "Forest and Wildlife Resources", url: "https://d274dp7v20n4nf.cloudfront.net/file_library/videos/channel_vod_non_drm_hls/4630615/176588947454377125088/176588947454377125088_7125088.m3u8", tag: "Geography" },
+        { title: "Nationalism in India", url: "https://d274dp7v20n4nf.cloudfront.net/file_library/videos/channel_vod_non_drm_hls/4631892/176597918089537125088/176597918089537125088_7125088.m3u8", tag: "History" }
+    ]
+};
 
 const video = document.getElementById("video");
-const seekBar = document.getElementById("seekBar");
-const bottomProgress = document.getElementById("bottomProgress");
 const playerContainer = document.getElementById("playerContainer");
 const controlsContainer = document.getElementById("controlsContainer");
-const timeDisplay = document.getElementById("timeDisplay");
+
+// Controls
 const playBtn = document.getElementById("playPauseBtn");
 const back5Btn = document.getElementById("back5");
 const forward5Btn = document.getElementById("forward5");
-const speedLabel = document.getElementById("speedLabel");
+const timeDisplay = document.getElementById("timeDisplay");
+const seekBar = document.getElementById("seekBar");
+const bottomProgress = document.getElementById("bottomProgress");
+const volumeSlider = document.getElementById("volumeSlider");
+const volumeBtn = document.getElementById("volumeBtn");
+const fullscreenBtn = document.getElementById("fullscreenBtn");
+const settingsBtn = document.getElementById("settingsBtn");
+const settingsMenu = document.getElementById("settingsMenu");
+
+// State
 let isDragging = false;
+let currentVideoURL = "";
+let currentSpeed = 1;
+let activityTimer;
+let showRemaining = false;
 
-function convertTimeToSeconds(t){
-    const [m, s] = t.split(":").map(Number);
-    return m * 60 + s;
-}
 
-timeDisplay.addEventListener("click", () => {
-    showRemaining = !showRemaining;
-    const dur = video.duration || 0;
-    updateSeekVisuals(video.currentTime, dur);
-});
-
-function updateSeekVisuals(currentTime, duration) {
-    if(!duration) return;
-    const percent = (currentTime / duration) * 100;
-    seekBar.style.setProperty("--seek-pos", percent + "%");
-    bottomProgress.style.width = percent + "%";
-    
-    if (showRemaining) {
-        const remaining = Math.max(0, duration - currentTime);
-        timeDisplay.textContent = `-${formatTime(remaining)}`;
-    } else {
-        timeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
-    }
-}
-
-function loadVideo(videoURL) {
+// ==========================================
+// 2. VIDEO LOGIC (Playback, HLS, Speed)
+// ==========================================
+function loadVideo(url) {
     if (Hls.isSupported()) {
+        if(window.hls) window.hls.destroy();
         const hls = new Hls();
-        hls.loadSource(videoURL);
+        hls.loadSource(url);
         hls.attachMedia(video);
         window.hls = hls;
-        hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => handleVideoType());
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+             // Reset UI on new video load
+             resetSpeedUI();
+        });
     } else {
-        video.src = videoURL;
-        video.onloadedmetadata = handleVideoType;
+        video.src = url;
     }
 }
 
-// Fallback empty func if not defined in original context
-function handleVideoType() {}
-
-back5Btn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    video.currentTime = Math.max(0, video.currentTime - 5);
-    showControls();
-});
-
-forward5Btn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    video.currentTime = Math.min(video.duration, video.currentTime + 5);
-    showControls();
-});
-
-function formatTime(time) {
-    time = Math.floor(time);
-    let hours = Math.floor(time / 3600);
-    let minutes = Math.floor((time % 3600) / 60);
-    let seconds = time % 60;
-    const hh = hours.toString().padStart(2, "0");
-    const mm = minutes.toString().padStart(2, "0");
-    const ss = seconds.toString().padStart(2, "0");
-    if (hours === 0) return `${mm}:${ss}`;
-    return `${hh}:${mm}:${ss}`;
+function togglePlay() {
+    if(video.paused || video.ended) {
+        video.play().catch(console.error);
+        playBtn.src = "pause.svg";
+    } else {
+        video.pause();
+        playBtn.src = "play.svg";
+    }
+    resetActivity();
 }
 
+function seek(delta) {
+    if(!video.duration) return;
+    const newTime = Math.min(Math.max(video.currentTime + delta, 0), video.duration);
+    video.currentTime = newTime;
+    resetActivity();
+}
+
+// Ensure speed persists
+video.addEventListener('ratechange', () => {
+    // Sync UI if changed externally, otherwise enforce currentSpeed
+});
+video.addEventListener('play', () => {
+    video.playbackRate = currentSpeed;
+});
+
+// ==========================================
+// 3. UI CONTROLS IMPLEMENTATION
+// ==========================================
+
+// --- Play/Pause ---
+playBtn.addEventListener("click", (e) => { e.stopPropagation(); togglePlay(); });
+video.addEventListener("click", (e) => { e.stopPropagation(); togglePlay(); });
+video.addEventListener("play", () => { playBtn.src = "pause.svg"; resetActivity(); });
+video.addEventListener("pause", () => { playBtn.src = "play.svg"; resetActivity(); });
+
+// --- Seek Buttons ---
+back5Btn.addEventListener("click", (e) => { e.stopPropagation(); seek(-5); });
+forward5Btn.addEventListener("click", (e) => { e.stopPropagation(); seek(5); });
+
+// --- Seek Bar Logic (Scrubbing) ---
 video.addEventListener("timeupdate", () => {
-    if (!isDragging) {
-        const dur = video.duration || 1;
-        updateSeekVisuals(video.currentTime, dur);
+    if(!isDragging && video.duration) {
         seekBar.value = video.currentTime;
+        const pct = (video.currentTime / video.duration) * 100;
+        seekBar.style.setProperty("--seek-pos", pct + "%");
+        bottomProgress.style.width = pct + "%";
+        const watched = formatTime(video.currentTime);
+const total = formatTime(video.duration);
+const remaining = formatTime(video.duration - video.currentTime);
+
+timeDisplay.textContent = showRemaining
+    ? `-${remaining} / ${total}`
+    : `${watched} / ${total}`;
     }
 });
-
-function onSeekStart() { isDragging = true; }
-function onSeekEnd() {
-    if (isDragging) {
-        video.currentTime = parseFloat(seekBar.value);
-        isDragging = false;
-    }
-}
-function onSeekInput() {
-    if (!isDragging) return;
-    const value = parseFloat(seekBar.value);
-    const dur = video.duration || 1;
-    updateSeekVisuals(value, dur);
-}
-
-seekBar.addEventListener("mousedown", onSeekStart);
-seekBar.addEventListener("mouseup", onSeekEnd);
-seekBar.addEventListener("mousemove", onSeekInput);
-seekBar.addEventListener("touchstart", onSeekStart, { passive: true });
-seekBar.addEventListener("touchend", onSeekEnd);
-seekBar.addEventListener("touchmove", onSeekInput, { passive: true });
-
-seekBar.addEventListener("keydown", (e) => {
-    if (e.code === "ArrowLeft" || e.code === "ArrowRight") {
-        onSeekStart();
-        const step = video.duration * 0.01; 
-        if (e.code === "ArrowLeft") seekBar.value = Math.max(0, seekBar.value - step);
-        else seekBar.value = Math.min(video.duration, parseFloat(seekBar.value) + step);
-        onSeekInput();
-        onSeekEnd();
-    }
+timeDisplay.addEventListener("click", (e) => {
+    e.stopPropagation();
+    showRemaining = !showRemaining;
 });
 
 video.addEventListener("loadedmetadata", () => {
     seekBar.max = video.duration;
-    updateSeekVisuals(video.currentTime, video.duration);
+    timeDisplay.textContent = `00:00 / ${formatTime(video.duration)}`;
 });
 
-// Drag fix
-seekBar.isDragging = false; 
-seekBar.addEventListener("mouseup", () => { 
-    if (seekBar.isDragging) video.currentTime = Number(seekBar.value);
-    seekBar.isDragging = false; 
-});
-seekBar.addEventListener("touchend", () => { 
-    if (seekBar.isDragging) video.currentTime = Number(seekBar.value);
-    seekBar.isDragging = false; 
+seekBar.addEventListener("mousedown", () => { isDragging = true; });
+seekBar.addEventListener("touchstart", () => { isDragging = true; }, {passive: true});
+
+seekBar.addEventListener("input", () => {
+    // Update visuals while dragging
+    const val = parseFloat(seekBar.value);
+    const pct = (val / (video.duration || 1)) * 100;
+    seekBar.style.setProperty("--seek-pos", pct + "%");
+    bottomProgress.style.width = pct + "%";
+    timeDisplay.textContent = `${formatTime(val)} / ${formatTime(video.duration)}`;
+    // Optional: Live seek
+    video.currentTime = val;
 });
 
-// Volume Logic
-let lastVolume = 1;
-const volumeSlider = document.getElementById("volumeSlider");
-const volumeBtn = document.getElementById("volumeBtn");
+const endDrag = () => {
+    if(isDragging) {
+        video.currentTime = parseFloat(seekBar.value);
+        isDragging = false;
+    }
+};
+seekBar.addEventListener("mouseup", endDrag);
+seekBar.addEventListener("touchend", endDrag);
+
+// --- Volume Logic ---
+function updateVolumeUI(vol) {
+    video.volume = Math.max(0, Math.min(1, vol));
+    video.muted = (video.volume === 0);
+    volumeSlider.value = video.volume;
+    
+    // Update Slider Gradient
+    const pct = video.volume * 100;
+    volumeSlider.style.setProperty("--vol-pos", pct + "%");
+    
+    // Icon
+    volumeBtn.src = (video.volume === 0 || video.muted) ? "mute.svg" : "volume.svg";
+}
 
 volumeSlider.addEventListener("input", (e) => {
-    const val = parseFloat(e.target.value);
-    video.volume = val;
-    if(val === 0) {
-        video.muted = true;
-        volumeBtn.src = "mute.svg";
-    } else {
-        video.muted = false;
-        volumeBtn.src = "volume.svg";
-        lastVolume = val; 
-    }
-    const progress = (e.target.value * 100);
-    volumeSlider.style.setProperty("--vol-pos", progress + "%");
+    updateVolumeUI(e.target.value);
 });
 
 volumeBtn.addEventListener("click", (e) => {
     e.stopPropagation();
-    if (video.muted || video.volume === 0) {
+    if(video.muted || video.volume === 0) {
         video.muted = false;
-        video.volume = lastVolume || 0.5;
-        volumeSlider.value = video.volume;
-        volumeBtn.src = "volume.svg";
+        updateVolumeUI(1); // Unmute to max
     } else {
-        lastVolume = video.volume;
-        video.muted = true;
-        video.volume = 0;
-        volumeSlider.value = 0;
-        volumeBtn.src = "mute.svg";
+        updateVolumeUI(0);
     }
-    volumeSlider.dispatchEvent(new Event('input')); 
 });
 
-// Settings Logic
-const settingsBtn = document.getElementById("settingsBtn");
-const settingsMenu = document.getElementById("settingsMenu");
-
-settingsMenu.addEventListener('click', e => e.stopPropagation());
-settingsBtn.addEventListener('click', (e) => {
+// --- Settings Menu ---
+settingsBtn.addEventListener("click", (e) => {
     e.stopPropagation();
-    settingsMenu.style.display = (settingsMenu.style.display === 'flex') ? 'none' : 'flex';
+    settingsMenu.style.display = (settingsMenu.style.display === "flex") ? "none" : "flex";
 });
 
+// Settings Tabs
 document.querySelectorAll(".main-setting-btn").forEach(btn => {
     btn.addEventListener("click", (e) => {
         e.stopPropagation();
-        const id = btn.dataset.open;
-        const box = document.getElementById(id);
-        if (box.style.display === "block") {
-            box.style.display = "none";
-            return;
-        }
+        const targetId = btn.dataset.open;
+        const targetBox = document.getElementById(targetId);
+        // Hide all boxes first
         document.querySelectorAll(".drop-box").forEach(b => b.style.display = "none");
-        box.style.display = "block";
+        // Toggle target
+        targetBox.style.display = "block";
     });
 });
 
-document.addEventListener('click', () => {
-    settingsMenu.style.display = 'none';
-});
-
-settingsMenu.querySelectorAll("[data-speed]").forEach(item => {
-    item.addEventListener("click", (e) => {
+// Speed Selection
+document.querySelectorAll("[data-speed]").forEach(opt => {
+    opt.addEventListener("click", (e) => {
         e.stopPropagation();
-        settingsMenu.querySelectorAll("[data-speed]").forEach(i => i.classList.remove("active"));
-        item.classList.add("active");
-        video.playbackRate = parseFloat(item.dataset.speed);
-        speedLabel.dataset.current = item.innerText;
+        const spd = parseFloat(opt.dataset.speed);
+        currentSpeed = spd;
+        video.playbackRate = spd;
+        
+        // Update UI
+        document.querySelectorAll("[data-speed]").forEach(o => o.classList.remove("active"));
+        opt.classList.add("active");
+        document.getElementById("speedLabel").dataset.current = opt.innerText;
+        settingsMenu.style.display = "none";
     });
 });
 
-const qualityLabel = document.getElementById("qualityLabel");
-settingsMenu.querySelectorAll("[data-quality]").forEach(item => {
-    item.addEventListener("click", () => {
-        settingsMenu.querySelectorAll("[data-quality]").forEach(i => i.classList.remove("active"));
-        item.classList.add("active");
-        const q = item.dataset.quality;
-        if (window.hls) {
-            if (q === "auto") window.hls.currentLevel = -1;
-            else {
-                const levelIndex = window.hls.levels.findIndex(l => l.height == Number(q));
-                if (levelIndex >= 0) window.hls.currentLevel = levelIndex;
-            }
+function resetSpeedUI() {
+    currentSpeed = 1;
+    video.playbackRate = 1;
+    document.querySelectorAll("[data-speed]").forEach(o => o.classList.remove("active"));
+    document.querySelector("[data-speed='1']").classList.add("active");
+    document.getElementById("speedLabel").dataset.current = "Normal";
+}
+
+// Quality Selection (HLS)
+document.querySelectorAll("[data-quality]").forEach(opt => {
+    opt.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if(!window.hls) return;
+
+        const qual = opt.dataset.quality;
+        
+        // UI Update
+        document.querySelectorAll("[data-quality]").forEach(o => o.classList.remove("active"));
+        opt.classList.add("active");
+        document.getElementById("qualityLabel").dataset.current = opt.innerText;
+
+        // Logic
+        if(qual === "auto") {
+            window.hls.currentLevel = -1;
+        } else {
+            const targetHeight = parseInt(qual);
+            // Find closest level
+            let closestLevel = -1;
+            let minDiff = Infinity;
+            window.hls.levels.forEach((lvl, idx) => {
+                const diff = Math.abs(lvl.height - targetHeight);
+                if(diff < minDiff) {
+                    minDiff = diff;
+                    closestLevel = idx;
+                }
+            });
+            if(closestLevel !== -1) window.hls.currentLevel = closestLevel;
         }
-        const displayText = q === "auto" ? "Auto" : item.innerText;
-        qualityLabel.dataset.current = displayText;
+        settingsMenu.style.display = "none";
     });
 });
 
-function togglePlayPause() {
-    if (video.paused || video.ended) { 
-        video.play(); 
-        playBtn.src = "pause.svg"; 
-    } else { 
-        video.pause(); 
-        playBtn.src = "play.svg"; 
-    }
-    showControls();
-}
-
-playBtn.onclick = (e) => { e.stopPropagation(); togglePlayPause(); };
-video.onplay = () => { playBtn.src = "pause.svg"; showControls(); };
-video.onpause = () => { playBtn.src = "play.svg"; showControls(); };
-video.onclick = () => { togglePlayPause(); };
-
-let inactivityTimer;
-const INACTIVITY_MS = 3000;
-
-function showControls() {
-    controlsContainer.classList.remove("hidden");
-    clearTimeout(inactivityTimer);
-    document.body.style.cursor = 'default';
-    if (!video.paused) {
-        inactivityTimer = setTimeout(() => {
-            controlsContainer.classList.add("hidden");
-            document.body.style.cursor = 'none'; 
-        }, INACTIVITY_MS);
-    }
-}
-
-function attachActivityListeners(el) {
-    ['mousemove','mousedown','touchstart','touchmove','keydown'].forEach(evt => {
-        el.addEventListener(evt, showControls, { passive: true });
-    });
-}
-attachActivityListeners(document);
-attachActivityListeners(playerContainer);
-showControls();
-
-controlsContainer.addEventListener('mouseenter', () => {
-    clearTimeout(inactivityTimer);
-    controlsContainer.classList.remove('hidden');
-});
-
-controlsContainer.addEventListener('mouseleave', () => {
-    if (!video.paused) {
-        inactivityTimer = setTimeout(() => {
-            controlsContainer.classList.add('hidden');
-        }, INACTIVITY_MS);
-    }
-});
-
-const fullscreenBtn = document.getElementById("fullscreenBtn");
-function toggleFullscreen() {
-    if (!document.fullscreenElement) {
-        if (playerContainer.requestFullscreen) playerContainer.requestFullscreen();
-        else if (playerContainer.webkitRequestFullscreen) playerContainer.webkitRequestFullscreen();
+// --- Fullscreen ---
+fullscreenBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if(!document.fullscreenElement) {
+        if(playerContainer.requestFullscreen) playerContainer.requestFullscreen();
+        else if(playerContainer.webkitRequestFullscreen) playerContainer.webkitRequestFullscreen();
     } else {
-        if (document.exitFullscreen) document.exitFullscreen();
+        if(document.exitFullscreen) document.exitFullscreen();
+    }
+});
+// --- Double Click Fullscreen ---
+let lastTap = 0;
+
+video.addEventListener("dblclick", (e) => {
+    e.preventDefault();
+    toggleFullscreen();
+});
+
+// Mobile double-tap support
+video.addEventListener("touchend", () => {
+    const now = Date.now();
+    if (now - lastTap < 300) {
+        toggleFullscreen();
+    }
+    lastTap = now;
+});
+
+function toggleFullscreen() {
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        if (playerContainer.requestFullscreen) {
+            playerContainer.requestFullscreen();
+        } else if (playerContainer.webkitRequestFullscreen) {
+            playerContainer.webkitRequestFullscreen();
+        }
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        }
     }
 }
-fullscreenBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleFullscreen(); });
-document.addEventListener('fullscreenchange', () => {
-    const fs = !!document.fullscreenElement;
-    fullscreenBtn.src = fs ? "exit.svg" : "fullscreen.svg";
-    showControls();
-});
-video.addEventListener('dblclick', () => toggleFullscreen());
 
-document.addEventListener('keydown', (e) => {
-    const tag = document.activeElement && document.activeElement.tagName;
-    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-    if (e.code === 'Space') { e.preventDefault(); togglePlayPause(); }
-    else if (e.code === 'ArrowLeft') { e.preventDefault(); back5Btn.click(); showControls(); }
-    else if (e.code === 'ArrowRight') { e.preventDefault(); forward5Btn.click(); showControls(); }
+// --- Keyboard Shortcuts ---
+document.addEventListener("keydown", (e) => {
+    // Ignore inputs
+    if(["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) return;
+
+    switch(e.key) {
+        case " ":
+        case "k":
+        case "K":
+            e.preventDefault();
+            togglePlay();
+            break;
+        case "ArrowRight":
+            e.preventDefault();
+            seek(5);
+            break;
+        case "ArrowLeft":
+            e.preventDefault();
+            seek(-5);
+            break;
+        case "ArrowUp":
+            e.preventDefault();
+            updateVolumeUI(video.volume + 0.1);
+            break;
+        case "ArrowDown":
+            e.preventDefault();
+            updateVolumeUI(video.volume - 0.1);
+            break;
+        case "f":
+        case "F":
+            e.preventDefault();
+            fullscreenBtn.click();
+            break;
+        case "m":
+        case "M":
+            e.preventDefault();
+            volumeBtn.click();
+            break;
+    }
+    resetActivity();
 });
 
-// Watch by Link & History Logic
+// ==========================================
+// 4. ACTIVITY & OVERLAYS
+// ==========================================
+function resetActivity() {
+    controlsContainer.classList.remove("hidden");
+    document.body.style.cursor = "default";
+    clearTimeout(activityTimer);
+    if(!video.paused) {
+        activityTimer = setTimeout(() => {
+            controlsContainer.classList.add("hidden");
+            document.body.style.cursor = "none";
+            settingsMenu.style.display = "none"; // Hide settings on idle
+        }, 3000);
+    }
+}
+
+document.addEventListener("mousemove", resetActivity);
+document.addEventListener("click", resetActivity);
+// Prevent menu closing when clicking inside controls
+controlsContainer.addEventListener("click", (e) => { e.stopPropagation(); resetActivity(); });
+document.addEventListener("click", () => { settingsMenu.style.display = "none"; });
+
+// ==========================================
+// 5. HELPER UTILS
+// ==========================================
+function formatTime(t) {
+    if(!t || isNaN(t)) return "00:00";
+    t = Math.floor(t);
+    const h = Math.floor(t/3600);
+    const m = Math.floor((t%3600)/60);
+    const s = t%60;
+    const mm = m.toString().padStart(2, "0");
+    const ss = s.toString().padStart(2, "0");
+    return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
+}
+
+// ==========================================
+// 6. POPUP & DIRECTORY LOGIC
+// ==========================================
 const linkOverlay = document.getElementById("linkOverlay");
+const libraryOverlay = document.getElementById("libraryOverlay");
 const historyOverlay = document.getElementById("historyOverlay");
-const playLinkBtn = document.getElementById("playLinkBtn");
-const videoLinkInput = document.getElementById("videoLinkInput");
+const linkInput = document.getElementById("videoLinkInput");
+const dirInput = document.getElementById("directoryCodeInput");
 const linkError = document.getElementById("linkError");
-const historyBtn = document.getElementById("historyBtn");
+const libraryList = document.getElementById("libraryList");
 const historyList = document.getElementById("historyList");
-let currentVideoURL = "";
 
-function isValidVideo(url) { return /\.(mp4|m3u8)(\?.*)?$/i.test(url); }
-function getHistory() { return JSON.parse(localStorage.getItem("watchHistory") || "[]"); }
-function saveHistory(data) { localStorage.setItem("watchHistory", JSON.stringify(data)); }
 function openPopup(el) { el.classList.add("show"); }
 function closePopup(el) { el.classList.remove("show"); }
 
 window.addEventListener("load", () => {
-    const videoFromURL = extractVideoFromURL();
-    if (videoFromURL) {
-        loadAndTrack(videoFromURL);
-        closePopup(linkOverlay);
+    const params = new URLSearchParams(window.location.search);
+    const qVideo = params.get("video");
+    if(qVideo) {
+        loadAndTrack(decodeURIComponent(qVideo));
     } else {
         openPopup(linkOverlay);
-        video.pause();
     }
 });
 
-playLinkBtn.onclick = () => {
-    const url = videoLinkInput.value.trim();
-    if (!isValidVideo(url)) {
-        linkError.textContent = "Only .mp4 or .m3u8 links are supported";
+// Click outside to close
+[linkOverlay, libraryOverlay, historyOverlay].forEach(el => {
+    el.addEventListener("click", (e) => { if(e.target === el) closePopup(el); });
+});
+
+document.getElementById("playLinkBtn").onclick = () => {
+    const directLink = linkInput.value.trim();
+    const dirCode = dirInput.value.trim();
+
+    if (dirCode.length > 0) {
+        if (DIRECTORY_DATA[dirCode]) {
+            linkError.textContent = "";
+            renderLibrary(dirCode, DIRECTORY_DATA[dirCode]);
+            closePopup(linkOverlay);
+            openPopup(libraryOverlay);
+        } else {
+            linkError.textContent = "Invalid Directory Code";
+        }
         return;
     }
-    linkError.textContent = "";
-    loadAndTrack(url);
-    closePopup(linkOverlay);
+
+    if (directLink.length > 0) {
+        if (isValidVideo(directLink)) {
+            linkError.textContent = "";
+            loadAndTrack(directLink);
+            closePopup(linkOverlay);
+        } else {
+            linkError.textContent = "Invalid Video URL";
+        }
+        return;
+    }
+    linkError.textContent = "Please enter input";
 };
 
-linkOverlay.addEventListener("click", e => { if (e.target === linkOverlay) closePopup(linkOverlay); });
+function isValidVideo(url) { return /\.(mp4|m3u8)(\?.*)?$/i.test(url); }
 
-function loadAndTrack(url) {
-    if (currentVideoURL && currentVideoURL !== url) saveProgress(true);
+function renderLibrary(codeName, videos) {
+    document.querySelector("#libraryTitle small").textContent = codeName;
+    libraryList.innerHTML = "";
+    videos.forEach(vid => {
+        const card = document.createElement("div");
+        card.className = "library-card";
+        card.innerHTML = `
+            <div class="play-icon-bg">▶</div>
+            <div class="card-info">
+                <div class="card-title">${vid.title}</div>
+                <div class="card-meta"><span class="card-tag">${vid.tag||'Chapter'}</span></div>
+            </div>`;
+        card.onclick = () => {
+            loadAndTrack(vid.url, vid.title);
+            closePopup(libraryOverlay);
+        };
+        libraryList.appendChild(card);
+    });
+}
+
+// History
+function getHistory() { return JSON.parse(localStorage.getItem("watchHistory") || "[]"); }
+function saveHistory(data) { localStorage.setItem("watchHistory", JSON.stringify(data)); }
+
+function loadAndTrack(url, manualTitle = null) {
+    if(currentVideoURL && currentVideoURL !== url) saveProgress(true);
     currentVideoURL = url;
+    
+    let history = getHistory();
+    history = history.filter(h => h.url !== url);
+    history.unshift({
+        url: url,
+        title: manualTitle || url.split("/").pop(),
+        time: 0,
+        date: new Date().toLocaleString()
+    });
+    saveHistory(history.slice(0, 50));
     loadVideo(url);
-    video.onloadedmetadata = () => {
-        video.currentTime = 0;
-        video.play();
-    };
+    video.currentTime = 0;
+    video.play().catch(()=>{});
 }
 
 function saveProgress(force = false) {
     if (!currentVideoURL) return;
-    if (!force && video.currentTime < 2) return;
+    if (!force && video.currentTime < 5) return;
     let history = getHistory();
-    const existing = history.find(h => h.url === currentVideoURL);
-    history = history.filter(h => h.url !== currentVideoURL);
-    history.unshift({
-        url: currentVideoURL,
-        time: video.currentTime,
-        date: new Date().toLocaleString(),
-        title: existing?.title || currentVideoURL.split("/").pop()
-    });
-    saveHistory(history.slice(0, 50));
+    const idx = history.findIndex(h => h.url === currentVideoURL);
+    if(idx !== -1) {
+        history[idx].time = video.currentTime;
+        history[idx].date = new Date().toLocaleString();
+        saveHistory(history);
+    }
 }
-
 video.addEventListener("pause", () => saveProgress());
 window.addEventListener("beforeunload", () => saveProgress());
 
-historyBtn.onclick = () => {
-    renderHistory();
-    openPopup(historyOverlay);
-};
-historyOverlay.addEventListener("click", e => { if (e.target === historyOverlay) closePopup(historyOverlay); });
-
-function renderHistory() {
+document.getElementById("historyBtn").onclick = () => {
     historyList.innerHTML = "";
     const history = getHistory();
-    if (!history.length) {
-        historyList.innerHTML = "<p style='opacity:.6; text-align:center'>No history yet</p>";
-        return;
-    }
-    history.forEach((item, index) => {
-        const div = document.createElement("div");
-        div.className = "history-item";
-        div.innerHTML = `
-            <div class="history-top">
-                <b contenteditable="false" class="history-title">${item.title}</b>
-                <span class="rename-btn" style="opacity:0.6;font-size:12px">✎</span>
-            </div>
-            <small>Resume at ${formatTime(item.time)} • ${item.date}</small>
-        `;
-        div.onclick = (e) => {
-            if (e.target.classList.contains("rename-btn") || e.target.classList.contains("history-title")) return;
-            closePopup(historyOverlay);
-            currentVideoURL = item.url;
-            loadVideo(item.url);
-            video.onloadedmetadata = () => {
-                if (item.time > 5) video.currentTime = item.time;
-                video.play();
+    if (history.length === 0) {
+        historyList.innerHTML = "<p style='text-align:center;opacity:0.5;margin-top:20px'>No history</p>";
+    } else {
+        history.forEach(item => {
+            const div = document.createElement("div");
+            div.className = "history-item";
+            div.innerHTML = `
+                <div class="history-top"><b class="history-title">${item.title}</b></div>
+                <small>Resume at ${formatTime(item.time)} • ${item.date}</small>`;
+            div.onclick = () => {
+                closePopup(historyOverlay);
+                currentVideoURL = item.url;
+                loadVideo(item.url);
+                video.currentTime = item.time;
+                video.play().catch(()=>{});
             };
-        };
-        const titleEl = div.querySelector(".history-title");
-        const renameBtn = div.querySelector(".rename-btn");
-        renameBtn.onclick = (e) => {
-            e.stopPropagation();
-            titleEl.contentEditable = "true";
-            titleEl.focus();
-        };
-        titleEl.onblur = () => {
-            titleEl.contentEditable = "false";
-            const newTitle = titleEl.innerText.trim();
-            if (!newTitle) return;
-            const all = getHistory();
-            all[index].title = newTitle;
-            saveHistory(all);
-        };
-        historyList.appendChild(div);
-    });
+            historyList.appendChild(div);
+        });
+    }
+    openPopup(historyOverlay);
+};
+function updateFullscreenIcon() {
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+        fullscreenBtn.src = "exit.svg"; // your exit icon
+        fullscreenBtn.title = "Exit Fullscreen";
+    } else {
+        fullscreenBtn.src = "fullscreen.svg"; // your enter icon
+        fullscreenBtn.title = "Fullscreen";
+    }
 }
+document.addEventListener("fullscreenchange", updateFullscreenIcon);
+document.addEventListener("webkitfullscreenchange", updateFullscreenIcon);
+
 </script>
 </body>
 </html>
