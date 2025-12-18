@@ -1,328 +1,506 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Link Processor</title>
+<title>BOOKStore - Link Processor</title>
+<!-- Fonts: Inter & Poppins -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-    body {
-        margin: 0;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #0b1220;
-        color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
+/* --- 1. VARIABLES & RESET (From Oswaal) --- */
+:root {
+--bg-dark: #050505;
+--bg-card: #121212;
+--bg-glass: rgba(18, 18, 18, 0.75);
+--border-color: rgba(255, 255, 255, 0.1);
 
-    .container {
-        background: #1a1f38;
-        padding: 40px;
-        border-radius: 15px;
-        box-shadow: 0 0 40px rgba(0, 255, 255, 0.2);
-        max-width: 600px;
-        width: 90%;
-        text-align: center;
-    }
+--primary-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);
+--accent-color: #3b82f6;
+--text-main: #ffffff;
+--text-muted: #a1a1aa;
 
-    h1 {
-        margin-bottom: 30px;
-        font-size: 2rem;
-        color: #00ffff;
-        text-shadow: 0 0 10px #00ffff;
-    }
+--radius-lg: 20px;
+--radius-md: 12px;
+--radius-pill: 50px;
 
-    input, textarea {
-        width: 100%;
-        padding: 15px;
-        margin: 15px 0;
-        border-radius: 10px;
-        border: none;
-        font-size: 16px;
-        background: #0b1220;
-        color: #fff;
-        border: 2px solid #00ffff;
-        outline: none;
-        transition: 0.3s;
-    }
-
-    input:focus, textarea:focus {
-        box-shadow: 0 0 10px #00ffff;
-        border-color: #00ffff;
-    }
-
-    button {
-        padding: 15px 25px;
-        margin: 10px 0;
-        border: none;
-        border-radius: 10px;
-        background: linear-gradient(45deg, #00ffff, #007bff);
-        color: white;
-        font-size: 16px;
-        cursor: pointer;
-        transition: 0.3s;
-        box-shadow: 0 0 10px rgba(0,255,255,0.4);
-    }
-
-    button:hover {
-        box-shadow: 0 0 20px rgba(0,255,255,0.8);
-        transform: scale(1.05);
-    }
-
-    .output {
-        position: relative;
-    }
-
-    .copy-btn {
-    position: absolute;
-    right: -31px;
-    top: 20%;
-    transform: translateY(-50%);
-    background: #007bff;
-    border: none;
-    cursor: pointer;
-    padding: 6px;
-    transition: 0.3s;
+--font-body: 'Inter', sans-serif;
+--font-head: 'Poppins', sans-serif;
 }
 
-.copy-btn:hover {
-    transform: translateY(-50%) scale(1.15);
+* {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+-webkit-tap-highlight-color: transparent;
 }
 
-
-
-    ::placeholder {
-        color: #aaa;
-    }
-    .input-wrapper {
-    position: relative;
-    width: 100%;
+body {
+background-color: var(--bg-dark);
+color: var(--text-main);
+font-family: var(--font-body);
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+overflow-x: hidden;
+align-items: center;
 }
 
-.paste-btn {
-    position: absolute;
-    right: -25px;
-    top: 42%;
-    transform: translateY(-50%);
-    background: #007bff;
-    border: none;
-    cursor: pointer;
-    padding: 6px;
-    transition: 0.3s;
+/* --- 2. HEADER & NAVIGATION (Exact Match) --- */
+header {
+position: sticky;
+top: 0;
+z-index: 1000;
+background: rgba(5, 5, 5, 0.8);
+backdrop-filter: blur(16px);
+-webkit-backdrop-filter: blur(16px);
+border-bottom: 1px solid var(--border-color);
+padding: 15px 20px;
+display: flex;
+justify-content: center;
+align-items: center;
+width: 100%;
 }
 
-.paste-btn:hover {
-    transform: translateY(-50%) scale(1.15);
+#logo {
+height: 45px;
+object-fit: contain;
 }
+
+/* Hamburger */
+.hamburger {
+position: absolute;
+right: 20px;
+top: 50%;
+transform: translateY(-50%);
+width: 28px;
+height: 20px;
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+cursor: pointer;
+z-index: 1100;
+}
+
+.hamburger span {
+display: block;
+height: 2px;
+width: 100%;
+background: var(--text-main);
+border-radius: 2px;
+transition: all 0.3s ease-in-out;
+}
+
+.hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 6px); }
+.hamburger.active span:nth-child(2) { opacity: 0; }
+.hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -6px); }
+
+/* Slide Menu */
+.menu {
+position: fixed;
+top: 0;
+right: -300px;
+width: 280px;
+height: 100vh;
+background: rgba(20, 20, 20, 0.95);
+backdrop-filter: blur(20px);
+border-left: 1px solid var(--border-color);
+display: flex;
+flex-direction: column;
+padding-top: 80px;
+transition: right 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+z-index: 1000;
+box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+}
+
+.menu.active { right: 0; }
+
+.menu a {
+display: flex;
+align-items: center;
+gap: 15px;
+padding: 16px 25px;
+text-decoration: none;
+color: var(--text-muted);
+font-size: 16px;
+font-weight: 500;
+transition: all 0.2s ease;
+border-left: 3px solid transparent;
+}
+
+.menu a:hover {
+color: var(--text-main);
+background: rgba(255, 255, 255, 0.03);
+}
+
+.menu a.active {
+color: var(--accent-color);
+background: rgba(59, 130, 246, 0.05);
+border-left-color: var(--accent-color);
+}
+
+.menu-icon, .menu-logo { width: 20px; height: 20px; object-fit: contain; opacity: 0.8; }
+.menu a:hover .menu-icon { opacity: 1; }
+
+/* --- 3. MAIN CARD (Link Processor) --- */
+.main-wrapper {
+flex: 1;
+display: flex;
+justify-content: center;
+align-items: center;
+width: 100%;
+padding: 40px 20px;
+}
+
+.container {
+background: rgba(18, 18, 18, 0.6);
+backdrop-filter: blur(20px);
+-webkit-backdrop-filter: blur(20px);
+border: 1px solid var(--border-color);
+padding: 40px;
+border-radius: var(--radius-lg);
+box-shadow: 0 20px 40px -10px rgba(0,0,0,0.6);
+max-width: 600px;
+width: 100%;
+text-align: center;
+transition: transform 0.3s ease;
+}
+
+.container:hover {
+transform: translateY(-5px);
+border-color: rgba(255, 255, 255, 0.15);
+}
+
+h1 {
+margin-bottom: 30px;
+font-family: var(--font-head);
+font-size: 2rem;
+background: linear-gradient(90deg, #fff, #a1a1aa);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+}
+
+/* --- 4. INPUTS --- */
+.input-wrapper {
+position: relative;
+width: 100%;
+margin-bottom: 20px;
+}
+
+input, textarea {
+width: 100%;
+padding: 14px 20px;
+border-radius: var(--radius-md);
+border: 1px solid var(--border-color);
+background: rgba(0, 0, 0, 0.4);
+color: var(--text-main);
+font-family: var(--font-body);
+font-size: 15px;
+outline: none;
+transition: all 0.3s ease;
+}
+
+input:focus, textarea:focus {
+border-color: var(--accent-color);
+background: rgba(0, 0, 0, 0.6);
+box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+}
+
+::placeholder { color: var(--text-muted); opacity: 0.7; }
+
+/* --- 5. BUTTONS --- */
+.primary-btn {
+width: 100%;
+padding: 14px;
+margin-bottom: 25px;
+border: none;
+border-radius: var(--radius-pill);
+background: var(--primary-gradient);
+color: white;
+font-size: 1rem;
+font-weight: 600;
+font-family: var(--font-head);
+cursor: pointer;
+transition: all 0.3s ease;
+box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+}
+
+.primary-btn:hover {
+filter: brightness(1.1);
+transform: translateY(-2px);
+box-shadow: 0 0 30px rgba(59, 130, 246, 0.4);
+}
+
+/* Icon Buttons (Paste/Copy) */
+.icon-btn {
+position: absolute;
+right: 10px;
+top: 50%;
+transform: translateY(-50%);
+background: rgba(255, 255, 255, 0.1);
+border: 1px solid transparent;
+border-radius: 8px;
+width: 36px;
+height: 36px;
+display: flex;
+justify-content: center;
+align-items: center;
+cursor: pointer;
+transition: all 0.2s ease;
+}
+
+/* Adjust for textarea positioning */
+.output { position: relative; }
+.output .icon-btn { top: 20px; transform: none; right: 10px; }
+
+.icon-btn:hover {
+background: rgba(59, 130, 246, 0.2);
+border-color: var(--accent-color);
+transform: translateY(-50%) scale(1.1);
+}
+.output .icon-btn:hover { transform: scale(1.1); }
+
+.icon-btn svg { fill: var(--text-muted); transition: fill 0.2s; }
+.icon-btn:hover svg { fill: white; }
+
+/* --- 6. FOOTER (Exact Match) --- */
+footer {
+border-top: 1px solid var(--border-color);
+padding: 40px 20px;
+text-align: center;
+background: #020202;
+width: 100%;
+margin-top: auto;
+}
+
 .madeby {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 6px;
-  background: linear-gradient(90deg, #6dd5fa, #2980b9, #6dd5fa);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 10px rgba(0,153,255,0.6);
-  animation: glowMove 3s infinite linear;
+font-weight: 600;
+margin-bottom: 10px;
+background: linear-gradient(90deg, #60a5fa, #a78bfa);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
 }
 
-@keyframes glowMove {
-  0% { text-shadow: 0 0 8px #1e90ff; }
-  50% { text-shadow: 0 0 16px #00c3ff; }
-  100% { text-shadow: 0 0 8px #1e90ff; }
+footer a { color: var(--text-muted); text-decoration: none; margin: 0 10px; font-size: 0.9rem; transition: color 0.2s; }
+footer a:hover { color: white; }
+footer p { color: #666; font-size: 0.85rem; margin-bottom: 10px; }
+
+/* --- 7. RESPONSIVE --- */
+@media (max-width: 480px) {
+.container { padding: 30px 20px; }
+h1 { font-size: 1.6rem; }
 }
-/* Hamburger animation */
-.hamburger.active span:nth-child(1) {
-    transform: rotate(45deg) translate(6px, 6px);
-}
-.hamburger.active span:nth-child(2) {
-    opacity: 0;
-}
-.hamburger.active span:nth-child(3) {
-    transform: rotate(-45deg) translate(6px, -6px);
+.social-buttons {
+display: flex;
+justify-content: center;
+gap: 15px;
+margin: 20px 0 40px;
 }
 
-/* Slide menu open */
-.menu-active {
-    right: 0 !important;
+.social-btn {
+display: flex;
+align-items: center;
+gap: 10px;
+padding: 12px 24px;
+border-radius: var(--radius-pill);
+background: #1f1f22;
+color: white;
+text-decoration: none;
+font-weight: 500;
+transition: 0.3s;
+border: 1px solid transparent;
+font-family: var(--font-body);
+font-size: 0.95rem;
 }
-nav a.active {
-     background: #24314d;
-  color: #58a6ff;
-  font-weight: bold;
-  border-left: 4px solid #58a6ff;
-  transform: translateX(5px);
+
+.social-btn:hover {
+background: #27272a;
+border-color: rgba(255,255,255,0.1);
+transform: translateY(-2px);
+}
+
+.social-btn.insta:hover { color: #e1306c; border-color: #e1306c; }
+.social-btn.telegram:hover { color: #0088cc; border-color: #0088cc; }
+
+.social-logo {
+width: 22px;
+height: 22px;
+object-fit: contain;
 }
 
 </style>
-
 </head>
-
 <body>
-    <header style="text-align:center;padding:15px;background:#0b1220;position:absolute;top:0;width:100%;">
-    <a href="index.html">
-        <img src="logo.png" id="logo" alt="BOOKStore" style="height:50px;">
-    </a>
-
-    <div class="hamburger" id="hamburger" style="
-        position:absolute;top:18px;right:25px;width:30px;height:24px;
-        display:flex;flex-direction:column;justify-content:space-between;
-        cursor:pointer;">
-        <span style="height:4px;width:100%;background:#fff;border-radius:2px;transition:0.4s;"></span>
-        <span style="height:4px;width:100%;background:#fff;border-radius:2px;transition:0.4s;"></span>
-        <span style="height:4px;width:100%;background:#fff;border-radius:2px;transition:0.4s;"></span>
-    </div>
-</header>
-<nav id="menu" style="
-    position:fixed;top:0;right:-260px;width:220px;height:100%;
-    background:#1c2940;display:flex;flex-direction:column;
-    padding-top:80px;transition:0.4s;z-index:1000;
-    box-shadow:-5px 0 15px rgba(0,0,0,0.6);">
-    
-    <a href="index.html" style="padding:14px 20px;color:white;text-decoration:none;border-bottom:1px solid #2e3a55;display:flex;align-items:center;gap:10px;">
-        <img src="home.svg" style="width:22px;height:22px;"> Home
-    </a>
-<a href="edupie.html" style="padding:14px 20px;color:white;text-decoration:none;border-bottom:1px solid #2e3a55;display:flex;align-items:center;gap:10px;">
-        <img src="edupie.png" style="width:50px;height:32px;">EduPie
-    </a>
-    <a href="games.html" style="padding:14px 20px;color:white;text-decoration:none;border-bottom:1px solid #2e3a55;display:flex;align-items:center;gap:10px;">
-        <img src="game.svg" style="width:22px;height:22px;"> Games Zone
-    </a>
-
-    <a href="profile.html" style="padding:14px 20px;color:white;text-decoration:none;border-bottom:1px solid #2e3a55;display:flex;align-items:center;gap:10px;">
-        <img src="profile.svg" style="width:22px;height:22px;"> Profile
-    </a>
-
-   <a href="link.html" class="active" style="padding:14px 20px;color:white;text-decoration:none;border-bottom:1px solid #2e3a55;display:flex;align-items:center;gap:10px;">
-    <img src="link.svg" style="width:22px;height:22px;"> Link Processor
+<!-- HEADER -->
+<header>
+<a href="index.html">
+<img src="logo.png" alt="BOOKStore" id="logo" onerror="this.style.display='none'; document.write('<span style=\'font-weight:bold;font-size:1.5rem;color:white;\'>BOOKStore</span>')">
 </a>
-<a href="play.html" style="padding:14px 20px;color:white;text-decoration:none;border-bottom:1px solid #2e3a55;display:flex;align-items:center;gap:10px;">
-        <img src="play.svg" style="width:22px;height:22px;"> Custom Player
-    </a>
-
+<div class="hamburger" id="hamburger">
+  <span></span>
+  <span></span>
+  <span></span>
+</div>
+</header>
+<!-- SIDE MENU -->
+<nav class="menu" id="menu">
+<a href="index.html">
+<img src="home.svg" class="menu-icon" alt=""> Home
+</a>
+<a href="edupie.html">
+<img src="edupie.png" class="menu-logo" alt=""> EduPie
+</a>
+<a href="games.html">
+<img src="game.svg" class="menu-icon" alt=""> Games Zone
+</a>
+<a href="profile.html">
+<img src="profile.svg" class="menu-icon" alt=""> Profile
+</a>
+<a href="link.html" class="active">
+<img src="link.svg" class="menu-icon" alt=""> Link Processor
+</a>
+<a href="play.html">
+<img src="play.svg" class="menu-icon" alt=""> Custom Player
+</a>
 </nav>
-
+<!-- MAIN CONTENT -->
+<div class="main-wrapper">
 <div class="container">
-    
-    <h1>Link Processor</h1>
-   <div class="input-wrapper">
-    <input type="text" id="linkInput" placeholder="Paste your Video link here">
-    <button class="paste-btn" onclick="pasteLink()">
-        <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="#e3e3e3">
-            <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h167q11-35 43-57.5t70-22.5q40 0 71.5 22.5T594-840h166q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560h-80v120H280v-120h-80v560Zm280-560q17 0 28.5-11.5T520-800q0-17-11.5-28.5T480-840q-17 0-28.5 11.5T440-800q0 17 11.5 28.5T480-760Z"/>
-        </svg>
-    </button>
-</div>
-
-    <button onclick="cleanLink()">Generate Clean Link</button>
-    <div class="output">
-        <textarea id="outputLink" rows="3" readonly placeholder="Processed link will appear here"></textarea>
-       <button class="copy-btn" onclick="copyLink()">
-    <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="#e3e3e3">
-        <path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"/>
-    </svg>
-</button>
-
+<h1>Link Processor</h1>
+<!-- Input Section -->
+    <div class="input-wrapper">
+        <input type="text" id="linkInput" placeholder="Paste your Video link here">
+        <button class="icon-btn" onclick="pasteLink()" title="Paste">
+            <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20">
+                <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h167q11-35 43-57.5t70-22.5q40 0 71.5 22.5T594-840h166q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560h-80v120H280v-120h-80v560Zm280-560q17 0 28.5-11.5T520-800q0-17-11.5-28.5T480-840q-17 0-28.5 11.5T440-800q0 17 11.5 28.5T480-760Z"/>
+            </svg>
+        </button>
     </div>
-    <footer style="color:white;text-align:center;padding:20px 10px;font-size:14px;">
-  <div class="madeby">Made by Bhavesh </div>
-    <p>© 2025 BOOKStore. All rights reserved.</p>
-  <p>
-    <a href="privacy.html" style="color:#58a6ff;text-decoration:none;">Privacy Policy</a> |
-    <a href="about.html" style="color:#58a6ff;text-decoration:none;">About Us</a>
-  </p>
-</footer>
+
+    <button class="primary-btn" onclick="cleanLink()">Generate Clean Link</button>
+    
+    <!-- Output Section -->
+    <div class="output">
+        <textarea id="outputLink" rows="4" readonly placeholder="Processed link will appear here"></textarea>
+        <button class="icon-btn" onclick="copyLink()" title="Copy">
+            <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20">
+                <path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"/>
+            </svg>
+        </button>
+    </div>
+</div>
+</div>
+ <!-- SOCIAL LINKS -->
+ <div class="social-buttons">
+<a href="https://www.instagram.com/syntaxbhavesh/" target="_blank" class="social-btn insta">
+<img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram" class="social-logo">
+Instagram
+</a>
+<a href="https://t.me/+oQOMU7yAIIE2OWVl" target="_blank" class="social-btn telegram">
+<img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram" class="social-logo">
+Telegram
+</a>
 </div>
 
-
+<!-- FOOTER -->
+<footer>
+<div class="madeby">Made by Bhavesh</div>
+<p>© 2025 BOOKStore. All rights reserved.</p>
+<div>
+<a href="privacy.html">Privacy Policy</a>
+<a href="about.html">About Us</a>
+</div>
+</footer>
 <script>
-    // HAMBURGER + MENU
+// --- HAMBURGER + MENU (Exact Logic from Oswaal) ---
 const hamburger = document.getElementById("hamburger");
 const menu = document.getElementById("menu");
 
 hamburger.addEventListener("click", (e) => {
-    e.stopPropagation();
-    hamburger.classList.toggle("active");
-    if (menu.classList.contains("menu-active")) {
-        menu.classList.remove("menu-active");
-    } else {
-        menu.classList.add("menu-active");
-    }
+e.stopPropagation();
+hamburger.classList.toggle("active");
+menu.classList.toggle("active");
 });
 
 document.addEventListener("click", (e) => {
-    if (!menu.contains(e.target) && !hamburger.contains(e.target)) {
-        menu.classList.remove("menu-active");
-        hamburger.classList.remove("active");
-    }
+if (!menu.contains(e.target) && !hamburger.contains(e.target)) {
+menu.classList.remove("active");
+hamburger.classList.remove("active");
+}
 });
 
-    async function pasteLink() {
-    try {
-        const text = await navigator.clipboard.readText();
-        document.getElementById("linkInput").value = text;
-    } catch (e) {
-        alert("Unable to paste! Browser permission needed.");
-    }
+// --- FUNCTIONALITY (Unchanged) ---
+async function pasteLink() {
+try {
+const text = await navigator.clipboard.readText();
+document.getElementById("linkInput").value = text;
+} catch (e) {
+alert("Unable to paste! Browser permission needed.");
+}
 }
 
 function cleanLink() {
-    let input = document.getElementById("linkInput").value.trim();
-    if (!input) return alert("Please paste a link first!");
+let input = document.getElementById("linkInput").value.trim();
+if (!input) return alert("Please paste a link first!");
 
-    let videoURL = "";
+let videoURL = "";
 
-    // 1️⃣ If link contains file_url=
-    const fileMatch = input.match(/file_url=([^&]+)/);
-    if (fileMatch) {
-        videoURL = decodeURIComponent(fileMatch[1]);
-    }
-
-    // 2️⃣ If it's already a raw video URL
-    else if (/^https?:\/\//i.test(input)) {
-        videoURL = input;
-    }
-
-    // 3️⃣ If it's play.html/https:/...
-    else if (input.includes("play.html/")) {
-        let after = input.split("play.html/")[1];
-
-        // Fix https:/ → https://
-        if (after.startsWith("https:/") && !after.startsWith("https://")) {
-            after = after.replace("https:/", "https://");
-        }
-        if (after.startsWith("http:/") && !after.startsWith("http://")) {
-            after = after.replace("http:/", "http://");
-        }
-
-        videoURL = after;
-    }
-
-    else {
-        return alert("Invalid or unsupported link!");
-    }
-
-    // 4️⃣ Final validation
-    if (!/\.(mp4|m3u8)(\?.*)?$/i.test(videoURL)) {
-        return alert("Not a valid video URL!");
-    }
-
-    // 5️⃣ Encode and generate final player link
-    const encoded = encodeURIComponent(videoURL);
-    const finalLink = `https://bookstore-nt.vercel.app/play.html?video=${encoded}`;
-
-    document.getElementById("outputLink").value = finalLink;
+// 1️⃣ If link contains file_url=
+const fileMatch = input.match(/file_url=([^&]+)/);
+if (fileMatch) {
+videoURL = decodeURIComponent(fileMatch[1]);
 }
 
+// 2️⃣ If it's already a raw video URL
+else if (/^https?:\/\//i.test(input)) {
+videoURL = input;
+}
 
+// 3️⃣ If it's play.html/https:/...
+else if (input.includes("play.html/")) {
+let after = input.split("play.html/")[1];
+
+// Fix https:/ → https://
+if (after.startsWith("https:/") && !after.startsWith("https://")) {
+after = after.replace("https:/", "https://");
+}
+if (after.startsWith("http:/") && !after.startsWith("http://")) {
+after = after.replace("http:/", "http://");
+}
+
+videoURL = after;
+}
+
+else {
+return alert("Invalid or unsupported link!");
+}
+
+// 4️⃣ Final validation
+if (!/\.(mp4|m3u8)(\?.*)?$/i.test(videoURL)) {
+return alert("Not a valid video URL!");
+}
+
+// 5️⃣ Encode and generate final player link
+const encoded = encodeURIComponent(videoURL);
+const finalLink = `https://bookstore-nt.vercel.app/play.html?video=${encoded}`;
+
+document.getElementById("outputLink").value = finalLink;
+}
 
 function copyLink() {
-    const output = document.getElementById('outputLink');
-    output.select();
-    output.setSelectionRange(0, 99999); // For mobile devices
-    navigator.clipboard.writeText(output.value).then(() => {
-       ;
-    });
+const output = document.getElementById('outputLink');
+if (!output.value) return;
+
+output.select();
+output.setSelectionRange(0, 99999); // For mobile devices
+navigator.clipboard.writeText(output.value).then(() => {
+// Optional visual feedback
+const btn = document.querySelector('.output .icon-btn svg');
+const original = btn.innerHTML;
+// No changes needed for logic, functionality preserved.
+});
 }
 </script>
 </body>
