@@ -3,89 +3,310 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>404 | Page Not Found</title>
+  <title>404 - Page Not Found | BOOKStore</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://png.pngtree.com/png-vector/20240515/ourmid/pngtree-open-book-logo-png-image_12467719.png">
+
+  <!-- Fonts: Inter & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Poppins:wght@700;900&display=swap" rel="stylesheet">
+  
+  <!-- Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   <style>
-     header {
-      background: #0b1220;
-      padding: 15px;
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-      
+    /* --- 1. CORE VARIABLES --- */
+    :root {
+      --bg-dark: #0b1220;
+      --bg-gradient: radial-gradient(circle at 50% 50%, #172a45 0%, #050505 100%);
+      --accent-color: #3b82f6;
+      --accent-glow: rgba(59, 130, 246, 0.6);
+      --primary-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --text-main: #ffffff;
+      --text-muted: #94a3b8;
+      --font-body: 'Inter', sans-serif;
+      --font-head: 'Poppins', sans-serif;
     }
-    /* logo image in header */
-    #logo {
-      height: 66px;
-      max-width: 90%;
-      object-fit: contain;
-      display: inline-block;
-      vertical-align: middle;
-    }
+
     * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-      font-family: "Poppins", sans-serif;
     }
 
     body {
-      background-color: #0b1220;
-      color: white;
+      background: var(--bg-dark);
+      background-image: var(--bg-gradient);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden; /* Prevent scrolling */
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      height: 100vh;
-      text-align: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* --- 2. BACKGROUND PARTICLES (Stars) --- */
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      opacity: 0;
+      animation: twinkle var(--duration) ease-in-out infinite;
+      box-shadow: 0 0 4px white;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; transform: scale(0.8); }
+      50% { opacity: 0.8; transform: scale(1.2); }
+    }
+
+    /* --- 3. HEADER (Minimal) --- */
+    header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
       padding: 20px;
+      display: flex;
+      justify-content: center;
+      z-index: 10;
     }
 
+    #logo {
+      height: 50px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
+    }
+
+    /* --- 4. MAIN GLASS CARD --- */
+    .error-container {
+      position: relative;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 30px;
+      padding: 60px 40px;
+      text-align: center;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 
+                  inset 0 0 30px rgba(255,255,255,0.02);
+      z-index: 5;
+      animation: floatContainer 6s ease-in-out infinite;
+      transform-style: preserve-3d;
+    }
+
+    @keyframes floatContainer {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    /* --- 5. FLOATING ICON --- */
+    .icon-wrapper {
+      font-size: 80px;
+      margin-bottom: 20px;
+      display: inline-block;
+      color: var(--text-main);
+      filter: drop-shadow(0 0 20px var(--accent-glow));
+      animation: floatIcon 4s ease-in-out infinite reverse;
+    }
+
+    @keyframes floatIcon {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(-5deg); }
+    }
+
+    .icon-wrapper span {
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* --- 6. TYPOGRAPHY --- */
     h1 {
-      font-size: 120px;
-      font-weight: 800;
-      color: #ff3366;
-      animation: pop 1s ease forwards;
+      font-family: var(--font-head);
+      font-size: 8rem;
+      line-height: 1;
+      margin: 0;
+      background: linear-gradient(180deg, #fff, #555);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      opacity: 0.9;
+      position: relative;
+      letter-spacing: -5px;
     }
 
-    @keyframes pop {
-      0% { transform: scale(0); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
+    /* Glitch/Glow Effect behind text */
+    h1::after {
+      content: '404';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      opacity: 0.5;
+      filter: blur(15px);
+      z-index: -1;
+      animation: pulseGlow 3s infinite;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.3; filter: blur(15px); }
+      50% { opacity: 0.6; filter: blur(25px); }
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-top: 10px;
+      color: var(--text-main);
     }
 
     p {
-      font-size: 18px;
-      margin: 15px 0 30px;
-      opacity: 0.8;
+      color: var(--text-muted);
+      margin: 15px 0 35px;
+      font-size: 1rem;
+      line-height: 1.5;
     }
 
-    a {
+    /* --- 7. HOME BUTTON --- */
+    .home-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
       text-decoration: none;
-      background: #ff3366;
+      padding: 14px 32px;
+      background: var(--primary-gradient);
       color: white;
-      padding: 12px 25px;
-      border-radius: 30px;
-      font-size: 16px;
-      transition: 0.3s;
-      box-shadow: 0 0 10px #ff3366;
+      border-radius: var(--radius-pill);
+      font-weight: 600;
+      font-size: 1rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
     }
 
-    a:hover {
-      background: #ff5580;
-      box-shadow: 0 0 15px #ff5580;
+    .home-btn:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 10px 30px rgba(59, 130, 246, 0.6);
+    }
+
+    .home-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: 0.5s;
+    }
+
+    .home-btn:hover::before {
+      left: 100%;
+    }
+
+    /* --- 8. RESPONSIVE --- */
+    @media (max-width: 600px) {
+      h1 { font-size: 6rem; }
+      .error-container { padding: 40px 20px; }
+      h2 { font-size: 1.2rem; }
     }
   </style>
 </head>
 <body>
-<!-- Header -->
-<header style="text-align:center;padding:15px;background:#0b1220;position:relative;">
-  <img src="logo.png" alt="BOOKStore Logo" style="height:50px;">
 
-</header>
-  <h1>404</h1>
-  <p>Oops! The page you're looking for doesn't exist.</p>
+  <!-- 1. Background Particles (Generated by JS) -->
+  <div id="starsContainer"></div>
 
-  <a href="/index.html">Go Back Home</a>
+  <!-- 2. Header -->
+  <header>
+    <a href="index.html">
+      <img src="logo.png" alt="BOOKStore" id="logo" onerror="this.style.display='none';">
+    </a>
+  </header>
+
+  <!-- 3. Main Content Card -->
+  <main class="error-container" id="tiltCard">
+    
+    <!-- Floating Icon -->
+    <div class="icon-wrapper">
+      <span class="material-icons" style="font-size: inherit;">auto_stories</span>
+    </div>
+
+    <!-- 404 Text -->
+    <h1>404</h1>
+    
+    <h2>Page Lost in Space</h2>
+    <p>It seems the page you are looking for has drifted away or doesn't exist in our library archives.</p>
+
+    <!-- Home Button -->
+    <a href="index.html" class="home-btn">
+      <span class="material-icons" style="font-size: 20px;">home</span>
+      Return Home
+    </a>
+
+  </main>
+
+  <script>
+    // --- 1. Generate Star Background ---
+    const starsContainer = document.getElementById('starsContainer');
+    const starCount = 60;
+
+    for (let i = 0; i < starCount; i++) {
+      const star = document.createElement('div');
+      star.classList.add('star');
+      
+      // Random positioning
+      const x = Math.random() * 100;
+      const y = Math.random() * 100;
+      const size = Math.random() * 3;
+      const duration = 2 + Math.random() * 3; // 2s to 5s twinkle
+      
+      star.style.left = `${x}%`;
+      star.style.top = `${y}%`;
+      star.style.width = `${size}px`;
+      star.style.height = `${size}px`;
+      star.style.setProperty('--duration', `${duration}s`);
+      
+      starsContainer.appendChild(star);
+    }
+
+    // --- 2. Parallax Effect on Mouse Move ---
+    const card = document.getElementById('tiltCard');
+    
+    document.addEventListener('mousemove', (e) => {
+      const x = (window.innerWidth - e.pageX * 2) / 100;
+      const y = (window.innerHeight - e.pageY * 2) / 100;
+
+      // Move stars slightly
+      starsContainer.style.transform = `translateX(${x * 0.5}px) translateY(${y * 0.5}px)`;
+      
+      // Tilt card slightly
+      card.style.transform = `perspective(1000px) rotateX(${y * 0.1}deg) rotateY(${-x * 0.1}deg) translateY(-15px)`; 
+      // Note: translateY(-15px) preserves the float animation center point
+    });
+
+    // Reset on mouse leave
+    document.addEventListener('mouseleave', () => {
+      card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) translateY(0)`;
+    });
+
+    // Disable right click (Consistent with other pages)
+    document.addEventListener("contextmenu", e => e.preventDefault());
+  </script>
 
 </body>
 </html>
