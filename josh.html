@@ -1,516 +1,556 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BOOKStore-100x Josh</title>
-  <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-    }
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background: #0b1220;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      justify-content: top;
-      align-items: center;
-      transition:0.3s, color 0.3s;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BOOKStore - 100x Josh</title>
+<!-- Fonts: Inter & Poppins -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* --- 1. VARIABLES & RESET (From Oswaal) --- */
+:root {
+--bg-dark: #050505;
+--bg-card: #121212;
+--bg-glass: rgba(18, 18, 18, 0.75);
+--border-color: rgba(255, 255, 255, 0.1);
 
-    header {
-      background: #0b1220;
-      padding: 15px;
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-      
-    }
-    /* logo image in header */
-    #logo {
-      height: 66px;
-      max-width: 90%;
-      object-fit: contain;
-      display: inline-block;
-      vertical-align: middle;
-    }
-    h1 {
-      margin: 10px 0;
-    }
+--primary-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);
+--accent-color: #3b82f6;
+--text-main: #ffffff;
+--text-muted: #a1a1aa;
 
-    #timer {
-      font-size: 20px;
-      font-weight: bold;
-      margin: 10px 0;
-    }
+--radius-lg: 20px;
+--radius-md: 12px;
+--radius-pill: 50px;
 
-    #game {
-      display: grid;
-      grid-template-columns: repeat(5, 80px);
-      grid-gap: 10px;
-      margin: 20px 0;
-    }
+--font-body: 'Inter', sans-serif;
+--font-head: 'Poppins', sans-serif;
 
-    .box {
-      width: 80px;
-      height: 80px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      font-weight: bold;
-      background: #1c2940;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .correct {
-      background: #28a745 !important;
-      color: white !important;
-    }
-
-    .wrong {
-      background: #dc3545 !important;
-      color: white !important;
-    }
-
-    #controls {
-      margin-top: 15px;
-    }
-
-    button {
-      padding: 8px 16px;
-      font-size: 16px;
-      border: none;
-      border-radius: 6px;
-      background: #007bff;
-      color: white;
-      cursor: pointer;
-      margin: 5px;
-    }
-
-    button:hover {
-      background: #0056b3;
-    }
-
-    #popup {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.75);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(6px);
-  animation: fadeIn 0.3s ease;
+--correct-color: #22c55e;
+--wrong-color: #ef4444;
 }
 
-#popupContent {
-  background: #151d2f;
-  padding: 25px;
-  border-radius: 18px;
-  width: 300px;
-  text-align: center;
-  box-shadow: 0 0 25px rgba(0,123,255,0.4);
-  transform: scale(0.7);
-  animation: popupShow 0.35s ease forwards;
-  border: 2px solid rgba(88,166,255,0.4);
+* {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+-webkit-tap-highlight-color: transparent;
 }
 
-#popupContent h2 {
-  font-size: 26px;
-  margin-bottom: 10px;
-  background: linear-gradient(90deg, #58a6ff, #3f8cff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+body {
+background-color: var(--bg-dark);
+color: var(--text-main);
+font-family: var(--font-body);
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+overflow-x: hidden;
+align-items: center;
 }
 
-#popupContent p {
-  font-size: 16px;
-  color: #ccd6f6;
-  margin: 6px 0;
+/* --- 2. HEADER & NAVIGATION (From Oswaal) --- */
+header {
+position: sticky;
+top: 0;
+z-index: 1000;
+background: rgba(5, 5, 5, 0.8);
+backdrop-filter: blur(16px);
+-webkit-backdrop-filter: blur(16px);
+border-bottom: 1px solid var(--border-color);
+padding: 15px 20px;
+display: flex;
+justify-content: center;
+align-items: center;
+width: 100%;
 }
 
-#popup button {
-  padding: 10px 20px;
-  font-size: 17px;
-  border: none;
-  border-radius: 10px;
-  background: #007bff;
-  color: white;
-  margin-top: 12px;
-  cursor: pointer;
-  transition: 0.3s ease;
-  font-weight: bold;
+#logo {
+height: 45px;
+object-fit: contain;
 }
 
-#popup button:hover {
-  background: #0056b3;
-  transform: translateY(-2px);
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes popupShow {
-  0% { transform: scale(0.5) translateY(30px); opacity: 0; }
-  100% { transform: scale(1) translateY(0); opacity: 1; }
-}
-
-    /* Mobile Responsive */
-    @media only screen and (max-width: 480px) {
-      #game {
-        grid-template-columns: repeat(5, 14vw);
-        grid-gap: 2vw;
-        margin: 15px 0;
-      }
-      .box {
-        width: 14vw;
-        height: 14vw;
-        font-size: 4vw;
-      }
-      #timer {
-        font-size: 5vw;
-      }
-      button {
-        padding: 3vw 5vw;
-        font-size: 4vw;
-      }
-      h1 {
-        font-size: 7vw;
-      }
-      #popupContent {
-        width: 80vw;
-        padding: 5vw;
-      }
-    }
-    #logo {
-  cursor: pointer; /* makes it clear the logo is clickable */
-}
-/* Hamburger Button */
-    /* Hamburger Button */
-/* Hamburger Button (TOP-LEFT) */
-/* FIXED: Hamburger Always Visible (Top-Left) */
+/* Hamburger */
 .hamburger {
-  position: fixed;      /* keep it above header */
-  top: 15px;
-  right: 15px;
-  
-  width: 30px;
-  height: 22px;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-
-  cursor: pointer;
-  z-index: 2000;        /* stays above logo, header, game */
+position: absolute;
+right: 20px;
+top: 50%;
+transform: translateY(-50%);
+width: 28px;
+height: 20px;
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+cursor: pointer;
+z-index: 1100;
 }
-
 
 .hamburger span {
-  height: 4px;
-  width: 100%;
-  background: #fff;
-  border-radius: 2px;
-  transition: all 0.4s ease;
+display: block;
+height: 2px;
+width: 100%;
+background: var(--text-main);
+border-radius: 2px;
+transition: all 0.3s ease-in-out;
 }
 
-/* Turn into X when active */
-.hamburger.active span:nth-child(1) {
-  transform: rotate(45deg) translate(6px, 6px);
-}
-.hamburger.active span:nth-child(2) {
-  opacity: 0;
-}
-.hamburger.active span:nth-child(3) {
-  transform: rotate(-45deg) translate(6px, -6px);
-}
+.hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 6px); }
+.hamburger.active span:nth-child(2) { opacity: 0; }
+.hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -6px); }
 
 /* Slide Menu */
 .menu {
-  position: fixed;
-  top: 0;
-  right: -260px;
-  width: 220px;
-  height: 100%;
-  background: #1c2940;
-  display: flex;
-  flex-direction: column;
-  padding-top: 80px;
-  transition: right 0.4s ease;
-  z-index: 1000;
-  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.6);
+position: fixed;
+top: 0;
+right: -300px;
+width: 280px;
+height: 100vh;
+background: rgba(20, 20, 20, 0.95);
+backdrop-filter: blur(20px);
+border-left: 1px solid var(--border-color);
+display: flex;
+flex-direction: column;
+padding-top: 80px;
+transition: right 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+z-index: 1000;
+box-shadow: -10px 0 30px rgba(0,0,0,0.5);
 }
 
-.menu.active {
-  right: 0;
-}
+.menu.active { right: 0; }
 
 .menu a {
-  padding: 14px 20px;
-  text-decoration: none;
-  color: white;
-  font-size: 18px;
-  font-weight: 500;
-  transition: background 0.3s, transform 0.2s;
-  border-bottom: 1px solid #2e3a55;
-  display: flex;
-  align-items: center;
-  gap: 12px;          /* space between icon + text */
-  justify-content: flex-start;
+display: flex;
+align-items: center;
+gap: 15px;
+padding: 16px 25px;
+text-decoration: none;
+color: var(--text-muted);
+font-size: 16px;
+font-weight: 500;
+transition: all 0.2s ease;
+border-left: 3px solid transparent;
 }
 
 .menu a:hover {
-  background: #24314d;
-  transform: translateX(5px);
+color: var(--text-main);
+background: rgba(255, 255, 255, 0.03);
 }
 
-    .close-btn {
-  display: block;
-  margin-bottom: 20px;
-  text-align: right;
-  font-size: 18px;
-  cursor: pointer;
-  color: red;
-  font-weight: bold;
-}
-.close-btn:hover {
-  color: #ff6666;
-}
-.menu-icon {
-  width: 22px;
-  height: 22px;
-  vertical-align: middle;
-  margin-right: 8px;
-}
-
-.menu-logo {
-  width: 50px;
-  height: 32px;
-  object-fit: contain;
-  vertical-align: middle;
-}
 .menu a.active {
-  background: #24314d;
-  color: #58a6ff;
-  font-weight: bold;
-  border-left: 4px solid #58a6ff;
-  transform: translateX(5px);
+color: var(--accent-color);
+background: rgba(59, 130, 246, 0.05);
+border-left-color: var(--accent-color);
+}
+
+.menu-icon, .menu-logo { width: 20px; height: 20px; object-fit: contain; opacity: 0.8; }
+.menu a:hover .menu-icon { opacity: 1; }
+
+/* --- 3. GAME STYLES (Adapted to Premium Theme) --- */
+h1 {
+text-align: center;
+margin: 30px 0 10px;
+font-family: var(--font-head);
+font-size: 2rem;
+background: linear-gradient(90deg, #fff, #a1a1aa);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+}
+
+#timer {
+font-family: var(--font-head);
+font-size: 1.2rem;
+font-weight: 600;
+margin: 10px 0 30px;
+color: var(--accent-color);
+background: rgba(59, 130, 246, 0.1);
+padding: 8px 20px;
+border-radius: var(--radius-pill);
+border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+#game {
+display: grid;
+grid-template-columns: repeat(5, 80px);
+grid-gap: 15px;
+margin: 20px 0;
+}
+
+.box {
+width: 80px;
+height: 80px;
+display: flex;
+align-items: center;
+justify-content: center;
+font-family: var(--font-head);
+font-size: 1.5rem;
+font-weight: 600;
+background: var(--bg-card);
+border: 1px solid var(--border-color);
+border-radius: var(--radius-md);
+cursor: pointer;
+color: var(--text-main);
+transition: all 0.3s ease;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.box:hover {
+transform: translateY(-3px);
+border-color: rgba(255, 255, 255, 0.3);
+box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5);
+}
+
+.correct {
+background: rgba(34, 197, 94, 0.2) !important;
+border-color: var(--correct-color) !important;
+color: var(--correct-color) !important;
+box-shadow: 0 0 15px rgba(34, 197, 94, 0.3) !important;
+}
+
+.wrong {
+background: rgba(239, 68, 68, 0.2) !important;
+border-color: var(--wrong-color) !important;
+color: var(--wrong-color) !important;
+animation: shake 0.3s;
+}
+
+@keyframes shake {
+0% { transform: translateX(0); }
+25% { transform: translateX(-5px); }
+75% { transform: translateX(5px); }
+100% { transform: translateX(0); }
+}
+
+#controls {
+margin-top: 25px;
+margin-bottom: 20px;
+}
+
+button {
+padding: 12px 30px;
+font-size: 1rem;
+font-family: var(--font-head);
+font-weight: 600;
+border: none;
+border-radius: var(--radius-pill);
+background: var(--primary-gradient);
+color: white;
+cursor: pointer;
+transition: all 0.3s ease;
+box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+}
+
+button:hover {
+filter: brightness(1.1);
+transform: scale(1.02);
+box-shadow: 0 0 25px rgba(59, 130, 246, 0.5);
+}
+
+/* --- 4. POPUP --- */
+#popup {
+position: fixed;
+top: 0; left: 0;
+width: 100%; height: 100%;
+background: rgba(0,0,0,0.85);
+display: none;
+align-items: center;
+justify-content: center;
+backdrop-filter: blur(8px);
+z-index: 2000;
+animation: fadeIn 0.3s ease;
+}
+
+#popupContent {
+background: #18181b;
+padding: 30px;
+border-radius: var(--radius-lg);
+width: 320px;
+text-align: center;
+box-shadow: 0 0 40px rgba(59, 130, 246, 0.2);
+transform: scale(0.9);
+animation: popupShow 0.35s ease forwards;
+border: 1px solid var(--border-color);
+}
+
+#popupContent h2 {
+font-family: var(--font-head);
+font-size: 1.8rem;
+margin-bottom: 15px;
+background: var(--primary-gradient);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+}
+
+#popupContent p {
+font-size: 1rem;
+color: var(--text-muted);
+margin: 8px 0;
+}
+
+#popup button {
+margin-top: 20px;
+width: 100%;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes popupShow {
+0% { transform: scale(0.8) translateY(20px); opacity: 0; }
+100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* --- 5. SOCIAL & FOOTER (From Oswaal) --- */
+.social-buttons {
+display: flex;
+justify-content: center;
+gap: 15px;
+margin: 20px 0 40px;
+}
+
+.social-btn {
+display: flex;
+align-items: center;
+gap: 10px;
+padding: 12px 24px;
+border-radius: var(--radius-pill);
+background: #1f1f22;
+color: white;
+text-decoration: none;
+font-weight: 500;
+transition: 0.3s;
+border: 1px solid transparent;
+font-family: var(--font-body);
+font-size: 0.95rem;
+}
+
+.social-btn:hover {
+background: #27272a;
+border-color: rgba(255,255,255,0.1);
+transform: translateY(-2px);
+}
+
+.social-btn.insta:hover { color: #e1306c; border-color: #e1306c; }
+.social-btn.telegram:hover { color: #0088cc; border-color: #0088cc; }
+
+.social-logo {
+width: 22px;
+height: 22px;
+object-fit: contain;
+}
+
+footer {
+border-top: 1px solid var(--border-color);
+padding: 40px 20px;
+text-align: center;
+background: #020202;
+margin-top: auto;
+width: 100%;
 }
 
 .madeby {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 6px;
-  background: linear-gradient(90deg, #6dd5fa, #2980b9, #6dd5fa);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 10px rgba(0,153,255,0.6);
-  animation: glowMove 3s infinite linear;
+font-weight: 600;
+margin-bottom: 10px;
+background: linear-gradient(90deg, #60a5fa, #a78bfa);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
 }
 
-@keyframes glowMove {
-  0% { text-shadow: 0 0 8px #1e90ff; }
-  50% { text-shadow: 0 0 16px #00c3ff; }
-  100% { text-shadow: 0 0 8px #1e90ff; }
+/* --- 6. RESPONSIVE --- */
+@media only screen and (max-width: 480px) {
+#game {
+grid-template-columns: repeat(5, 14vw);
+grid-gap: 3vw;
+margin: 15px 0;
 }
-
-  </style>
+.box {
+width: 14vw;
+height: 14vw;
+font-size: 1.2rem;
+}
+h1 {
+font-size: 1.8rem;
+}
+#popupContent {
+width: 85%;
+}
+}
+</style>
 </head>
 <body>
-
-   <!-- Header -->
-<header style="text-align:center; padding:15px; background:#0b1220;">
-  <a href="index.html">
-    <img src="logo.png" alt="BOOKStore" id="logo" style="height:50px;">
-  </a>
-  <!-- Hamburger Button -->
-  <div class="hamburger" id="hamburger">
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
+<!-- HEADER -->
+<header>
+<a href="index.html">
+<img src="logo.png" alt="BOOKStore" id="logo" onerror="this.style.display='none'; document.write('<span style=\'font-weight:bold;font-size:1.5rem;color:white;\'>BOOKStore</span>')">
+</a>
+<div class="hamburger" id="hamburger">
+  <span></span>
+  <span></span>
+  <span></span>
+</div>
 </header>
-
-<!-- Slide Menu -->
+<!-- SIDE MENU -->
 <nav class="menu" id="menu">
-  <a href="index.html">
-    <img src="home.svg" alt="Home" class="menu-icon"> Home</a>
-     <a href="edupie.html">
-    <img src="edupie.png" alt="Edupie" class="menu-logo">EduPie
-  </a>
-  <a href="games.html" class="active">
-    <img src="game.svg" alt="Games" class="menu-icon">Games Zone</a>
-  <a href="profile.html">
-    <img src="profile.svg" alt="Profile" class="menu-icon"> Profile
-  </a>
-   <a href="link.html">
-    <img src="link.svg" alt="Link-Processor" class="menu-icon"> Link Processer
-  </a>
-  <a href="play.html">
-    <img src="play.svg" alt="Custom-Player" class="menu-icon"> Custom Player
-   </a>
+<a href="index.html">
+<img src="home.svg" class="menu-icon" alt=""> Home
+</a>
+<a href="edupie.html">
+<img src="edupie.png" class="menu-logo" alt=""> EduPie
+</a>
+<a href="games.html" class="active">
+<img src="game.svg" class="menu-icon" alt=""> Games Zone
+</a>
+<a href="profile.html">
+<img src="profile.svg" class="menu-icon" alt=""> Profile
+</a>
+<a href="link.html">
+<img src="link.svg" class="menu-icon" alt=""> Link Processor
+</a>
+<a href="play.html">
+<img src="play.svg" class="menu-icon" alt=""> Custom Player
+</a>
 </nav>
-
-
-
-  <h1>100x Josh</h1>
-  <div id="timer">Time Left: 25s</div>
-  <div id="game"></div>
-  <div id="controls">
-    <button onclick="startGame()">Shuffle & Restart</button>
-  </div>
-<footer style="background:#0b1220;color:white;text-align:center;padding:20px 10px;font-size:14px;">
-  <div class="madeby">Made by Bhavesh </div>
- 
+<!-- GAME CONTENT -->
+<h1>100x Josh</h1>
+<div id="timer">Time Left: 25s</div>
+<div id="game"></div>
+<div id="controls">
+<button onclick="startGame()">Shuffle & Restart</button>
+</div>
+<!-- SOCIAL LINKS -->
+<div class="social-buttons">
+<a href="https://www.instagram.com/syntaxbhavesh/" target="_blank" class="social-btn insta">
+<img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram" class="social-logo">
+Instagram
+</a>
+<a href="https://t.me/+oQOMU7yAIIE2OWVl" target="_blank" class="social-btn telegram">
+<img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram" class="social-logo">
+Telegram
+</a>
+</div>
+<!-- FOOTER -->
+<footer>
+<div class="madeby">Made by Bhavesh</div>
 </footer>
-  <!-- Popup -->
-  <div id="popup">
-    <div id="popupContent">
-      <h2>⏳ Time's Up!</h2>
-      <p id="scoreText"></p>
-      <p id="highScoreText"></p>
-      <button onclick="closePopup()">Try Again</button>
-    </div>
-  </div>
-  
-  <script>
-     const currentPage = window.location.pathname.split('/').pop();
-  document.querySelectorAll('.menu a').forEach(link => {
-    if (link.getAttribute('href') === currentPage) {
-      link.classList.add('active');
-    }
-  });
+<!-- POPUP -->
+<div id="popup">
+<div id="popupContent">
+<h2>⏳ Time's Up!</h2>
+<p id="scoreText"></p>
+<p id="highScoreText"></p>
+<button onclick="closePopup()">Try Again</button>
+</div>
+</div>
+<script>
+// --- MENU LOGIC (From Oswaal) ---
 const hamburger = document.getElementById("hamburger");
 const menu = document.getElementById("menu");
 
-hamburger.addEventListener("click", () => {
-  hamburger.classList.toggle("active");
-  menu.classList.toggle("active");
+hamburger.addEventListener("click", (e) => {
+e.stopPropagation();
+hamburger.classList.toggle("active");
+menu.classList.toggle("active");
 });
 
-    document.addEventListener("click", (event) => {
-  const clickedInsideMenu = menu.contains(event.target);
-  const clickedHamburger = hamburger.contains(event.target);
-
-  if (!clickedInsideMenu && !clickedHamburger) {
-    menu.classList.remove("active");
-    hamburger.classList.remove("active");
-  }
+document.addEventListener("click", (e) => {
+if (!menu.contains(e.target) && !hamburger.contains(e.target)) {
+menu.classList.remove("active");
+hamburger.classList.remove("active");
+}
 });
 
-// Close menu when clicking outside it
-document.addEventListener("click", (event) => {
-  const isClickInsideMenu = menu.contains(event.target);
-  const isClickOnHamburger = hamburger.contains(event.target);
+// --- GAME LOGIC (Unchanged) ---
+const gameBoard = document.getElementById("game");
+const timerDisplay = document.getElementById("timer");
+const popup = document.getElementById("popup");
+const scoreText = document.getElementById("scoreText");
+const highScoreText = document.getElementById("highScoreText");
 
-  if (!isClickInsideMenu && !isClickOnHamburger) {
-    menu.classList.remove("active");
-    hamburger.classList.remove("active");
-  }
+let numbers = [];
+let nextNumber = 1;
+let timer;
+let timeLeft = 25;
+let highestScore = localStorage.getItem("highestScore")
+? parseInt(localStorage.getItem("highestScore"))
+: 0;
+
+function shuffle(array) {
+return array.sort(() => Math.random() - 0.5);
+}
+
+function startGame() {
+numbers = shuffle([...Array(25).keys()].map(n => n + 1));
+gameBoard.innerHTML = "";
+nextNumber = 1;
+timeLeft = 25;
+clearInterval(timer);
+startTimer();
+
+numbers.forEach(num => {
+const div = document.createElement("div");
+div.classList.add("box");
+div.textContent = num;
+div.addEventListener("click", () => handleClick(div, num));
+gameBoard.appendChild(div);
 });
+}
 
-    const gameBoard = document.getElementById("game");
-    const timerDisplay = document.getElementById("timer");
-    const popup = document.getElementById("popup");
-    const scoreText = document.getElementById("scoreText");
-    const highScoreText = document.getElementById("highScoreText");
-    
-    let numbers = [];
-    let nextNumber = 1;
-    let timer;
-    let timeLeft = 25;
-    let highestScore = localStorage.getItem("highestScore") 
-                       ? parseInt(localStorage.getItem("highestScore")) 
-                       : 0;
+function handleClick(div, num) {
+if (num === nextNumber) {
+div.classList.add("correct");
+nextNumber++;
+if (nextNumber > 25) {
+clearInterval(timer);
+setTimeout(() => showPopup(true), 300);
+}
+} else {
+div.classList.add("wrong");
+setTimeout(() => div.classList.remove("wrong"), 1000);
+}
+}
 
-    function shuffle(array) {
-      return array.sort(() => Math.random() - 0.5);
-    }
+function startTimer() {
+timerDisplay.textContent = `Time Left: ${timeLeft}s`;
+timer = setInterval(() => {
+timeLeft--;
+timerDisplay.textContent = `Time Left: ${timeLeft}s`;
+if (timeLeft <= 0) {
+clearInterval(timer);
+showPopup(false);
+}
+}, 1000);
+}
 
-    function startGame() {
-      numbers = shuffle([...Array(25).keys()].map(n => n + 1));
-      gameBoard.innerHTML = "";
-      nextNumber = 1;
-      timeLeft = 25;
-      clearInterval(timer);
-      startTimer();
+function showPopup(win) {
+let score = nextNumber - 1;
+if (score > highestScore) {
+highestScore = score;
+localStorage.setItem("highestScore", highestScore);
+}
+scoreText.textContent = `Numbers Found: ${score}`;
+highScoreText.textContent = `Highest Score: ${highestScore}`;
+popup.style.display = "flex";
+}
 
-      numbers.forEach(num => {
-        const div = document.createElement("div");
-        div.classList.add("box");
-        div.textContent = num;
-        div.addEventListener("click", () => handleClick(div, num));
-        gameBoard.appendChild(div);
-      });
-    }
+function closePopup() {
+popup.style.display = "none";
+startGame();
+}
 
-    function handleClick(div, num) {
-      if (num === nextNumber) {
-        div.classList.add("correct");
-        nextNumber++;
-        if (nextNumber > 25) {
-          clearInterval(timer);
-          setTimeout(() => showPopup(true), 300);
-        }
-      } else {
-        div.classList.add("wrong");
-        setTimeout(() => div.classList.remove("wrong"), 1000);
-      }
-    }
+// Start game on load
+startGame();
 
-    function startTimer() {
-      timerDisplay.textContent = `Time Left: ${timeLeft}s`;
-      timer = setInterval(() => {
-        timeLeft--;
-        timerDisplay.textContent = `Time Left: ${timeLeft}s`;
-        if (timeLeft <= 0) {
-          clearInterval(timer);
-          showPopup(false);
-        }
-      }, 1000);
-    }
-
-    function showPopup(win) {
-      let score = nextNumber - 1;
-      if (score > highestScore) {
-        highestScore = score;
-        localStorage.setItem("highestScore", highestScore);
-      }
-      scoreText.textContent = `Numbers Found: ${score}`;
-      highScoreText.textContent = `Highest Score: ${highestScore}`;
-      popup.style.display = "flex";
-    }
-
-    function closePopup() {
-      popup.style.display = "none";
-      startGame();
-    }
-
-    // Start game on load
-    startGame();
-    // Disable right-click
-    document.addEventListener("contextmenu", e => e.preventDefault());
-
-    // Block common shortcut keys
-    document.addEventListener("keydown", e => {
-      if ( 
-        (e.ctrlKey && ["s","u","p"].includes(e.key.toLowerCase())) ||
-        (e.ctrlKey && e.shiftKey && ["i","j","c"].includes(e.key.toLowerCase())) ||
-        (e.key === "PrintScreen")
-      ) {
-        e.preventDefault();
-        displayError("Export/Download is disabled!");
-      }
-    });
-  </script>
-
+// --- SECURITY RESTRICTIONS (Unchanged) ---
+document.addEventListener("contextmenu", e => e.preventDefault());
+document.addEventListener("keydown", e => {
+if (
+(e.ctrlKey && ["s","u","p"].includes(e.key.toLowerCase())) ||
+(e.ctrlKey && e.shiftKey && ["i","j","c"].includes(e.key.toLowerCase())) ||
+(e.key === "PrintScreen")
+) {
+e.preventDefault();
+// displayError is not defined in original script, defaulting to alert like oswaal or no-op
+alert("Export/Download is disabled!");
+}
+});
+</script>
 </body>
 </html>
