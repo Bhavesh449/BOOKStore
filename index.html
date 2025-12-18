@@ -3,1203 +3,882 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BOOKStore - Free Books, PDFs, PYQs & More</title>
+  <title>BOOKStore - Premium Study Material</title>
 
-<meta name="description" content="BOOKStore offers Oswaal PDFs, solved papers, sample papers, 100x-Josh videos, science notes, SST notes and more for Class 10 students.">
-
-<meta name="keywords" content="bookstore, class 10, ncert, oswaal, pdfs, books, study material, cbse, sample papers, solved papers, study website">
-<meta property="og:title" content="BOOKStore – Your Study Partner">
-<meta property="og:description" content="Get free books, notes, PDFs, Oswaal, CBSE study material and more.">
-<meta property="og:image" content="/logo.png">
-<meta property="og:url" content="https://bookstore-study.vercel.app/">
-<meta property="og:type" content="website">
+  <meta name="description" content="BOOKStore offers Oswaal PDFs, solved papers, sample papers, 100x-Josh videos, science notes, SST notes and more for Class 10 students.">
+  <meta name="keywords" content="bookstore, class 10, ncert, oswaal, pdfs, books, study material, cbse, sample papers, solved papers, study website">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="BOOKStore – Your Study Partner">
+  <meta property="og:description" content="Get free books, notes, PDFs, Oswaal, CBSE study material and more.">
+  <meta property="og:image" content="/logo.png">
+  <meta property="og:url" content="https://bookstore-study.vercel.app/">
+  <meta property="og:type" content="website">
 
   <link rel="icon" type="image/png" href="https://png.pngtree.com/png-vector/20240515/ourmid/pngtree-open-book-logo-png-image_12467719.png">
+
+  <!-- Fonts: Inter & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Google Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-  <!-- Google Fonts for the 'G' logo -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   <style>
-    body {
+    /* --- 1. VARIABLES & RESET --- */
+    :root {
+      --bg-dark: #050505;
+      --bg-card: #121212;
+      --bg-glass: rgba(18, 18, 18, 0.75);
+      --border-color: rgba(255, 255, 255, 0.1);
+      
+      --primary-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      --accent-color: #3b82f6;
+      --text-main: #ffffff;
+      --text-muted: #a1a1aa;
+      
+      --shadow-soft: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+      --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.15);
+      
+      --radius-lg: 20px;
+      --radius-md: 12px;
+      --radius-pill: 50px;
+      
+      --font-body: 'Inter', sans-serif;
+      --font-head: 'Poppins', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0b1220;
-      color: #e8edf6;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
+      overflow-x: hidden;
     }
+
+    /* --- 2. HEADER & NAVIGATION --- */
     header {
-      background: #0b1220;
-      padding: 15px;
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-      
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(5, 5, 5, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 15px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
-    /* logo image in header */
+
     #logo {
-      height: 66px;
-      max-width: 90%;
+      height: 45px;
       object-fit: contain;
-      display: inline-block;
-      vertical-align: middle;
     }
-      #searchBar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  background: #0b1220;
-}
 
-#searchInput {
-  width: 90%;
-  max-width: 600px;
-  padding: 12px 45px;
-  border-radius: 50px;
-  border: 1px solid #3c4a66;
-  background-color: #1c2940;
-  color: #e8edf6;
-  font-size: 16px;
-  outline: none;
-  transition: all 0.3s ease;
-  background-image: url('https://cdn-icons-png.flaticon.com/512/622/622669.png');
-  background-size: 20px;
-  background-repeat: no-repeat;
-  background-position: 15px center;
-}
+    /* Hamburger */
+    .hamburger {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      z-index: 1100;
+    }
 
-#searchInput:focus {
-  background-color: #24314d;
-  box-shadow: 0 0 10px rgba(0, 123, 255, 0.4);
-  border-color: #007bff;
-}
+    .hamburger span {
+      display: block;
+      height: 2px;
+      width: 100%;
+      background: var(--text-main);
+      border-radius: 2px;
+      transition: all 0.3s ease-in-out;
+    }
+
+    /* Hamburger Active State */
+    .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 6px); }
+    .hamburger.active span:nth-child(2) { opacity: 0; }
+    .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -6px); }
+
+    /* Slide Menu */
+    .menu {
+      position: fixed;
+      top: 0;
+      right: -300px;
+      width: 280px;
+      height: 100vh;
+      background: rgba(20, 20, 20, 0.95);
+      backdrop-filter: blur(20px);
+      border-left: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      padding-top: 80px;
+      transition: right 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+      z-index: 1000;
+      box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+    }
+
+    .menu.active { right: 0; }
+
+    .menu a {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 16px 25px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 16px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+    }
+
+    .menu a:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .menu a.active {
+      color: var(--accent-color);
+      background: rgba(59, 130, 246, 0.05);
+      border-left-color: var(--accent-color);
+    }
+
+    .menu-icon, .menu-logo { width: 20px; height: 20px; object-fit: contain; opacity: 0.8; }
+    .menu a:hover .menu-icon { opacity: 1; }
+
+    /* --- 3. SEARCH BAR --- */
+    #searchBar {
+      padding: 20px 5%;
+      display: flex;
+      justify-content: center;
+    }
+
+    #searchInput {
+      width: 100%;
+      max-width: 500px;
+      padding: 14px 20px 14px 50px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-color);
+      background: #111 url('https://cdn-icons-png.flaticon.com/512/622/622669.png') no-repeat 20px center;
+      background-size: 18px;
+      color: var(--text-main);
+      font-size: 15px;
+      font-family: var(--font-body);
+      transition: all 0.3s ease;
+    }
+
+    #searchInput:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      background-color: #161616;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+    }
+
+    /* --- 4. GREETING & BUTTONS --- */
+    #greeting {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+    
+    #greeting span { color: var(--accent-color); }
+    #greeting .vip { color: #facc15; text-shadow: 0 0 10px rgba(250, 204, 21, 0.3); animation: none; }
+    #greeting .Admin { color: #ef4444; text-shadow: 0 0 10px rgba(239, 68, 68, 0.3); animation: none; }
+    
+    #fakeAddBtn {
+      display: none;
+      margin: 0 auto 20px;
+      background: var(--primary-gradient);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    /* --- 5. BANNERS / CAROUSEL --- */
+    .banner-container {
+      position: relative;
+      width: 90%;
+      max-width: 1000px;
+      margin: 10px auto 20px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid var(--border-color);
+      aspect-ratio: 16/9;
+    }
+    
+    @media (min-width: 768px) { .banner-container { aspect-ratio: 5/1; } }
+    
+    .banner-slide {
+      display: flex;
+      transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    
+    .banner-item {
+      min-width: 100%;
+      position: relative;
+    }
+    
+    .banner-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Dots */
+    .dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 30px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: #444;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .dot.active {
+      background: var(--text-main);
+      width: 20px;
+      border-radius: 10px;
+    }
+
+    /* --- 6. BOOK CARDS --- */
     .books {
       display: grid;
-      gap: 20px;
-      padding: 20px;
-      justify-content: center;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 25px;
+      padding: 0 5%;
+      max-width: 1400px;
+      margin: 0 auto 40px;
     }
+
     .book {
-      background: #1c2940;
-      padding: 10px;
-      border-radius: 12px;
-      text-align: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
     }
+
+    .book:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+      border-color: rgba(255,255,255,0.2);
+    }
+
     .book img {
       width: 100%;
-      height: auto;
-      max-width: 178px;
+      height: 280px;
+      object-fit: cover;
       border-radius: 8px;
+      margin-bottom: 15px;
+      transition: transform 0.4s ease;
     }
-    .price {
-      margin: 8px 0;
-      font-weight: bold;
-    }
-    .price .old {
-      text-decoration: line-through;
-      color: #ccc;
-      margin-right: 6px;
-    }
-    .price .new {
-      font-weight: bold;
-      color: limegreen;
-    }
-    .year {
-      font-style: none;
-      font-size: 14px;
+
+    .book:hover img { transform: scale(1.05); }
+
+    .book h3 {
+      font-family: var(--font-head);
+      font-size: 1rem;
+      font-weight: 600;
       margin-bottom: 5px;
-      color: #aaa;
-    }
-    .author {
-      font-style: none;
-      font-size: 14px;
-      margin-bottom: 5px;
-      color: #aaa;
-    }
-    button {
-      background: #007bff;
-      color: white;
-      padding: 6px 12px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #0056b3;
-    }
-    footer {
-      background: #121a2a;
-      padding: 8px;
       text-align: center;
-      font-size: 14px;
-      color: #7a8aa0;
-      flex-shrink: 0;
+      line-height: 1.4;
     }
+
+    .book-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-align: center;
+    }
+
+    .price {
+      margin: 10px 0;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .price span { color: #22c55e; } /* Green */
+
+    .preview-btn {
+      margin-top: auto; /* Push to bottom */
+      background: var(--primary-gradient);
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: var(--radius-pill);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: filter 0.3s, transform 0.2s;
+    }
+
+    .preview-btn:hover {
+      filter: brightness(1.1);
+      transform: scale(1.02);
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+    }
+
+    /* --- 7. COLLECTION BOXES --- */
+    .section-title {
+      text-align: center;
+      font-family: var(--font-head);
+      font-size: 1.5rem;
+      margin: 40px 0 20px;
+    }
+
+    .folders {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      padding: 0 5%;
+      max-width: 1200px;
+      margin: 0 auto 50px;
+    }
+
+    .collection-box {
+      background: #0f0f0f; /* Slightly lighter than bg */
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: 0.3s ease;
+      position: relative;
+    }
+
+    .collection-box:hover {
+      background: #161616;
+      border-color: rgba(59, 130, 246, 0.4);
+      transform: translateY(-4px);
+    }
+
+    .collection-img {
+      height: 60px;
+      object-fit: contain;
+      margin-bottom: 15px;
+      filter: grayscale(20%);
+      transition: 0.3s;
+    }
+    .collection-box:hover .collection-img { filter: grayscale(0%); transform: scale(1.1); }
+
+    .collection-title {
+      color: var(--text-main);
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 5px;
+    }
+
+    .collection-desc { font-size: 0.85rem; color: var(--text-muted); }
+
+    /* --- 8. LOGIN POPUP (Glassmorphism + Floating Labels) --- */
     #loginPopup {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.7);
-      backdrop-filter: blur(10px);
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 10000;
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 10000;
-      transition: 0.6s ease;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
     }
+    
+    #loginPopup.show { opacity: 1; pointer-events: auto; }
+
     #loginBox {
-      background: #1c2940;
-      /* Increased top padding to give space for the 'X' button and H2 */
-      padding: 40px 20px 20px 20px; 
-      border-radius: 10px;
-      text-align: center;
-      position: relative;
+      background: #18181b;
+      border: 1px solid var(--border-color);
+      padding: 40px 30px;
+      border-radius: 24px;
       width: 100%;
-      max-width: 350px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    /* Style H2 to prevent default top margin from causing overlap */
-    #loginBox h2 {
-        margin-top: 0;
-        margin-bottom: 20px;
-        font-size: 24px;
-    }
-    #loginBox input {
-      width: 90%;
-      max-width: 280px;
-      margin: 8px 0;
-      padding: 8px;
-      border-radius: 6px;
-      border: none;
-      background-color: #0b1220; /* Darker input background */
-      color: #e8edf6;
-    }
-    #loginBox button {
-      width: 90%;
-      max-width: 250px;
-      margin: 5px 0;
-      padding: 10px;
-      border: none;
-      border-radius: 9px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background-color 0.3s;
+      max-width: 400px;
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      text-align: center;
     }
 
-    /* Professional close button */
     #closeLogin {
       position: absolute;
-      top: 10px;
-      left: 220px;
+      top: 15px;
+      right: 15px;
       background: transparent;
       border: none;
-      color: #ffffff;
-      font-size: 20px;
-      font-weight: bold;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
+      color: var(--text-muted);
+      font-size: 24px;
       cursor: pointer;
-      padding: 0;
+      transition: color 0.2s;
+    }
+    #closeLogin:hover { color: white; }
+
+    #loginBox h2 {
+      font-family: var(--font-head);
+      margin-bottom: 25px;
+      font-size: 1.8rem;
     }
 
-    
-    #loginBox #emailLoginBtn {
-      background: #007bff;
+    /* Floating Input */
+    .input-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 16px 15px;
+      background: #09090b;
+      border: 1px solid #333;
+      border-radius: 12px;
       color: white;
+      font-size: 16px;
+      outline: none;
+      transition: 0.2s;
     }
-    #loginBox #emailLoginBtn:hover {
-      background: #0056b3;
+    
+    .input-group input:focus { border-color: var(--accent-color); }
+
+    .input-group label {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #71717a;
+      pointer-events: none;
+      transition: 0.2s ease all;
+      background: #09090b;
+      padding: 0 5px;
+      font-size: 16px;
     }
-    /* Google Login Button Style */
+
+    .input-group input:focus + label,
+    .input-group input:not(:placeholder-shown) + label {
+      top: 0;
+      font-size: 12px;
+      color: var(--accent-color);
+    }
+
+    .auth-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-bottom: 12px;
+    }
+
+    #emailLoginBtn { background: var(--primary-gradient); color: white; }
+    #emailLoginBtn:hover { opacity: 0.9; transform: scale(0.99); }
+
     #googleLoginBtn {
       background: white;
-      color: #4a4a4a;
+      color: #333;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
-    #googleLoginBtn:hover {
-      background: #f0f0f0;
-    }
-    /* Google 'G' Logo Style */
-    #googleLoginBtn .material-icons {
-      color: #4285F4; /* Blue */
-      font-size: 20px;
-    }
-    #google {
-      margin-top: -10px;
-      margin-left: 2px;
-    }
-    /* Style for Create Account button - looks like a text link with 'or' logic */
+    #googleLoginBtn:hover { background: #f4f4f5; }
+
     #createAccountBtn {
-      width: auto; 
-      max-width: none;
       background: none;
-      color: #aaa; /* Default text color */
-      padding: 0;
-      margin-top: 15px; 
       border: none;
+      color: var(--text-muted);
       cursor: pointer;
-      font-weight: normal;
-      font-size: 14px;
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    
-    #createAccountBtn:hover {
-      color: #fff;
-      background: none;
-    }
-    
-    /* Style for the dynamic error box (Red banner as requested) */
-    #authErrorBox {
-        background: #dc3545; 
-        color: white; 
-        padding: 10px; 
-        border-radius: 6px; 
-        margin-bottom: 10px; 
-        text-align: left; 
-        width: 90%; 
-        max-width: 280px; 
-        transition: opacity 0.5s, max-height 0.5s; 
-        opacity: 1; 
-        overflow: hidden; 
-        max-height: 100px; 
-        box-sizing: border-box;
-    }
-
-
-    /* Banner Carousel */
-    .banner-container {
-      position: relative;
-      overflow: hidden;
-      margin: 20px auto;
-      width: 95%;
-      border-radius: 20px;
-    }
-    .banner-slide {
-      display: flex;
-      transition: transform 0.8s ease-in-out;
-    }
-    .banner-item {
-      min-width: 100%;
-      position: relative;
-      border-radius: 20px;
-      overflow: hidden;
-    }
-    .banner-item img {
-      width: 100%;
-      height: auto;
-      border-radius: 20px;
-      object-fit: cover;
-    }
-    /* Desktop ratio 5:1 */
-    @media (min-width: 768px) {
-      .banner-container {
-        aspect-ratio: 5/1;
-      }
-      .banner-item:nth-child(1) img {
-        content: url('unpromo.png');
-      }
-      .banner-item:nth-child(2) img {
-        content: url('edupiepc.png');
-      }
-    }
-  /* Mobile ratio 9:5 (cropped) */
-    @media (max-width: 767px) {
-      .banner-container {
-        aspect-ratio: 9/5;
-      }
-      .banner-item img {
-        object-fit: cover;
-        object-position: center;
-      }
-      .banner-item:nth-child(1) img {
-        content: url('unpromomobile.png');
-      }
-      .banner-item:nth-child(2) img {
-        content: url('edupiemobile.png');
-      }
-      
-    }
-   /* ====== PDF PREVIEW – COOL STYLES ====== */
-
-#previewOverlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(10, 14, 25, 0.85);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    display: none;
-    flex-direction: column;
-    animation: fadeIn 0.4s ease forwards;
-    z-index: 99999;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-/* HEADER BAR */
-#previewHeader {
-    background: rgba(18, 26, 42, 0.7);
-    backdrop-filter: blur(10px);
-    padding: 12px 18px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 0 4px 25px rgba(0,0,0,0.4);
-}
-
-/* PDF TITLE TEXT */
-#previewHeader h3 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 600;
-    color: #e8edf6;
-    letter-spacing: 0.5px;
-}
-
-/* CLOSE BUTTON */
-#closePreview {
-    background: #ff3b3b;
-    border: none;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 14px;
-    transition: 0.25s;
-    box-shadow: 0 4px 14px rgba(255, 0, 0, 0.35);
-}
-
-#closePreview:hover {
-    background: #ff1f1f;
-    transform: scale(1.07);
-}
-
-/* PDF IFRAME */
-#pdfFrame {
-    flex: 1;
-    width: 100%;
-    border: none;
-    background: linear-gradient(135deg, #0b1220, #182236);
-    box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
-    animation: slideUp 0.4s ease forwards;
-}
-
-@keyframes slideUp {
-    from { transform: translateY(30px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-/* ZOOM EFFECT ON HOVER */
-#pdfFrame:hover {
-    filter: brightness(1.05);
-}
-
-/* TOP BORDER GLOW */
-#previewHeader {
-    border-bottom: 1px solid rgba(255,255,255,0.12);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-}
-
-/* SCROLLBAR CUSTOM (Chrome/Edge) */
-#pdfFrame::-webkit-scrollbar {
-    width: 10px;
-}
-#pdfFrame::-webkit-scrollbar-track {
-    background: rgba(255,255,255,0.05);
-}
-#pdfFrame::-webkit-scrollbar-thumb {
-    background: #3d4e72;
-    border-radius: 8px;
-}
-#pdfFrame::-webkit-scrollbar-thumb:hover {
-    background: #4b66a8;
-}
-
-    #greeting {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 10px;
-      font-size: 18px;
-      font-weight: bold;
-    }
-    /* small tick image next to Admin greeting */
-    #greeting img {
-      width: 30px;
-      height: 30px;
-      object-fit: contain;
-      display: inline-block;
-    }
-    /* color the Admin tag red */
-    #greeting .Admin {
-      color: rgb(255, 0, 0);
-      font-weight: bold;
-    }
-    #fakeAddBtn {
-      display: none;
-      margin: 10px auto;
-      background: #2264ff;
-    }
-    @media (max-width: 600px) {
-      header {
-        font-size: 20px;
-      }
-      .books {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-    @media (min-width: 1024px) {
-      .books {
-        grid-template-columns: repeat(5, 1fr);
-      }
-    }
-      /* Dots */
-    .dots {
-      text-align: center;
+      font-size: 0.9rem;
       margin-top: 10px;
     }
-    .dot {
-      height: 12px;
-      width: 12px;
-      margin: 0 5px;
-      background-color: #bbb;
-      border-radius: 50%;
-      display: inline-block;
+    #createAccountBtn:hover { color: var(--accent-color); text-decoration: underline; }
+
+    /* --- 9. PDF PREVIEW (App-like) --- */
+    #previewOverlay {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 20000;
+      display: none;
+      flex-direction: column;
+    }
+
+    #previewHeader {
+      height: 60px;
+      background: rgba(20, 20, 20, 0.9);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    #previewHeader span { font-weight: 600; font-size: 1.1rem; }
+
+    .preview-actions button {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
       cursor: pointer;
-      transition: background-color 0.3s;
+      margin-left: 10px;
+      font-size: 0.85rem;
     }
-    .dot.active {
-      background-color: #fff;
+    .preview-actions button.close { background: #ef4444; }
+
+    #pdfFrame {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background: #111;
     }
-/* ensure cards always fill their grid cell */
-.card{
-  background: #1c2940;
-  padding: 20px;
-  border-radius: 18px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  cursor: pointer;
-  width: 100%;
-  box-sizing: border-box;
-  text-decoration: none;
-  color: #fff;
-}
 
-/* responsive image containers */
-.cover,
-.oswaal {
-  width: 100%;
-  max-width: 340px; /* reasonable max on wide screens */
-  height: 140px;
-  background: #1c2940;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
+    /* --- 10. SOCIAL & FOOTER --- */
+    .social-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
 
-/* make images fluid and preserve aspect */
-.cover img,
-.oswaal img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
+    .social-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 24px;
+      border-radius: var(--radius-pill);
+      background: #1f1f22;
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.3s;
+      border: 1px solid transparent;
+    }
 
-    /* Hamburger Button */
-   /* Hamburger Button */
-.hamburger {
-  position: absolute;
-  top: 18px;
-  right: 25px;
-  width: 30px;
-  height: 24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  cursor: pointer;
-  z-index: 1100;
-}
-
-.hamburger span {
-  height: 4px;
-  width: 100%;
-  background: #fff;
-  border-radius: 2px;
-  transition: all 0.4s ease;
-}
-
-/* Turn into X when active */
-.hamburger.active span:nth-child(1) {
-  transform: rotate(45deg) translate(6px, 6px);
-}
-.hamburger.active span:nth-child(2) {
-  opacity: 0;
-}
-.hamburger.active span:nth-child(3) {
-  transform: rotate(-45deg) translate(6px, -6px);
-}
-
-/* Slide Menu */
-.menu {
-  position: fixed;
-  top: 0;
-  right: -260px;
-  width: 220px;
-  height: 100%;
-  background: #1c2940;
-  display: flex;
-  flex-direction: column;
-  padding-top: 80px;
-  transition: right 0.4s ease;
-  z-index: 1000;
-  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.6);
-}
-
-.menu.active {
-  right: 0;
-}
-
-.menu a {
-  padding: 14px 20px;
-  text-decoration: none;
-  color: white;
-  font-size: 18px;
-  font-weight: 500;
-  transition: background 0.3s, transform 0.2s;
-  border-bottom: 1px solid #2e3a55;
-}
-
-.menu a:hover {
-  background: #24314d;
-  transform: translateX(5px);
-}
-.menu a.active {
-  background: #24314d;
-  color: #58a6ff;
-  font-weight: bold;
-  border-left: 4px solid #58a6ff;
-  transform: translateX(5px);
-}
-
-    .close-btn {
-  display: block;
-  margin-bottom: 20px;
-  text-align: right;
-  font-size: 18px;
-  cursor: pointer;
-  color: red;
-  font-weight: bold;
-}
-.close-btn:hover {
-  color: #ff6666;
-}
-.menu-icon {
-  width: 22px;
-  height: 22px;
-  vertical-align: middle;
-  margin-right: 8px;}
-
-  
-.menu-logo {
-  width: 50px;
-  height: 32px;
-  object-fit: contain;
-  vertical-align: middle;
-}
-.folders{
-  display: grid;
-  gap: 20px;
-  /* auto-fit + minmax will make items take full row on small screens
-     and create columns as space allows (desktop will show 2+ columns) */
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  padding: 20px;
-  margin: 0 auto;
-  max-width: 1200px;
-  box-sizing: border-box;
-}
-
-/* ensure cards always fill their grid cell */
-.card{
-  background: #1c2940;
-  padding: 20px;
-  border-radius: 18px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  cursor: pointer;
-  width: 100%;
-  box-sizing: border-box;
-  text-decoration: none;
-  color: #fff;
-}
-
-/* responsive image containers */
-.cover,
-.oswaal {
-  width: 100%;
-  max-width: 340px; /* reasonable max on wide screens */
-  height: 140px;
-  background: #1c2940;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-/* make images fluid and preserve aspect */
-.cover img,
-.oswaal img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-/* tighten layout on very small screens */
-@media (max-width: 420px) {
-  .folders {
-    grid-template-columns: 1fr; /* force single column for very small devices */
-    padding: 12px;
-    gap: 12px;
-  }
-  .cover,
-  .oswaal {
-    max-width: 220px;
-    height: 120px;
-  }
-}
-/* VIP golden animated text */
-.vip {
-  color: gold;
-  font-weight: bold;
-  font-size: 22px;
-  animation: shine 1.5s infinite alternate;
-}
-
-/* Simple shimmer/glow effect */
-@keyframes shine {
-  0% { text-shadow: 0 0 5px gold, 0 0 10px gold, 0 0 15px orange; }
-  50% { text-shadow: 0 0 10px gold, 0 0 20px gold, 0 0 25px orange; }
-  100% { text-shadow: 0 0 5px gold, 0 0 10px gold, 0 0 15px orange; }
-}
-/* Admin red glowing text */
-.Admin {
-  color: red;
-  font-weight: bold;
-  font-size: 18px;
-  animation: redGlow 1.5s infinite alternate;
-}
-
-@keyframes redGlow {
-  0% { text-shadow: 0 0 5px red, 0 0 10px red, 0 0 15px darkred; }
-  50% { text-shadow: 0 0 10px red, 0 0 20px red, 0 0 25px darkred; }
-  100% { text-shadow: 0 0 5px red, 0 0 10px red, 0 0 15px darkred; }
-}
-.input-group {
-  position: relative;
-  width: 90%;
-  max-width: 280px;
-  margin: 12px 0;
-}
-
-.input-group input {
-  width: 100%;
-  padding: 14px 12px 6px 12px;
-  border: 1px solid #3c4a66;
-  background: #0b1220;
-  color: #e8edf6;
-  border-radius: 8px;
-  font-size: 16px;
-  outline: none;
-  transition: 0.3s ease;
-}
-
-.input-group label {
-  position: absolute;
-  top: 50%;
-  left: 12px;
-  transform: translateY(-50%);
-  background: #0b1220; 
-  padding: 0 4px;
-  color: #8fa2c8;
-  font-size: 16px;
-  pointer-events: none;
-  transition: 0.3s ease;
-  border-radius: 4px;
-  user-select: none; /* ← fixes the highlight issue */
-}
-
-
-.input-group input:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 8px rgba(0, 123, 255, 0.4);
-}
-
-.input-group input:focus + label,
-.input-group input:not(:placeholder-shown) + label {
-  top: -4px;
-  font-size: 12px;
-  color: #58a6ff;
-}
-.madeby {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 6px;
-  background: linear-gradient(90deg, #6dd5fa, #2980b9, #6dd5fa);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 10px rgba(0,153,255,0.6);
-  animation: glowMove 3s infinite linear;
-}
-
-@keyframes glowMove {
-  0% { text-shadow: 0 0 8px #1e90ff; }
-  50% { text-shadow: 0 0 16px #00c3ff; }
-  100% { text-shadow: 0 0 8px #1e90ff; }
-}
-/* COLLECTION BOXES – NEW COOL DESIGN */
-.collection-box {
-  background: linear-gradient(145deg, #162238, #0d1525);
-  border-radius: 18px;
-  padding: 22px;
-  text-align: center;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.6),
-              inset 0 0 0 2px rgba(255,255,255,0.05);
-  transition: 0.4s ease;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Glow ring animation */
-.collection-box::before {
-  content: "";
-  position: absolute;
-  width: 180%;
-  height: 180%;
-  left: -40%;
-  top: -40%;
-  background: conic-gradient(#007bff, #00d4ff, #007bff);
-  animation: rotateGlow 6s linear infinite;
-  opacity: 0.15;
-  z-index: 0;
-}
-
-@keyframes rotateGlow {
-  100% { transform: rotate(360deg); }
-}
-
-/* Inner dark layer */
-.collection-box::after {
-  content: "";
-  position: absolute;
-  inset: 4px;
-  background: #121a2b;
-  border-radius: 14px;
-  z-index: 1;
-}
-
-/* Actual content (text + images) */
-.collection-content {
-  position: relative;
-  z-index: 10;
-}
-
-/* Title style */
-.collection-title {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 8px;
-  background: linear-gradient(90deg, #6dd5fa, #2980b9);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Preview image */
-.collection-img {
-  width: 100%;
-  max-width: 260px;
-  height: 130px;
-  border-radius: 10px;
-  object-fit: contain;
-  margin-bottom: 10px;
-  transition: 0.3s ease;
-}
-
-/* Hover effects */
-.collection-box:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 35px rgba(0,0,0,0.7),
-              inset 0 0 0 2px rgba(0,132,255,0.2);
-}
-
-.collection-box:hover .collection-img {
-  transform: scale(1.05);
-}
-
-/* Responsive */
-@media (max-width: 480px) {
-  .collection-img {
-    height: 110px;
-  }
-}
-
-.preview-btn {
-  background: linear-gradient(135deg, #007bff, #00c6ff);
-  color: #fff;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 150, 255, 0.4);
-  position: relative;
-  overflow: hidden;
-}
-
-/* Glow line animation */
-.preview-btn::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    120deg,
-    transparent,
-    rgba(255,255,255,0.5),
-    transparent
-  );
-  transition: 0.5s;
-}
-
-.preview-btn:hover::before {
-  left: 100%;
-}
-
-.preview-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(0, 150, 255, 0.6);
-}
-
-.preview-btn:active {
-  transform: scale(0.95);
-}
-
-
-#instagramBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-  padding: 12px 20px;
-  border-radius: 50px;
-  color: #fff;
-  font-weight: bold;
-  text-decoration: none;
-  font-size: 16px;
-  box-shadow: 0 0 15px #ff3399, 0 0 30px #ff66cc inset;
-  transition: transform 0.2s, box-shadow 0.3s;
-}
-
-#instagramBtn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 25px #ff3399, 0 0 50px #ff66cc inset;
-}
-
-#instagramBtn img {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-}
-.social-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin: 25px 0 10px 0;
-}
-
-.social-btn {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: linear-gradient(135deg, #1c2940, #24314d);
-  padding: 12px 20px;
-  border-radius: 14px;
-  text-decoration: none;
-  color: #e8edf6;
-  font-size: 16px;
-  font-weight: bold;
-  transition: 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-}
-
-.social-btn img {
-  width: 22px;
-  height: 22px;
-  filter: drop-shadow(0 0 6px rgba(255,255,255,0.4));
-}
-
-.social-btn:hover {
-  transform: scale(1.08);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.6);
-}
-
-/* Special glow effects */
-.social-btn.insta:hover {
-  background: linear-gradient(135deg, #ff6a00, #ee0979);
-}
-
-.social-btn.telegram:hover {
-  background: linear-gradient(135deg, #0088cc, #00b7ff);
-}
-
-    </style>
+    .social-btn:hover {
+      background: #27272a;
+      border-color: rgba(255,255,255,0.1);
+      transform: translateY(-2px);
+    }
     
+    .social-btn.insta:hover { color: #e1306c; border-color: #e1306c; }
+    .social-btn.telegram:hover { color: #0088cc; border-color: #0088cc; }
+
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 40px 20px;
+      text-align: center;
+      background: #020202;
+    }
+
+    .madeby {
+      font-weight: 600;
+      margin-bottom: 10px;
+      background: linear-gradient(90deg, #60a5fa, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    footer a { color: var(--text-muted); text-decoration: none; margin: 0 10px; font-size: 0.9rem; }
+    footer a:hover { color: white; }
+
+    /* Helper for JS errors */
+    #authErrorBox {
+      background: rgba(220, 38, 38, 0.1);
+      border: 1px solid rgba(220, 38, 38, 0.5);
+      color: #fca5a5;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    /* Responsive Tweaks */
+    @media (max-width: 600px) {
+      .books { grid-template-columns: 1fr; }
+      .book { flex-direction: row; align-items: center; padding: 10px; text-align: left; }
+      .book img { width: 80px; height: 110px; margin-bottom: 0; margin-right: 15px; }
+      .book h3 { text-align: left; font-size: 1rem; margin-top: 0; }
+      .book-meta { text-align: left; }
+      .book .price { margin: 5px 0; }
+      .preview-btn { width: auto; padding: 6px 16px; font-size: 0.8rem; }
+      .book > div { flex: 1; display: flex; flex-direction: column; align-items: flex-start; }
+      /* Reset book inner structure for mobile list view if desired, otherwise keep grid */
+    }
+    
+    /* Force Grid on mobile as per user preference in code, but refined */
+    @media (max-width: 480px) {
+       .books { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+       .book { flex-direction: column; text-align: center; }
+       .book img { width: 100%; height: 160px; margin-right: 0; }
+       .book > div { align-items: center; }
+       .preview-btn { width: 100%; }
+    }
+/* Publishers vertical only on mobile */
+@media (max-width: 600px) {
+  .folders {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .collection-box {
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    gap: 15px;
+  }
+
+  .collection-img {
+    height: 45px;
+    margin-bottom: 0;
+  }
+}
+.social-logo {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+  </style>
 </head>
 <body>
-   <!-- Header -->
-<header style="text-align:center;padding:15px;background:#0b1220;position:relative;">
-  <img src="logo.png" alt="BOOKStore Logo" style="height:50px;">
 
-  <!-- Hamburger Button -->
-  <div class="hamburger" id="hamburger">
-    <span></span>
-    <span></span>
-    <span></span>
+  <!-- HEADER -->
+  <header>
+    <img src="logo.png" alt="BOOKStore" id="logo" onerror="this.style.display='none'; document.write('<span style=\'font-weight:bold;font-size:1.5rem;\'>BOOKStore</span>')">
+    
+    <div class="hamburger" id="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </header>
+
+  <!-- SIDE MENU -->
+  <nav class="menu" id="menu">
+    <a href="index.html" class="active">
+      <img src="home.svg" class="menu-icon" alt=""> Home
+    </a>
+    <a href="edupie.html">
+      <img src="edupie.png" class="menu-logo" alt=""> EduPie
+    </a>
+    <a href="games.html">
+      <img src="game.svg" class="menu-icon" alt=""> Games Zone
+    </a>
+    <a href="profile.html">
+      <img src="profile.svg" class="menu-icon" alt=""> Profile
+    </a>
+    <a href="link.html">
+      <img src="link.svg" class="menu-icon" alt=""> Link Processor
+    </a>
+    <a href="play.html">
+      <img src="play.svg" class="menu-icon" alt=""> Custom Player
+    </a>
+  </nav>
+
+  <!-- SEARCH -->
+  <div id="searchBar">
+    <input type="text" id="searchInput" placeholder="Search by Title, Author, or Year..." onkeyup="searchBooks()">
   </div>
-</header>
 
-<!-- Slide Menu -->
-<nav class="menu" id="menu">
-  <a href="index.html" class="active">
-    <img src="home.svg" alt="Home" class="menu-icon"> Home
-  </a>
-   <a href="edupie.html">
-    <img src="edupie.png" alt="Edupie" class="menu-logo">EduPie
-  </a>
-  <a href="games.html">
-    <img src="game.svg" alt="Games" class="menu-icon"> Games Zone
-  </a>
-  <a href="profile.html">
-    <img src="profile.svg" alt="Profile" class="menu-icon"> Profile
-  </a>
-   <a href="link.html">
-    <img src="link.svg" alt="Link-Processor" class="menu-icon"> Link Processer
-  </a>
-  <a href="play.html">
-    <img src="play.svg" alt="Custom-Player" class="menu-icon"> Custom Player
-   </a>
-</nav>
-
-
-<!-- Search Bar --> <div id="searchBar"> <input type="text" id="searchInput" placeholder="Search by Title, Author, or Year..." onkeyup="searchBooks()"> </div>
+  <!-- GREETING & ADMIN -->
   <div id="greeting"></div>
   <button id="fakeAddBtn">+ Add New Book</button>
-  <!-- Moving Banners -->
+
+  <!-- BANNER CAROUSEL -->
   <div class="banner-container" id="bannerContainer">
     <div class="banner-slide" id="bannerSlide">
       <div class="banner-item">
-         <a href="unpromomobile.png"><img src="unpromo.png" alt="Unbarbad"></a>
-      </div>
-      <div class="banner-item">
-         <a href="edupie.html"><img src="edupiepc.png" alt="EduPie"></a>
-      </div>
+  <a href="#">
+    <picture>
+      <source srcset="unpromomobile.png" media="(max-width: 600px)">
+      <img src="unpromo.png" alt="Unbarbad">
+    </picture>
+  </a>
+</div>
+
+<div class="banner-item">
+  <a href="edupie.html">
+    <picture>
+      <source srcset="edupiemobile.png" media="(max-width: 600px)">
+      <img src="edupiepc.png" alt="EduPie">
+    </picture>
+  </a>
+</div>
+
     </div>
   </div>
   <div class="dots">
     <span class="dot active" onclick="setSlide(0)"></span>
     <span class="dot" onclick="setSlide(1)"></span>
-    </div>
-
-  <!-- Login -->
-  <div id="loginPopup">
-    <div id="loginBox">
-      <button id="closeLogin">X</button> 
-      <h2>Login</h2>
-      <div class="input-group">
-  <input type="email" id="email" required placeholder=" ">
-
-  <label for="email">Email Address</label>
-</div>
-
-<div class="input-group">
-  <input type="password" id="password" required placeholder=" ">
-  <label for="password">Password</label>
-</div>
-
-      <button id="emailLoginBtn">Login</button>
-      <p style="margin: 10px 0; font-size: 14px; color: #aaa;">OR</p>
-      <!-- Google Login Button with Logo -->
-      <button id="googleLoginBtn">
-        <span class="material-icons">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Google_Favicon_2025.svg/120px-Google_Favicon_2025.svg.png" 
-           id="google" style="width:20px;height:20px;vertical-align:middle;" viewBox="0 0 24 24" >
-        </img>
-        </span>
-        Continue with Google
-      </button>
-      <!-- Toggle button for Create Account/Back to Login -->
-      <button id="createAccountBtn"></button>
-      
-    </div>
   </div>
 
-  <!-- Books -->
-    <div class="books">
-
-      <div class="book">
-      <img src="booklet.png" onerror="this.onerror=null;this.src='error.jpg';">
+  <!-- BOOKS GRID -->
+  <div class="books">
+    <!-- Book 1 -->
+    <div class="book">
+      <img src="booklet.png" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
       <h3>Brahmastra Booklet</h3>
-      <div class="year">Class: X</div>
-      <div class="year">Edition: 2025-2026</div>
-      <div class="author">Author: Next Toppers</div>
-      <div class="price" style="color:limegreen;">Free</div>
+      <div class="book-meta">Class X • 2025-26</div>
+      <div class="book-meta">Next Toppers</div>
+      <div class="price"><span>Free</span></div>
       <button class="preview-btn" onclick="previewPDF('https://drive.google.com/file/d/1uxeKiDwiw3GDAkPTyDOe5uJ3ZLuOELOw/preview')">Preview</button>
     </div>
+
+    <!-- Book 2 -->
     <div class="book">
-      <img src="RD.jpg" onerror="this.onerror=null;this.src='error.jpg';">
+      <img src="RD.jpg" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
       <h3>RD Sharma</h3>
-      <div class="year">Class: X</div>
-      <div class="year">Edition: 2023-2024</div>
-      <div class="author">Author: RD Sharma</div>
-      <div class="price" style="color:limegreen;">Free</div>
+      <div class="book-meta">Class X • 2023-24</div>
+      <div class="book-meta">RD Sharma</div>
+      <div class="price"><span>Free</span></div>
       <button class="preview-btn" onclick="previewPDF('https://drive.google.com/file/d/1sKoawaJf2PUk8dWSFvrcoGjC_0V0k8GS/preview')">Preview</button>
     </div>
+
+    <!-- Book 3 -->
     <div class="book">
-      <img src="unbarbaad.jpg"  onerror="this.onerror=null;this.src='error.jpg';">
+      <img src="unbarbaad.jpg" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
       <h3>Unbarbaad</h3>
-      <div class="author">Author: Shobit Nirwan</div>
-      <div class="price" style="color:limegreen;">Free</div>
+      <div class="book-meta">Class X</div>
+      <div class="book-meta">Shobit Nirwan</div>
+      <div class="price"><span>Free</span></div>
       <button class="preview-btn" onclick="previewPDF('https://drive.google.com/file/d/1KVuKBojVZLSi-dnjfVM1BkOp93w_1o4l/preview')">Preview</button>
     </div>
   </div>
 
-
-   <h2 style="text-align:center; margin-top:20px;">All Publishers</h2>
-
-   <div class="folders">
-
-  <!-- OSWAAL COLLECTION -->
-  <a href="oswaal.html" class="collection-box" class="folders hide-during-preview">
-    <div class="collection-content">
-      <img src="https://ebooks.oswaalbooks.com/assets/oswaal/oswaal-logo-icon-5b53538829e0bfbe5be442c684abe649.png" class="collection-img" alt="Oswaal Books">
+  <!-- COLLECTIONS -->
+  <h2 class="section-title">Browse Publishers</h2>
+  <div class="folders hide-during-preview">
+    <!-- Oswaal -->
+    <a href="oswaal.html" class="collection-box">
+      <img src="https://ebooks.oswaalbooks.com/assets/oswaal/oswaal-logo-icon-5b53538829e0bfbe5be442c684abe649.png" class="collection-img" alt="Oswaal">
       <div class="collection-title">Oswaal Books</div>
-      <div style="color:#9bb4d8;font-size:14px;">Latest PDFs • Sample papers</div>
-    </div>
-  </a>
-
-  <!-- CBSE COLLECTION -->
-  <a href="cbse.html" class="collection-box" class="folders hide-during-preview">
-    <div class="collection-content">
-      <img src="cbse.png" class="collection-img" alt="CBSE Material">
-      <div class="collection-title">CBSE Syllabus</div>
-      <div style="color:#9bb4d8;font-size:14px;">Syllabus • PYQs</div>
-    </div>
-  </a>
-
-</div>
-
-
-  <!-- Preview -->
-  <div id="previewOverlay">
-    <div id="previewHeader">
-      <span style="font-weight:bold;">PDF Preview</span>
-      <div>
-        <button onclick="openFullscreen()">Fullscreen</button>
-        <button onclick="closePreview()">Close</button>
-      </div>
-    </div>
-    <iframe id="pdfFrame" sandbox="allow-scripts allow-same-origin"></iframe>
+      <div class="collection-desc">Sample Papers & Question Banks</div>
+    </a>
+    
+    <!-- CBSE -->
+    <a href="cbse.html" class="collection-box">
+      <img src="cbse.png" class="collection-img" alt="CBSE" onerror="this.src='https://via.placeholder.com/100?text=CBSE'">
+      <div class="collection-title">CBSE Official</div>
+      <div class="collection-desc">Syllabus & PYQs</div>
+    </a>
   </div>
-  <div class="social-buttons">
+
+  <!-- SOCIAL LINKS -->
+  <div class="social-buttons hide-during-preview">
   <a href="https://www.instagram.com/syntaxbhavesh/" target="_blank" class="social-btn insta">
-    <img src="https://cdn-icons-png.flaticon.com/512/174/174855.png">
+    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram" class="social-logo">
     Instagram
   </a>
 
   <a href="https://t.me/+oQOMU7yAIIE2OWVl" target="_blank" class="social-btn telegram">
-    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png">
+    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram" class="social-logo">
     Telegram
   </a>
 </div>
 
-   <footer style="background:#0b1220;color:white;text-align:center;padding:20px 10px;font-size:14px;">
-  <div class="madeby">Made by Bhavesh </div>
-    <p>© 2025 BOOKStore. All rights reserved.</p>
-  <p>
-    <a href="privacy.html" style="color:#58a6ff;text-decoration:none;">Privacy Policy</a> |
-    <a href="about.html" style="color:#58a6ff;text-decoration:none;">About Us</a>
-  </p>
-</footer>
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/sw.js")
-      .catch(err => console.log("SW failed:", err));
-  }
-</script>
 
+  <!-- FOOTER -->
+  <footer class="hide-during-preview">
+    <div class="madeby">Made by Bhavesh</div>
+    <p style="color: #666; font-size: 0.85rem; margin-bottom: 10px;">© 2025 BOOKStore. All rights reserved.</p>
+    <div>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="about.html">About Us</a>
+    </div>
+  </footer>
 
- <script>
+  <!-- LOGIN POPUP -->
+  <div id="loginPopup">
+    <div id="loginBox">
+      <button id="closeLogin">&times;</button>
+      <h2>Login</h2>
+      
+      <div id="authErrorBox"></div>
 
-   function showToast(message, duration = 3000) {
-  const toast = document.getElementById("toast");
-  toast.textContent = message;
-  toast.style.display = "block";
-  toast.style.opacity = "1";
+      <div class="input-group">
+        <input type="email" id="email" placeholder=" " required>
+        <label for="email">Email Address</label>
+      </div>
 
-  setTimeout(() => {
-    toast.style.transition = "opacity 0.5s ease";
-    toast.style.opacity = "0";
-    setTimeout(() => {
-      toast.style.display = "none";
-      toast.style.transition = "";
-    }, 500);
-  }, duration);
-}
-window.addEventListener("load", () => {
-  const topToast = document.getElementById("topToast");
-  topToast.style.display = "flex";
-  topToast.style.opacity = "1";
+      <div class="input-group">
+        <input type="password" id="password" placeholder=" " required>
+        <label for="password">Password</label>
+      </div>
 
-  setTimeout(() => {
-    topToast.style.transition = "opacity 0.5s ease";
-    topToast.style.opacity = "0";
-    setTimeout(() => {
-      topToast.style.display = "none";
-      topToast.style.transition = "";
-    }, 500);
-  }, 2000); // 3 seconds
-});
+      <button id="emailLoginBtn" class="auth-btn">Login</button>
+      
+      <div style="margin: 15px 0; color: #555; font-size: 0.9rem;">OR</div>
+      
+      <button id="googleLoginBtn" class="auth-btn">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/2048px-Google_%22G%22_logo.svg.png" alt="G" width="20">
+        Continue with Google
+      </button>
 
-    // 1. Firebase Configuration
+      <button id="createAccountBtn">or Create new account</button>
+    </div>
+  </div>
+
+  <!-- PDF PREVIEW OVERLAY -->
+  <div id="previewOverlay">
+    <div id="previewHeader">
+      <span>PDF Preview</span>
+      <div class="preview-actions">
+        <button onclick="openFullscreen()">Fullscreen</button>
+        <button class="close" onclick="closePreview()">Close</button>
+      </div>
+    </div>
+    <iframe id="pdfFrame" sandbox="allow-scripts allow-same-origin"></iframe>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script>
+    // --- 1. CONFIG ---
     const firebaseConfig = {
       apiKey: "AIzaSyCcpG-oEqkDprgTwWXKt5CFsttjAQAZFNg",
       authDomain: "bookstore-6ab08.firebaseapp.com",
@@ -1210,436 +889,227 @@ window.addEventListener("load", () => {
       measurementId: "G-R9N7YSCMY0"
     };
 
-    // Initialize Firebase
     const app = firebase.initializeApp(firebaseConfig);
     const auth = app.auth();
-
-    // The UID Collection
     const ADMIN_UID = "F9UxJ3W6CVUVIIgwByuHQxscQab2";
     const VIP_UID = "KGi3N6UPRic9tlRZOfwp6giIoGt1";
 
-    // 2. Element References
+    // --- 2. UI ELEMENTS ---
     const loginPopup = document.getElementById("loginPopup");
-    const loginBox = document.getElementById("loginBox"); 
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const emailLoginBtn = document.getElementById("emailLoginBtn");
-    const googleLoginBtn = document.getElementById("googleLoginBtn");
     const closeLogin = document.getElementById("closeLogin");
     const greeting = document.getElementById("greeting");
     const fakeAddBtn = document.getElementById("fakeAddBtn");
     const previewOverlay = document.getElementById("previewOverlay");
     const pdfFrame = document.getElementById("pdfFrame");
-    const createAccountBtn = document.getElementById("createAccountBtn"); 
-
-    let isCreatingAccount = false; 
     
-    closeLogin.onclick = () => loginPopup.style.display = "none";
+    // Auth Elements
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const emailLoginBtn = document.getElementById("emailLoginBtn");
+    const googleLoginBtn = document.getElementById("googleLoginBtn");
+    const createAccountBtn = document.getElementById("createAccountBtn");
+    const errorBox = document.getElementById('authErrorBox');
+
+    let isCreatingAccount = false;
+
+    // --- 3. EVENT LISTENERS ---
     
-    // Helper to display errors without using alert()
-    function displayError(message) {
-        let errorBox = document.getElementById('authErrorBox');
-        if (!errorBox) {
-            errorBox = document.createElement('div');
-            errorBox.id = 'authErrorBox';
-            
-            // Apply the CSS defined in the <style> block
-            errorBox.style.cssText = 'background: #dc3545; color: white; padding: 10px; border-radius: 6px; margin-bottom: 10px; text-align: left; width: 90%; max-width: 280px; transition: opacity 0.5s, max-height 0.5s; opacity: 1; overflow: hidden; max-height: 100px; box-sizing: border-box;';
-            
-            // Insert after the H2 element
-            const h2 = loginBox.querySelector('h2');
-            loginBox.insertBefore(errorBox, h2.nextElementSibling);
-        }
-        
-        errorBox.textContent = message;
-        errorBox.style.opacity = '1';
-        errorBox.style.maxHeight = '100px';
-        
-        // Hide after 5 seconds
-        setTimeout(() => {
-            errorBox.style.opacity = '0';
-            errorBox.style.maxHeight = '0';
-        }, 5000);
-    }
-    
-const hamburger = document.getElementById("hamburger");
-const menu = document.getElementById("menu");
+    // Close Login Modal
+    closeLogin.onclick = () => {
+      loginPopup.classList.remove("show");
+      setTimeout(() => loginPopup.style.display = "none", 300);
+    };
 
-// Toggle menu open/close
-hamburger.addEventListener("click", (event) => {
-  event.stopPropagation(); // prevent triggering document click
-  hamburger.classList.toggle("active");
-  menu.classList.toggle("active");
-});
+    // Hamburger Menu
+    const hamburger = document.getElementById("hamburger");
+    const menu = document.getElementById("menu");
 
-// Close menu when clicking outside
-document.addEventListener("click", (event) => {
-  const clickedInsideMenu = menu.contains(event.target);
-  const clickedHamburger = hamburger.contains(event.target);
+    hamburger.addEventListener("click", (e) => {
+      e.stopPropagation();
+      hamburger.classList.toggle("active");
+      menu.classList.toggle("active");
+    });
 
-  if (!clickedInsideMenu && !clickedHamburger) {
-    menu.classList.remove("active");
-    hamburger.classList.remove("active");
-  }
-});
-
-// Prevent clicks inside menu from closing it
-menu.addEventListener("click", (event) => {
-  event.stopPropagation();
-});
- const currentPage = window.location.pathname.split('/').pop();
-  document.querySelectorAll('.menu a').forEach(link => {
-    if (link.getAttribute('href') === currentPage) {
-      link.classList.add('active');
-    }
-  });
-    // Helper to switch mode display (Login <-> Create Account)
-    function toggleMode(isCreate) {
-        isCreatingAccount = isCreate;
-        emailInput.value = ''; // Clear inputs when switching mode
-        passwordInput.value = '';
-        
-        // Hide existing error box when switching mode
-        const errorBox = document.getElementById('authErrorBox');
-        if (errorBox) {
-            errorBox.style.opacity = '0';
-            errorBox.style.maxHeight = '0';
-        }
-
-        document.querySelector('#loginBox h2').textContent = isCreate ? "Create Account" : "Login";
-        emailLoginBtn.textContent = isCreate ? "Sign Up" : "Login";
-        emailLoginBtn.style.background = isCreate ? '#007bff' : '#007bff'; // Blue for both actions
-
-        // Apply the "or" prefix logic for the toggle button
-        if (isCreate) {
-            createAccountBtn.innerHTML = 'or <span style="font-weight: bold; color: #4dabff;">Back to Login</span>';
-        } else {
-            createAccountBtn.innerHTML = 'or <span style="font-weight: bold; color: #4dabff;">Create new account</span>';
-        }
-    }
-
-    /**
-     * Updates the user's display name in Firebase and re-renders the greeting.
-     */
-    async function saveDisplayName(user, newName) {
-        const input = document.getElementById('userNameInput');
-        const oldNameSpan = document.createElement('span');
-        
-        // Use a temporary span element while updating
-        oldNameSpan.id = 'userNameDisplay';
-        oldNameSpan.title = "Double-click to edit";
-        
-        // Optimistic update
-        oldNameSpan.textContent = newName;
-        input.parentNode.replaceChild(oldNameSpan, input);
-        
-        try {
-            await user.updateProfile({
-                displayName: newName
-            });
-            console.log("Display name updated to:", newName);
-            // Re-attach dblclick listener to the new span element
-            setupGreetingEdit(user); 
-        } catch (error) {
-            console.error("Error updating display name:", error);
-            // Revert to old name if update failed (use the latest from Firebase if available)
-            oldNameSpan.textContent = user.displayName || 'Error';
-            displayError("Failed to save name: " + error.message);
-            setupGreetingEdit(user); // Re-attach listener anyway
-        }
-    }
-    
-    /**
-     * Sets up the double-click handler to allow editing the display name.
-     */
-    function setupGreetingEdit(user) {
-        const nameSpan = document.getElementById('userNameDisplay');
-        if (!nameSpan) return;
-
-        // Attach double-click listener
-        nameSpan.ondblclick = () => {
-            // Check if user is not the admin UID (optional restriction, can be removed)
-            // if (user.uid === ADMIN_UID) return; 
-
-            // Create an input field
-            const currentName = nameSpan.textContent.trim();
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.value = currentName;
-            input.id = 'userNameInput';
-            
-            // Inline styling for the input to blend with the greeting text
-            input.style.cssText = 'background: #0b1220; border: 1px solid #4dabff; color: #e8edf6; padding: 2px 4px; border-radius: 4px; font-size: 18px; width: 150px;';
-
-            // Replace the span with the input
-            nameSpan.parentNode.replaceChild(input, nameSpan);
-            input.focus();
-
-            // Function to save the name
-            const saveEdit = async () => {
-                const newName = input.value.trim();
-                // Check if name has changed and is not empty
-                if (newName && newName !== currentName) {
-                    await saveDisplayName(user, newName);
-                } else {
-                    // Revert if cancelled, empty, or unchanged
-                    // Create a new span element to replace the input
-                    const revertSpan = document.createElement('span');
-                    revertSpan.id = 'userNameDisplay';
-                    revertSpan.title = "Double-click to edit";
-                    revertSpan.textContent = currentName;
-                    
-                    input.parentNode.replaceChild(revertSpan, input);
-                    setupGreetingEdit(user); // Re-attach listener
-                }
-            };
-
-            // Save on blur (when input loses focus)
-            input.onblur = saveEdit;
-            
-            // Save on Enter key press
-            input.onkeydown = (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault(); 
-                    saveEdit();
-                }
-            };
-        };
-    }
-
-    // 3. User Initialization and Admin Greeting
-    function initUser(user) {
-  loginPopup.style.display = "none";
-  fakeAddBtn.style.display = "none"; // Hide by default
-
-  if (user) {
-    let displayName = user.displayName;
-    const defaultName = user.email ? user.email.split('@')[0] : 'User';
-    
-    if (!displayName) {
-      displayName = defaultName;
-      user.updateProfile({ displayName: displayName })
-          .catch(error => console.error("Error setting default display name:", error));
-    }
-
-    // VIP user greeting
-    if (user.uid === VIP_UID) {
-      greeting.innerHTML = `Welcome <span id="userNameDisplay">${displayName}</span> <span class="vip">VIP</span>`;
-      fakeAddBtn.style.display = "none";
-    } 
-    // Admin user greeting
-    else if (user.uid === ADMIN_UID) {
-      greeting.innerHTML = `Welcome <span id="userNameDisplay">${displayName}</span> <span class="Admin">(Admin)</span>
-                            <img src="https://static.vecteezy.com/system/resources/thumbnails/034/211/380/small_2x/blue-checkmark-validation-social-media-png.png" alt="Admin tick">`;
-      fakeAddBtn.style.display = "block";
-    } 
-    // Regular user greeting
-    else {
-      greeting.innerHTML = `Welcome <span id="userNameDisplay">${displayName}</span>`;
-    }
-
-    setupGreetingEdit(user);
-  } else {
-    greeting.innerHTML = '';
-  }
-}
-
-
-    // 4. Firebase Authentication Handlers
-
-    // Listen for auth state changes
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        // User is signed in.
-        initUser(user);
-        toggleMode(false); // Reset to login mode on successful auth
-      } else {
-        // User is signed out.
-        initUser(null);
-        // Automatically show the login popup if no user is signed in
-        loginPopup.style.display = "flex";
+    document.addEventListener("click", (e) => {
+      if (!menu.contains(e.target) && !hamburger.contains(e.target)) {
+        menu.classList.remove("active");
+        hamburger.classList.remove("active");
       }
     });
 
-    // Email/Password Action (handles both Login and Signup)
+    // --- 4. AUTH LOGIC ---
+    
+    // Toggle Login/Signup Mode
+    function toggleMode(isCreate) {
+      isCreatingAccount = isCreate;
+      emailInput.value = '';
+      passwordInput.value = '';
+      errorBox.style.display = 'none';
+      
+      const title = document.querySelector('#loginBox h2');
+      title.textContent = isCreate ? "Create Account" : "Login";
+      emailLoginBtn.textContent = isCreate ? "Sign Up" : "Login";
+      
+      createAccountBtn.innerHTML = isCreate 
+        ? 'or <span style="color:var(--accent-color)">Back to Login</span>' 
+        : 'or <span style="color:var(--accent-color)">Create new account</span>';
+    }
+
+    createAccountBtn.onclick = () => toggleMode(!isCreatingAccount);
+
+    function displayError(msg) {
+      errorBox.textContent = msg;
+      errorBox.style.display = 'block';
+    }
+
+    // Auth State Listener
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        initUser(user);
+        // Hide login popup with animation
+        loginPopup.classList.remove("show");
+        setTimeout(() => loginPopup.style.display = "none", 300);
+        toggleMode(false);
+      } else {
+        initUser(null);
+        loginPopup.style.display = "flex";
+        // Small delay to allow display flex to apply before opacity transition
+        setTimeout(() => loginPopup.classList.add("show"), 10);
+      }
+    });
+
+    // Email Login/Signup
     emailLoginBtn.onclick = async () => {
       const email = emailInput.value.trim();
       const password = passwordInput.value;
-      
-      // Basic client-side validation
-      if (!email || !password) {
-        displayError("Please enter both email and password.");
-        return;
-      }
+      if (!email || !password) return displayError("Please enter email and password.");
 
       try {
         if (isCreatingAccount) {
-            // New account creation (This will automatically log the user in)
-            await auth.createUserWithEmailAndPassword(email, password);
-            console.log("Account created successfully and user logged in.");
+          await auth.createUserWithEmailAndPassword(email, password);
         } else {
-            // Login
-            await auth.signInWithEmailAndPassword(email, password);
+          await auth.signInWithEmailAndPassword(email, password);
         }
-        // auth.onAuthStateChanged will handle hiding the popup and initializing the user
       } catch (error) {
-        displayError((isCreatingAccount ? "Sign Up" : "Login") + " failed: " + error.message);
+        displayError(error.message);
       }
     };
 
-    // Toggle between Login and Create Account mode
-    createAccountBtn.onclick = () => {
-        toggleMode(!isCreatingAccount);
-    };
-    
-    // Google Sign-In
+    // Google Login
     googleLoginBtn.onclick = async () => {
       const provider = new firebase.auth.GoogleAuthProvider();
       try {
         await auth.signInWithPopup(provider);
-        // auth.onAuthStateChanged will handle initUser
       } catch (error) {
-        displayError("Google Login failed: " + error.message);
+        displayError(error.message);
       }
     };
-    
-    // Initialize the mode when the script loads
-    toggleMode(false);
 
+    // --- 5. USER DISPLAY LOGIC ---
+    function initUser(user) {
+      fakeAddBtn.style.display = "none";
+      if (user) {
+        let name = user.displayName || user.email.split('@')[0];
+        
+        let tag = "";
+        if (user.uid === VIP_UID) tag = `<span class="vip"> VIP</span>`;
+        if (user.uid === ADMIN_UID) {
+          tag = `<span class="Admin"> (Admin)</span> <i class="material-icons" style="font-size:16px;color:#3b82f6;vertical-align:middle;">verified</i>`;
+          fakeAddBtn.style.display = "block";
+        }
+        
+        greeting.innerHTML = `Welcome back, <span id="userNameDisplay">${name}</span>${tag}`;
+        setupNameEdit(user);
+      } else {
+        greeting.innerHTML = "";
+      }
+    }
 
-    // Placeholder for searchBooks and other functions
-    
-    // Simple Auto Carousel
-    let index = 0;
+    function setupNameEdit(user) {
+      const nameSpan = document.getElementById('userNameDisplay');
+      if(!nameSpan) return;
+      
+      nameSpan.ondblclick = () => {
+        const current = nameSpan.textContent;
+        const input = document.createElement('input');
+        input.value = current;
+        input.style.cssText = "background:#111; color:white; border:1px solid #555; padding:2px 5px; border-radius:4px;";
+        nameSpan.replaceWith(input);
+        input.focus();
+
+        const save = async () => {
+          const newVal = input.value.trim();
+          if(newVal && newVal !== current) {
+             try {
+               await user.updateProfile({ displayName: newVal });
+               input.replaceWith(Object.assign(document.createElement('span'), { id:'userNameDisplay', textContent: newVal }));
+               setupNameEdit(user); // Re-attach listener
+             } catch(e) { console.error(e); }
+          } else {
+             input.replaceWith(nameSpan);
+          }
+        };
+        input.onblur = save;
+        input.onkeydown = (e) => { if(e.key === 'Enter') save(); }
+      };
+    }
+
+    // --- 6. CAROUSEL LOGIC ---
+    let slideIndex = 0;
     const slides = document.getElementById("bannerSlide");
-    const totalSlides = slides.children.length;
-    const dots = document.querySelectorAll(".dot"); // Get dots here
+    const dots = document.querySelectorAll(".dot");
+    const totalSlides = 2; // Fixed based on HTML
 
-    function updateDots() {
-      dots.forEach((dot, i) => {
-        dot.classList.toggle("active", i === index);
+    function setSlide(n) {
+      slideIndex = n;
+      slides.style.transform = `translateX(-${slideIndex * 100}%)`;
+      dots.forEach((d, i) => d.classList.toggle("active", i === slideIndex));
+    }
+
+    // Auto play
+    setInterval(() => {
+      slideIndex = (slideIndex + 1) % totalSlides;
+      setSlide(slideIndex);
+    }, 5000);
+
+    // --- 7. UTILS & PDF ---
+    function searchBooks() {
+      let input = document.getElementById('searchInput').value.toLowerCase();
+      let books = document.querySelectorAll('.book');
+      books.forEach(book => {
+        let text = book.innerText.toLowerCase();
+        book.style.display = text.includes(input) ? "flex" : "none";
       });
     }
 
-    function showSlide() {
-      index = (index + 1) % totalSlides;
-      slides.style.transform = `translateX(-${index * 100}%)`;
-      updateDots(); // Update dots on slide change
-    }
-
-    function setSlide(n) {
-      index = n;
-      slides.style.transform = `translateX(-${index * 100}%)`;
-      updateDots();
-    }
-
-    setInterval(showSlide, 4000);
-    // ... (rest of carousel/swipe code) ...
-    let startX = 0;
-    let endX = 0;
-    const bannerContainer = document.getElementById("bannerContainer");
-
-    bannerContainer.addEventListener("touchstart", (e) => {
-      startX = e.touches[0].clientX;
-    });
-
-    bannerContainer.addEventListener("touchend", (e) => {
-      endX = e.changedTouches[0].clientX;
-      handleSwipe();
-    });
-
-    function handleSwipe() {
-      const diff = endX - startX;
-      if (Math.abs(diff) > 50) { // swipe threshold
-        if (diff > 0) {
-          index = (index - 1 + totalSlides) % totalSlides; // swipe right
-        } else {
-          index = (index + 1) % totalSlides; // swipe left
-        }
-        slides.style.transform = `translateX(-${index * 100}%)`;
-        updateDots();
-      }
-    }
-
-    function toggleMenu(){
-      document.getElementById("sidebar")?.classList.toggle("active");
-    }
-
-    function previewPDF(file) {
-      pdfFrame.src = file + "#toolbar=0&navpanes=0&scrollbar=0";
+    function previewPDF(url) {
+      pdfFrame.src = url + "#toolbar=0&navpanes=0&scrollbar=0";
       previewOverlay.style.display = "flex";
+      // Hide scroll on body
+      document.body.style.overflow = "hidden";
+      document.querySelectorAll(".hide-during-preview").forEach(el => el.style.opacity = "0");
     }
 
     function closePreview() {
       previewOverlay.style.display = "none";
       pdfFrame.src = "";
+      document.body.style.overflow = "auto";
+      document.querySelectorAll(".hide-during-preview").forEach(el => el.style.opacity = "1");
     }
-function openPDF(url) {
-  document.getElementById("pdfFrame").src = url;
-  const overlay = document.getElementById("previewOverlay");
-  overlay.style.display = "flex";
-  overlay.classList.add("active");  // <<< IMPORTANT
-}
-
-
-function closePDF() {
-  const overlay = document.getElementById("previewOverlay");
-  overlay.style.display = "none";
-  overlay.classList.remove("active"); // <<< IMPORTANT
-}
-function openPreview(url) {
-  document.getElementById("pdfFrame").src = url;
-  document.getElementById("previewOverlay").style.display = "flex";
-
-  // Hide boxes
-  document.querySelectorAll(".hide-during-preview")
-    .forEach(el => el.style.display = "none");
-}
-
 
     function openFullscreen() {
       if (pdfFrame.requestFullscreen) pdfFrame.requestFullscreen();
     }
-function closePreview() {
-  document.getElementById("previewOverlay").style.display = "none";
 
-  // Show boxes again
-  document.querySelectorAll(".hide-during-preview")
-    .forEach(el => el.style.display = "");
-}
-
-    // Disable right-click
+    // Security
     document.addEventListener("contextmenu", e => e.preventDefault());
-
-    // Block common shortcut keys
     document.addEventListener("keydown", e => {
-      if ( 
-        (e.ctrlKey && ["s","u","p"].includes(e.key.toLowerCase())) ||
-        (e.ctrlKey && e.shiftKey && ["i","j","c"].includes(e.key.toLowerCase())) ||
-        (e.key === "PrintScreen")
-      ) {
-        e.preventDefault();
-        displayError("Export/Download is disabled!");
-      }
+       if((e.ctrlKey && (e.key === 'p' || e.key === 's' || e.key === 'u')) || e.key === 'PrintScreen') {
+         e.preventDefault();
+         alert("Protected Content");
+       }
     });
 
-    function searchBooks() { 
-      let input = document.getElementById('searchInput').value.toLowerCase(); 
-      let books = document.getElementsByClassName('book'); 
-      for (let i = 0; i < books.length; i++) { 
-        let title = books[i].getElementsByTagName("h3")[0].innerText.toLowerCase(); 
-        let author = books[i].getElementsByClassName("author")[0]?.innerText.toLowerCase() || ""; 
-        let year = books[i].getElementsByClassName("year")[0]?.innerText.toLowerCase() || ""; 
-        if (title.includes(input) || author.includes(input) || year.includes(input)) { 
-          books[i].style.display = "block"; 
-        } else { 
-          books[i].style.display = "none"; 
-        } 
-      } 
-    }
-   
-
-  </script>
-
+  </script>
 </body>
 </html>
