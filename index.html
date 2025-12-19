@@ -683,6 +683,102 @@
   height: 22px;
   object-fit: contain;
 }
+/* ===== Browse Batches ===== */
+.batch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 25px;
+  padding: 0 5%;
+  max-width: 1200px;
+  margin: 0 auto 50px;
+}
+
+.batch-card {
+  background: linear-gradient(180deg, #0f0f0f, #090909);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.batch-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(59,130,246,0.25);
+  border-color: rgba(59,130,246,0.4);
+}
+
+.batch-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 15px;
+}
+
+.batch-card h3 {
+  font-family: var(--font-head);
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+}
+
+/* Tag */
+.batch-tag {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: rgba(59,130,246,0.15);
+  color: #93c5fd;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(59,130,246,0.3);
+}
+
+/* Explore Button */
+.explore-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: white;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.explore-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.35), transparent);
+  transform: translateX(-100%);
+  transition: 0.6s;
+}
+
+.explore-btn:hover::after {
+  transform: translateX(100%);
+}
+
+.explore-btn:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 25px rgba(139,92,246,0.5);
+}
+/* Force batch order on mobile */
+@media (max-width: 600px) {
+  .batch-grid {
+    grid-template-columns: 1fr; /* single column */
+  }
+}
+
 
   </style>
 </head>
@@ -790,6 +886,31 @@
       <button class="preview-btn" onclick="previewPDF('https://drive.google.com/file/d/1KVuKBojVZLSi-dnjfVM1BkOp93w_1o4l/preview')">Preview</button>
     </div>
   </div>
+<h2 class="section-title">Browse Batches</h2>
+
+<div class="batch-grid">
+  <!-- Abhay Batch -->
+  <div class="batch-card">
+    <img src="https://dxixtlyravvxx.cloudfront.net/540/admin_v1/bundle_management/course/626308539904_abhay%2010th%20banner%20app%202026.png" alt="Abhay Batch">
+    <span class="batch-tag">By Next Toppers</span>
+    <h3>Abhay Batch (2025–26)</h3>
+    <button class="explore-btn"
+      onclick="window.open('https://theeduverse.xyz/courses/details/39904','_blank')">
+      Explore
+    </button>
+  </div>
+
+  <!-- Booster Batch -->
+  <div class="batch-card">
+    <img src="https://d1xo3otg0k74xn.cloudfront.net/566/admin_v1/bundle_management/course/527182840819_8.jpg" alt="Booster Batch">
+    <span class="batch-tag">By Master Sahab</span>
+    <h3>Booster Batch</h3>
+    <button class="explore-btn"
+      onclick="window.open('https://theeduverse.xyz/courses/details/40819','_blank')">
+      Explore
+    </button>
+  </div>
+</div>
 
   <!-- COLLECTIONS -->
   <h2 class="section-title">Browse Publishers</h2>
