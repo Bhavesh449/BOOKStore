@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BOOKStore — Admin Panel</title>
+  
+  <link rel="icon" type="image/png" href="https://png.pngtree.com/png-vector/20240515/ourmid/pngtree-open-book-logo-png-image_12467719.png">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <style>
+    /* --- 1. VARIABLES & THEME --- */
+    :root {
+      --bg-dark: #050505;
+      --bg-card: #121212;
+      --bg-glass: rgba(18, 18, 18, 0.8);
+      --border-color: rgba(255, 255, 255, 0.1);
+      
+      --primary-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      --accent-color: #3b82f6;
+      --text-main: #ffffff;
+      --text-muted: #a1a1aa;
+      
+      --vip-gold: #facc15;
+      --vip-glow: 0 0 15px rgba(250, 204, 21, 0.3);
+      
+      --danger: #ef4444;
+      --success: #22c55e;
+      
+      --radius-lg: 16px;
+      --radius-md: 10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* --- 2. OVERLAYS (SECURITY & LOADING) --- */
+    #securityOverlay, #loadingOverlay {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    
+    #securityOverlay { background: #0a0a0a; display: none; }
+    
+    .denied-icon {
+      font-size: 5rem;
+      color: var(--danger);
+      margin-bottom: 20px;
+      animation: pulse 1.5s infinite;
+    }
+    
+    .denied-text {
+      font-family: 'Poppins', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(to right, #ef4444, #b91c1c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .loader {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255,255,255,0.1);
+      border-top-color: var(--accent-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+
+    /* --- 3. MAIN UI --- */
+    #adminPanel { display: none; padding-bottom: 50px; }
+
+    /* Top Bar */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(5, 5, 5, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 15px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 1.2rem;
+    }
+    
+    .brand img { height: 32px; }
+
+    .admin-profile {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logout-btn {
+      padding: 8px 16px;
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: 0.3s;
+    }
+    .logout-btn:hover { background: var(--danger); color: white; }
+
+    /* Content Area */
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    h2 { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 1.8rem; }
+
+    .search-bar {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .search-bar input {
+      width: 100%;
+      background: #111;
+      border: 1px solid var(--border-color);
+      padding: 12px 15px 12px 45px;
+      border-radius: 50px;
+      color: white;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .search-icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+
+    /* --- 4. USER CARDS (GRID SYSTEM) --- */
+    .users-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
+    }
+
+    .user-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      position: relative;
+      transition: 0.3s;
+      overflow: hidden;
+    }
+
+    .user-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+
+    .user-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #333, #444);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--text-muted);
+    }
+
+    /* Role Badges */
+    .badge {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .badge-admin { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .badge-vip { background: rgba(250, 204, 21, 0.15); color: #facc15; border: 1px solid rgba(250, 204, 21, 0.3); box-shadow: var(--vip-glow); }
+    .badge-user { background: rgba(255, 255, 255, 0.05); color: var(--text-muted); }
+
+    /* User Info */
+    .info-group { margin-bottom: 15px; }
+    
+    .info-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+    
+    .info-value {
+      font-size: 0.95rem;
+      color: white;
+      word-break: break-all;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .uid-box {
+      font-family: monospace;
+      background: #000;
+      padding: 4px 8px;
+      border-radius: 6px;
+      color: #888;
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 5px;
+    }
+    
+    .copy-btn { cursor: pointer; font-size: 1rem; opacity: 0.7; transition: 0.2s; }
+    .copy-btn:hover { color: white; opacity: 1; }
+
+    /* Editable Name */
+    .name-edit-wrapper { display: flex; align-items: center; gap: 8px; width: 100%; }
+    .name-input {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid transparent;
+      color: white;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      width: 100%;
+      padding: 2px 0;
+    }
+    .name-input:focus { border-bottom-color: var(--accent-color); }
+    .edit-icon { font-size: 1rem; color: var(--text-muted); cursor: pointer; }
+
+    /* --- 5. VIP TOGGLE SWITCH --- */
+    .vip-control {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .vip-label { font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+    .vip-label .material-icons { font-size: 1.1rem; color: var(--vip-gold); }
+
+    /* The Switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input { opacity: 0; width: 0; height: 0; }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #333;
+      transition: .4s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+    }
+
+    .slider.round { border-radius: 34px; }
+    .slider.round:before { border-radius: 50%; }
+
+    input:checked + .slider { background-color: var(--vip-gold); box-shadow: var(--vip-glow); }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #1a1a1a;
+      border-left: 4px solid var(--accent-color);
+      padding: 15px 25px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 10000;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
+
+    @media (max-width: 600px) {
+      .section-header { flex-direction: column; align-items: stretch; }
+      .search-bar { max-width: 100%; }
+    }
+    /* Block User Control */
+.block-control {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(239,68,68,0.25);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.block-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #f87171;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.block-label .material-icons {
+  font-size: 1.1rem;
+  color: var(--danger);
+}
+
+input.blocked:checked + .slider {
+  background-color: var(--danger);
+  box-shadow: 0 0 15px rgba(239,68,68,0.6);
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- LOADING OVERLAY -->
+  <div id="loadingOverlay">
+    <div class="loader"></div>
+    <p style="margin-top:15px; color:#888;">Verifying Credentials...</p>
+  </div>
+
+  <!-- SECURITY BLOCK OVERLAY -->
+  <div id="securityOverlay">
+    <span class="material-icons denied-icon">gpp_bad</span>
+    <div class="denied-text">ACCESS DENIED</div>
+    <p style="color:#aaa; margin-top:10px;">You are not authorized to view this page.</p>
+    <p style="color:#666; font-size:0.9rem; margin-top:20px;">Redirecting...</p>
+  </div>
+
+  <!-- MAIN ADMIN PANEL -->
+  <div id="adminPanel">
+    
+    <header>
+      <div class="brand">
+        <img src="https://png.pngtree.com/png-vector/20240515/ourmid/pngtree-open-book-logo-png-image_12467719.png" alt="Logo">
+        <span>Admin Panel</span>
+      </div>
+      <div class="admin-profile">
+        <span id="adminNameDisplay" style="display:none; color:#ddd; font-size:0.9rem;">Admin</span>
+        <button class="logout-btn" onclick="logout()">
+          <span class="material-icons" style="vertical-align:middle; font-size:1.1rem;">logout</span> Logout
+        </button>
+      </div>
+    </header>
+
+    <div class="container">
+      
+      <!-- Users Section -->
+      <div class="section-header">
+        <h2>User Management</h2>
+        <div class="search-bar">
+          <span class="material-icons search-icon">search</span>
+          <input type="text" id="userSearch" placeholder="Search by name, email or UID..." onkeyup="filterUsers()">
+        </div>
+      </div>
+
+      <div class="users-grid" id="usersContainer">
+        <!-- Users loaded dynamically -->
+        <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">
+          Loading users from database...
+        </div>
+      </div>
+
+      <footer>
+        <span class="material-icons" style="font-size:1rem; vertical-align:middle;">security</span>
+        Secure Admin Environment. Only authorized access permitted.
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast">
+    <span class="material-icons" style="color:var(--accent-color)">info</span>
+    <span id="toastMsg">Notification</span>
+  </div>
+
+  <!-- FIREBASE SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <script>
+    // --- 1. CONFIGURATION ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyCcpG-oEqkDprgTwWXKt5CFsttjAQAZFNg",
+      authDomain: "bookstore-6ab08.firebaseapp.com",
+      databaseURL: "https://bookstore-6ab08-default-rtdb.firebaseio.com",
+      projectId: "bookstore-6ab08",
+      storageBucket: "bookstore-6ab08.firebasestorage.app",
+      messagingSenderId: "102226032749",
+      appId: "1:102226032749:web:f7090175d2e53c2f522764"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    // --- 2. SECURITY CONSTANTS ---
+    const ADMIN_UID = "F9UxJ3W6CVUVIIgwByuHQxscQab2"; 
+
+    // --- DOM ELEMENTS ---
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const securityOverlay = document.getElementById('securityOverlay');
+    const adminPanel = document.getElementById('adminPanel');
+    const usersContainer = document.getElementById('usersContainer');
+    const adminNameDisplay = document.getElementById('adminNameDisplay');
+
+    // --- 3. AUTH & SECURITY LOGIC ---
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        if (user.uid === ADMIN_UID) {
+          // ACCESS GRANTED
+          loadingOverlay.style.display = 'none';
+          adminPanel.style.display = 'block';
+          adminNameDisplay.innerText = user.displayName || "Administrator";
+          adminNameDisplay.style.display = "inline";
+          loadUsers(); // Fetch data
+        } else {
+          // ACCESS DENIED (Wrong User)
+          triggerSecurityBlock();
+        }
+      } else {
+        // NOT LOGGED IN
+        triggerSecurityBlock();
+      }
+    });
+
+    function triggerSecurityBlock() {
+      loadingOverlay.style.display = 'none';
+      adminPanel.style.display = 'none';
+      securityOverlay.style.display = 'flex';
+      
+      // Auto Redirect
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 3000);
+    }
+
+    function logout() {
+      auth.signOut().then(() => window.location.href = "index.html");
+    }
+
+    // --- 4. DATA MANAGEMENT (USERS) ---
+    let usersData = [];
+
+    function loadUsers() {
+      // NOTE: Client SDK cannot list all users from Auth. 
+      // This relies on your app saving users to 'users/' node in Realtime DB upon login.
+      db.ref('users').on('value', (snapshot) => {
+        usersContainer.innerHTML = '';
+        const data = snapshot.val();
+        usersData = [];
+
+        if (data) {
+          Object.keys(data).forEach(key => {
+            usersData.push({ uid: key, ...data[key] });
+          });
+          renderUsers(usersData);
+        } else {
+          usersContainer.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:#666;">No user records found in Database.</div>`;
+        }
+      });
+    }
+
+   function renderUsers(list) {
+  usersContainer.innerHTML = '';
+
+  if (list.length === 0) {
+    usersContainer.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:#666;">No users found.</div>`;
+    return;
+  }
+
+  list.forEach(user => {
+    const isVip = user.vip === true;
+    const isAdmin = user.uid === ADMIN_UID;
+    const isBlocked = user.blocked === true; // <-- move here
+
+    const role = isAdmin ? 'admin' : (isVip ? 'vip' : 'user');
+    const initial = (user.displayName || user.email || 'U').charAt(0).toUpperCase();
+
+    const card = document.createElement('div');
+    card.className = 'user-card';
+    card.innerHTML = `
+      <div class="card-header">
+        <div class="user-avatar">${initial}</div>
+        <span class="badge badge-${role}">${role}</span>
+      </div>
+
+      <div class="info-group">
+        <div class="info-label">Email</div>
+        <div class="info-value text-muted">${user.email || 'No Email'}</div>
+      </div>
+
+      <div class="info-group">
+        <div class="info-label">UID</div>
+        <div class="uid-box">
+          <span>${user.uid.substring(0, 10)}...</span>
+          <span class="material-icons copy-btn" onclick="copyToClip('${user.uid}')">content_copy</span>
+        </div>
+      </div>
+
+      <div class="vip-control">
+        <div class="vip-label">
+          <span class="material-icons">stars</span> VIP Access
+        </div>
+        <label class="switch">
+          <input type="checkbox" ${isVip ? 'checked' : ''} onchange="toggleVip('${user.uid}', this.checked)">
+          <span class="slider round"></span>
+        </label>
+      </div>
+
+      <div class="block-control">
+        <div class="block-label">
+          <span class="material-icons">block</span> Block User
+        </div>
+        <label class="switch">
+          <input type="checkbox" class="blocked" ${isBlocked ? 'checked' : ''} onchange="toggleBlock('${user.uid}', this.checked)">
+          <span class="slider round"></span>
+        </label>
+      </div>
+    `;
+    usersContainer.appendChild(card);
+  });
+}
+
+    // --- 5. INTERACTION LOGIC ---
+
+    // Toggle VIP Status
+window.toggleVip = function(uid, status) {
+  db.ref('users/' + uid).update({ vip: status })
+    .then(() => showToast(`VIP status ${status ? 'Enabled' : 'Disabled'}`, 'success'))
+    .catch(err => showToast("Error updating VIP", 'error'));
+};
+
+// Toggle Block Status
+window.toggleBlock = function(uid, status) {
+  db.ref('users/' + uid).update({ blocked: status })
+    .then(() => {
+      showToast(
+        status ? "User Blocked Successfully" : "User Unblocked",
+        status ? 'error' : 'success'
+      );
+    })
+    .catch(() => showToast("Failed to update block status", 'error'));
+};
+
+
+    
+
+    // Filter Search
+    window.filterUsers = function() {
+      const term = document.getElementById('userSearch').value.toLowerCase();
+      const filtered = usersData.filter(u => 
+        (u.displayName && u.displayName.toLowerCase().includes(term)) ||
+        (u.email && u.email.toLowerCase().includes(term)) ||
+        u.uid.includes(term)
+      );
+      renderUsers(filtered);
+    };
+
+    // Copy UID
+    window.copyToClip = function(text) {
+      navigator.clipboard.writeText(text).then(() => showToast("UID copied to clipboard"));
+    };
+
+    // Toast Notification
+    function showToast(msg, type = 'normal') {
+      const toast = document.getElementById('toast');
+      const text = document.getElementById('toastMsg');
+      
+      toast.style.borderLeftColor = type === 'error' ? 'var(--danger)' : 
+                                    (type === 'success' ? 'var(--success)' : 'var(--accent-color)');
+      
+      text.innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // --- 6. PAGE SECURITY RULES ---
+    // Disable Right Click
+    document.addEventListener('contextmenu', event => event.preventDefault());
+
+    // Disable Shortcuts
+    document.addEventListener('keydown', function(e) {
+      if (
+        e.key === 'F12' || 
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || 
+        (e.ctrlKey && e.key === 'U')
+      ) {
+        e.preventDefault();
+      }
+    });
+
+  </script>
+</body>
+</html>
