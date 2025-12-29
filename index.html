@@ -206,17 +206,44 @@
     #greeting .vip { color: #facc15; text-shadow: 0 0 10px rgba(250, 204, 21, 0.3); animation: none; }
     #greeting .Admin { color: #ef4444; text-shadow: 0 0 10px rgba(239, 68, 68, 0.3); animation: none; }
     
-    #fakeAddBtn {
-      display: none;
-      margin: 0 auto 20px;
-      background: var(--primary-gradient);
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-    }
+   #adminBtn {
+  display: none;
+  margin: 0 auto 20px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4);
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+#adminBtn::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: rgba(255, 255, 255, 0.15);
+  transform: rotate(45deg) translate(-100%, -100%);
+  transition: all 0.5s ease-in-out;
+}
+
+#adminBtn:hover::before {
+  transform: rotate(45deg) translate(100%, 100%);
+}
+
+#adminBtn:hover {
+  box-shadow: 0 0 25px rgba(59, 130, 246, 0.6);
+  transform: scale(1.05);
+}
+
 
     /* --- 5. BANNERS / CAROUSEL --- */
     .banner-container {
@@ -851,7 +878,7 @@
 
   <!-- GREETING & ADMIN -->
   <div id="greeting"></div>
-  <button id="fakeAddBtn" onclick="window.open('admin.html','_blank')">Admin Panel</button>
+  <button id="adminBtn" onclick="window.open('admin.html','_blank')">Admin Panel</button>
 
   <!-- BANNER CAROUSEL -->
   <div class="banner-container" id="bannerContainer">
@@ -1045,7 +1072,7 @@
     const loginPopup = document.getElementById("loginPopup");
     const closeLogin = document.getElementById("closeLogin");
     const greeting = document.getElementById("greeting");
-    const fakeAddBtn = document.getElementById("fakeAddBtn");
+    const adminBtn = document.getElementById("adminBtn");
     const previewOverlay = document.getElementById("previewOverlay");
     const pdfFrame = document.getElementById("pdfFrame");
     
@@ -1176,7 +1203,7 @@ auth.onAuthStateChanged(user => {
 
     // --- 5. USER DISPLAY LOGIC ---
     function initUser(user) {
-  fakeAddBtn.style.display = "none";
+  adminBtn.style.display = "none";
   greeting.innerHTML = "";
 
   if (!user) return;
@@ -1206,7 +1233,7 @@ auth.onAuthStateChanged(user => {
              style="font-size:16px;color:#3b82f6;vertical-align:middle;">
              verified
           </i>`;
-        fakeAddBtn.style.display = "block";
+        adminBtn.style.display = "block";
       }
 
       greeting.innerHTML =
