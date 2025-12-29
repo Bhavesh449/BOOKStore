@@ -1011,6 +1011,7 @@
   <!-- LOGIN POPUP -->
   <div id="loginPopup">
     <div id="loginBox">
+      <button id="closeLogin">&times;</button>
       <h2>Login</h2>
       
       <div id="authErrorBox"></div>
@@ -1087,7 +1088,10 @@
     let isCreatingAccount = false;
 
     // --- 3. EVENT LISTENERS ---
-    
+    // Close Login Modal
+     closeLogin.onclick = () => {
+     loginPopup.classList.remove("show");
+      setTimeout(() => loginPopup.style.display = "none", 300); };
    
 
     // Hamburger Menu
