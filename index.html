@@ -783,6 +783,33 @@
   </style>
 </head>
 <body>
+<div id="blockedOverlay" style="
+  position:fixed;
+  inset:0;
+  background:#050505;
+  display:none;
+  z-index:99999;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  flex-direction:column;
+">
+  <span class="material-icons" style="font-size:5rem;color:#ef4444;">
+    block
+  </span>
+  <h1 style="margin-top:20px;
+             font-family:Poppins;
+             font-size:2rem;
+             background:linear-gradient(135deg,#ef4444,#b91c1c);
+             -webkit-background-clip:text;
+             -webkit-text-fill-color:transparent;">
+    You are Blocked
+  </h1>
+  <p style="color:#aaa;margin-top:10px;">
+    You are Blocked from <b>BOOKStore</b><br>
+    by <b>Bhavesh (Admin)</b>
+  </p>
+</div>
 
   <!-- HEADER -->
   <header>
@@ -824,7 +851,7 @@
 
   <!-- GREETING & ADMIN -->
   <div id="greeting"></div>
-  <button id="fakeAddBtn">+ Add New Book</button>
+  <button id="fakeAddBtn" onclick="window.open('admin.html','_blank')">Admin Panel</button>
 
   <!-- BANNER CAROUSEL -->
   <div class="banner-container" id="bannerContainer">
@@ -957,7 +984,6 @@
   <!-- LOGIN POPUP -->
   <div id="loginPopup">
     <div id="loginBox">
-      <button id="closeLogin">&times;</button>
       <h2>Login</h2>
       
       <div id="authErrorBox"></div>
@@ -996,6 +1022,7 @@
     </div>
     <iframe id="pdfFrame" sandbox="allow-scripts allow-same-origin"></iframe>
   </div>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
   <!-- SCRIPTS -->
   <script>
@@ -1013,7 +1040,6 @@
     const app = firebase.initializeApp(firebaseConfig);
     const auth = app.auth();
     const ADMIN_UID = "F9UxJ3W6CVUVIIgwByuHQxscQab2";
-    const VIP_UID = "KGi3N6UPRic9tlRZOfwp6giIoGt1";
 
     // --- 2. UI ELEMENTS ---
     const loginPopup = document.getElementById("loginPopup");
@@ -1035,11 +1061,7 @@
 
     // --- 3. EVENT LISTENERS ---
     
-    // Close Login Modal
-    closeLogin.onclick = () => {
-      loginPopup.classList.remove("show");
-      setTimeout(() => loginPopup.style.display = "none", 300);
-    };
+   
 
     // Hamburger Menu
     const hamburger = document.getElementById("hamburger");
@@ -1125,55 +1147,74 @@
         displayError(error.message);
       }
     };
+auth.onAuthStateChanged(user => {
+  if (!user) return;
+
+  const userRef = firebase.database().ref('users/' + user.uid);
+
+  userRef.once('value').then(snapshot => {
+    if (!snapshot.exists()) {
+      userRef.set({
+        displayName: user.displayName || "",
+        email: user.email || "",
+        vip: false,
+        createdAt: Date.now()
+      });
+    }
+  });
+  firebase.database()
+  .ref('users/' + user.uid + '/blocked')
+  .once('value')
+  .then(snapshot => {
+    if (snapshot.val() === true) {
+      document.body.style.overflow = "hidden";
+      document.getElementById("blockedOverlay").style.display = "flex";
+    }
+  });
+
+});
 
     // --- 5. USER DISPLAY LOGIC ---
     function initUser(user) {
-      fakeAddBtn.style.display = "none";
-      if (user) {
-        let name = user.displayName || user.email.split('@')[0];
-        
-        let tag = "";
-        if (user.uid === VIP_UID) tag = `<span class="vip"> VIP</span>`;
-        if (user.uid === ADMIN_UID) {
-          tag = `<span class="Admin"> (Admin)</span> <i class="material-icons" style="font-size:16px;color:#3b82f6;vertical-align:middle;">verified</i>`;
-          fakeAddBtn.style.display = "block";
-        }
-        
-        greeting.innerHTML = `Welcome back, <span id="userNameDisplay">${name}</span>${tag}`;
-        setupNameEdit(user);
-      } else {
-        greeting.innerHTML = "";
+  fakeAddBtn.style.display = "none";
+  greeting.innerHTML = "";
+
+  if (!user) return;
+
+  const name = user.displayName || user.email.split("@")[0];
+
+  // Admin check
+  const isAdmin = user.uid === ADMIN_UID;
+
+  // Read VIP from DATABASE
+  firebase.database()
+    .ref("users/" + user.uid)
+    .once("value")
+    .then(snapshot => {
+      const data = snapshot.val() || {};
+      const isVIP = data.vip === true;
+
+      let tag = "";
+
+      if (isVIP) {
+        tag = ` <span class="vip">(VIP)</span>`;
       }
-    }
 
-    function setupNameEdit(user) {
-      const nameSpan = document.getElementById('userNameDisplay');
-      if(!nameSpan) return;
-      
-      nameSpan.ondblclick = () => {
-        const current = nameSpan.textContent;
-        const input = document.createElement('input');
-        input.value = current;
-        input.style.cssText = "background:#111; color:white; border:1px solid #555; padding:2px 5px; border-radius:4px;";
-        nameSpan.replaceWith(input);
-        input.focus();
+      if (isAdmin) {
+        tag = ` <span class="Admin">(Admin)</span>
+          <i class="material-icons"
+             style="font-size:16px;color:#3b82f6;vertical-align:middle;">
+             verified
+          </i>`;
+        fakeAddBtn.style.display = "block";
+      }
 
-        const save = async () => {
-          const newVal = input.value.trim();
-          if(newVal && newVal !== current) {
-             try {
-               await user.updateProfile({ displayName: newVal });
-               input.replaceWith(Object.assign(document.createElement('span'), { id:'userNameDisplay', textContent: newVal }));
-               setupNameEdit(user); // Re-attach listener
-             } catch(e) { console.error(e); }
-          } else {
-             input.replaceWith(nameSpan);
-          }
-        };
-        input.onblur = save;
-        input.onkeydown = (e) => { if(e.key === 'Enter') save(); }
-      };
-    }
+      greeting.innerHTML =
+        `Welcome back, <span id="userNameDisplay">${name}</span>${tag}`;
+
+      setupNameEdit(user);
+    });
+}
 
     // --- 6. CAROUSEL LOGIC ---
     let slideIndex = 0;
