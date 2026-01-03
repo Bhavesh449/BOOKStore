@@ -805,6 +805,121 @@
     grid-template-columns: 1fr; /* single column */
   }
 }
+/* ================= BIRTHDAY_DECORATION_START ================= */
+
+#birthdayOverlay {
+  position: fixed;
+  top: 70px; /* below header */
+  left: 0;
+  width: 100%;
+  z-index: 1500; /* below loginPopup (10000) */
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: birthdayEnter 1.2s ease forwards;
+}
+
+@keyframes birthdayEnter {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.birthday-banner {
+  margin: 0 auto;
+  width: fit-content;
+  padding: 14px 30px;
+  border-radius: 999px;
+  background: rgba(18,18,18,0.7);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 0 30px rgba(139,92,246,0.25);
+  text-align: center;
+}
+
+.birthday-banner h1 {
+  font-family: Poppins;
+  font-size: 1.1rem;
+  font-weight: 600;
+  background: linear-gradient(90deg,#60a5fa,#a78bfa,#22d3ee);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.birthday-banner h1 span {
+  font-weight: 700;
+}
+
+.birthday-banner small {
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+
+.cake-emoji {
+  display: inline-block;
+  margin-right: 8px;
+  animation: cakeFloat 2.5s ease-in-out infinite;
+}
+
+@keyframes cakeFloat {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.founder-text {
+  font-size: 0.7rem;
+  margin-top: 2px;
+  color: #a5b4fc;
+  letter-spacing: 0.08em;
+}
+
+/* Corner Glow Stars */
+.corner-glow {
+  position: fixed;
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(circle, rgba(139,92,246,0.35), transparent 70%);
+  filter: blur(25px);
+  pointer-events: none;
+  z-index: 1400;
+}
+
+.top-left { top: 0; left: 0; }
+.top-right { top: 0; right: 0; }
+.bottom-left { bottom: 0; left: 0; }
+.bottom-right { bottom: 0; right: 0; }
+
+/* Confetti */
+#confettiLayer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1300;
+}
+
+.confetti {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: linear-gradient(135deg,#60a5fa,#a78bfa);
+  opacity: 0.8;
+  animation: confettiFall linear forwards;
+}
+
+@keyframes confettiFall {
+  to {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Mobile tweak */
+@media (max-width:600px) {
+  .birthday-banner h1 { font-size: 0.95rem; }
+}
+
+/* ================= BIRTHDAY_DECORATION_END ================= */
 
 
   </style>
@@ -837,6 +952,25 @@
     by <b>Bhavesh (Admin)</b>
   </p>
 </div>
+
+<!-- ================= BIRTHDAY_DECORATION_START ================= -->
+<div id="birthdayOverlay" aria-hidden="true">
+  <div class="birthday-banner">
+    <span class="cake-emoji">🎂</span>
+    <h1>Happy Birthday <span>Bhavesh</span> <small>(Admin)</small></h1>
+    <p class="founder-text">Founder’s Day 🎉</p>
+  </div>
+
+  <!-- Corner Glows -->
+  <div class="corner-glow top-left"></div>
+  <div class="corner-glow top-right"></div>
+  <div class="corner-glow bottom-left"></div>
+  <div class="corner-glow bottom-right"></div>
+</div>
+
+<!-- Confetti Container -->
+<div id="confettiLayer"></div>
+<!-- ================= BIRTHDAY_DECORATION_END ================= -->
 
   <!-- HEADER -->
   <header>
@@ -1304,6 +1438,41 @@ auth.onAuthStateChanged(user => {
     });
 
   </script>
+  <script>
+/* ================= BIRTHDAY_DECORATION_START ================= */
+(function () {
+  const now = new Date();
+  const isBirthday =
+    now.getFullYear() === 2026 &&
+    now.getMonth() === 0 && // January
+    now.getDate() === 3;
+
+  if (!isBirthday) return;
+
+  const overlay = document.getElementById("birthdayOverlay");
+  const confettiLayer = document.getElementById("confettiLayer");
+
+  overlay.style.display = "block";
+
+  // Create subtle confetti
+  const CONFETTI_COUNT = 70;
+  for (let i = 0; i < CONFETTI_COUNT; i++) {
+    const c = document.createElement("div");
+    c.className = "confetti";
+    c.style.left = Math.random() * 100 + "vw";
+    c.style.top = "-10px";
+    c.style.animationDuration = 4 + Math.random() * 3 + "s";
+    c.style.animationDelay = Math.random() * 0.5 + "s";
+    confettiLayer.appendChild(c);
+  }
+
+  // Stop confetti after ~7 seconds
+  setTimeout(() => {
+    confettiLayer.innerHTML = "";
+  }, 7000);
+})();
+ /* ================= BIRTHDAY_DECORATION_END ================= */
+</script>
+
 </body>
 </html>
-
