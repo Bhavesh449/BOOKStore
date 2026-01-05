@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shiva AI – Chatbot</title>
+
+  <style>
+    /* --- VARIABLES & RESET --- */
+    :root {
+      --bg-dark: #050505;
+      --bg-card: #121212;
+      --border-color: rgba(255, 255, 255, 0.1);
+      --accent-color: #3b82f6;
+      --text-main: #ffffff;
+      --text-muted: #a1a1aa;
+      --radius-pill: 50px;
+      --font-body: 'Inter', sans-serif;
+      --font-head: 'Poppins', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-dark);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* --- HEADER & NAVIGATION --- */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(5,5,5,0.8);
+      backdrop-filter: blur(16px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    #logo {
+      height: 40px;
+      object-fit: contain;
+    }
+
+    
+    /* --- 7. HAMBURGER & MENU --- */
+    .hamburger {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      z-index: 1100;
+    }
+
+    .hamburger span {
+      display: block;
+      height: 2px;
+      width: 100%;
+      background: white;
+      border-radius: 2px;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 6px); }
+    .hamburger.active span:nth-child(2) { opacity: 0; }
+    .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -6px); }
+
+    .menu {
+      position: fixed;
+      top: 0;
+      right: -300px;
+      width: 280px;
+      height: 100vh;
+      background: rgba(20, 20, 20, 0.95);
+      backdrop-filter: blur(20px);
+      border-left: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      padding-top: 80px;
+      transition: right 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+      z-index: 1000;
+      box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+    }
+
+    .menu.active { right: 0; }
+
+    .menu a {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 16px 25px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 16px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+    }
+
+    .menu a:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .menu a.active {
+      color: var(--accent-color);
+      background: rgba(59, 130, 246, 0.05);
+      border-left-color: var(--accent-color);
+    }
+
+    .menu-icon, .menu-logo { width: 20px; height: 20px; object-fit: contain; opacity: 0.8; }
+    .menu a:hover .menu-icon { opacity: 1; }
+
+    /* --- CHATBOT IFRAME --- */
+    .chatbot-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chatbot-container iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+    }
+
+    /* --- FOOTER --- */
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 20px;
+      text-align: center;
+      background: #020202;
+    }
+
+    .madeby {
+      font-weight: 600;
+      margin-bottom: 5px;
+      background: linear-gradient(90deg, #60a5fa, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      margin: 0 8px;
+      font-size: 0.85rem;
+    }
+
+    footer a:hover { color: var(--text-main); }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <a href="index.html">
+      <img src="logo.png" alt="BOOKStore" id="logo" onerror="this.style.display='none'; document.write('<span style=\'font-weight:bold;font-size:1.2rem;color:white;\'>BOOKStore</span>')">
+    </a>
+    <div class="hamburger" id="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </header>
+
+  <!-- SIDE MENU -->
+  <nav class="menu" id="menu">
+    <a href="index.html">
+      <img src="home.svg" class="menu-icon"> Home
+    </a>
+    <a href="edupie.html">
+      <img src="edupie.png" class="menu-logo"> EduPie
+    </a>
+    <a href="games.html">
+      <img src="game.svg" class="menu-icon"> Games Zone
+    </a>
+    <a href="play.html">
+      <img src="play.svg" class="menu-icon" alt=""> Custom Player
+    </a>
+    <a href="link.html">
+      <img src="link.svg" class="menu-icon" alt=""> Link Processor
+    </a>
+    <a href="shiva.html" class="active">
+      <img src="shiva.jpg" class="menu-icon" alt=""> Shiva AI
+    </a>
+     <a href="profile.html">
+      <img src="profile.svg" class="menu-icon" alt=""> Profile
+    </a>
+</nav>
+
+
+  <!-- CHATBOT IFRAME -->
+  <div class="chatbot-container">
+    <iframe
+      src="https://www.chatbase.co/chatbot-iframe/9h4YRghGT0Yjyggiz_FK5"
+      allow="microphone; clipboard-write"
+      loading="lazy"
+    ></iframe>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="madeby">Made by Bhavesh</div>
+  </footer>
+
+ <script>
+  const hamburger = document.getElementById("hamburger");
+  const menu = document.getElementById("menu");
+
+  // Toggle menu on hamburger click
+  hamburger.addEventListener("click", e => {
+    e.stopPropagation(); // prevent click from bubbling
+    hamburger.classList.toggle("active");
+    menu.classList.toggle("active");
+  });
+
+  // Prevent clicks inside menu from closing it
+  menu.addEventListener("click", e => {
+    e.stopPropagation();
+  });
+
+  // Click outside to close
+  document.addEventListener("click", e => {
+    if (menu.classList.contains("active")) {
+      menu.classList.remove("active");
+      hamburger.classList.remove("active");
+    }
+  });
+</script>
+
+</body>
+</html>
