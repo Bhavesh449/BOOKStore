@@ -805,6 +805,60 @@
     grid-template-columns: 1fr; /* single column */
   }
 }
+/* ===== Shiva AI Floating Bubble ===== */
+/* ===== Shiva AI Floating Bubble (BOOKStore Style) ===== */
+.shiva-bubble {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #050505; /* same as site background */
+  border: 2px solid #ffffff; /* white outline */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  cursor: pointer;
+
+  box-shadow:
+    0 10px 25px rgba(0,0,0,0.7),
+    0 0 0 4px rgba(255,255,255,0.05);
+
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.shiva-bubble img {
+  width: 34px;
+  height: 34px;
+  object-fit: cover;
+  border-radius: 50%;
+  filter: brightness(1.1);
+}
+
+.shiva-bubble:hover {
+  transform: scale(1.12);
+  box-shadow:
+    0 0 0 2px #ffffff,
+    0 0 25px rgba(255,255,255,0.35);
+}
+
+/* Mobile tweak */
+@media (max-width: 600px) {
+  .shiva-bubble {
+    width: 56px;
+    height: 56px;
+    right: 16px;
+    bottom: 16px;
+  }
+
+  .shiva-bubble img {
+    width: 30px;
+    height: 30px;
+  }
+}
+
 
 
   </style>
@@ -1307,5 +1361,10 @@ auth.onAuthStateChanged(user => {
     });
 
   </script>
+  <!-- Shiva Floating Bubble -->
+<a href="shiva.html" class="shiva-bubble" title="Ask Shiva AI">
+  <img src="shiva.jpg" alt="Shiva AI">
+</a>
+
 </body>
 </html>
