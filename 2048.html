@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>BOOKStore - 2048</title>
+<!-- Fonts: Inter & Poppins -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* --- 1. VARIABLES & RESET --- */
+:root {
+  --bg-dark: #050505;
+  --bg-card: #121212;
+  --bg-glass: rgba(20, 20, 20, 0.6);
+  --border-color: rgba(255, 255, 255, 0.08);
+
+  --primary-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  --accent-color: #3b82f6;
+  --text-main: #ffffff;
+  --text-muted: #a1a1aa;
+
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-pill: 50px;
+
+  --font-body: 'Inter', sans-serif;
+  --font-head: 'Poppins', sans-serif;
+
+  /* Tile Colors */
+  --tile-empty: rgba(255, 255, 255, 0.05);
+  --tile-2: rgba(59, 130, 246, 0.1);
+  --tile-4: rgba(59, 130, 246, 0.2);
+  --tile-8: rgba(139, 92, 246, 0.3);
+  --tile-16: rgba(139, 92, 246, 0.5);
+  --tile-32: linear-gradient(135deg, #3b82f6, #6366f1);
+  --tile-64: linear-gradient(135deg, #6366f1, #8b5cf6);
+  --tile-128: linear-gradient(135deg, #8b5cf6, #d946ef);
+  --tile-256: linear-gradient(135deg, #d946ef, #f43f5e);
+  --tile-512: linear-gradient(135deg, #f43f5e, #f97316);
+  --tile-1024: linear-gradient(135deg, #f97316, #eab308);
+  --tile-2048: linear-gradient(135deg, #eab308, #22c55e);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none; /* Prevent text selection during play */
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  align-items: center;
+}
+
+/* --- 2. HEADER & NAVIGATION --- */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(5, 5, 5, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-color);
+  padding: 15px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+#logo {
+  height: 40px;
+  object-fit: contain;
+}
+
+.hamburger {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  z-index: 1100;
+}
+
+.hamburger span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: var(--text-main);
+  border-radius: 2px;
+  transition: all 0.3s ease-in-out;
+}
+
+.hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 6px); }
+.hamburger.active span:nth-child(2) { opacity: 0; }
+.hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -6px); }
+
+.menu {
+  position: fixed;
+  top: 0;
+  right: -300px;
+  width: 280px;
+  height: 100vh;
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(25px);
+  border-left: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  padding-top: 80px;
+  transition: right 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: 1000;
+  box-shadow: -10px 0 30px rgba(0,0,0,0.8);
+}
+
+.menu.active { right: 0; }
+
+.menu a {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 16px 25px;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+.menu a:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.menu a.active {
+  color: var(--accent-color);
+  background: rgba(59, 130, 246, 0.05);
+  border-left-color: var(--accent-color);
+}
+
+.menu-icon { width: 20px; height: 20px; opacity: 0.8; }
+.menu a:hover .menu-icon { opacity: 1; }
+
+/* --- 3. GAME HEADER & SCORES --- */
+.game-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  width: 100%;
+  max-width: 500px;
+}
+
+h1 {
+  font-family: var(--font-head);
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 10px;
+}
+
+.score-board {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.score-box {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+  padding: 8px 20px;
+  border-radius: var(--radius-lg);
+  text-align: center;
+  min-width: 90px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.score-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.score-val {
+  font-family: var(--font-head);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+}
+
+/* --- 4. 2048 GAME BOARD --- */
+#game-container {
+  position: relative;
+  width: 340px;
+  height: 340px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: var(--radius-lg);
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  box-shadow: 
+    0 0 30px rgba(59, 130, 246, 0.1),
+    inset 0 0 20px rgba(0,0,0,0.5);
+  margin-bottom: 25px;
+  touch-action: none; /* Crucial for swipe */
+}
+
+.grid-cell {
+  width: 70px;
+  height: 70px;
+  background: var(--tile-empty);
+  border-radius: var(--radius-md);
+  position: absolute;
+}
+
+.tile {
+  width: 70px;
+  height: 70px;
+  border-radius: var(--radius-md);
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 2rem;
+  color: white;
+  z-index: 10;
+  transition: transform 0.15s ease-in-out, background 0.2s;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+/* Tile Animations */
+@keyframes spawn {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); box-shadow: 0 0 15px rgba(255,255,255,0.3); }
+  100% { transform: scale(1); }
+}
+
+.tile-new { animation: spawn 0.2s ease-out backwards; }
+.tile-merged { animation: pop 0.2s ease-in-out; z-index: 20; }
+
+/* Dynamic Tile Coloring classes generated via JS or specific classes below */
+.val-2 { background: var(--tile-2); color: #e2e8f0; font-size: 2.2rem; }
+.val-4 { background: var(--tile-4); color: #f8fafc; font-size: 2.2rem; }
+.val-8 { background: var(--tile-8); color: white; box-shadow: 0 0 10px rgba(139, 92, 246, 0.2); }
+.val-16 { background: var(--tile-16); box-shadow: 0 0 10px rgba(139, 92, 246, 0.4); }
+.val-32 { background: var(--tile-32); box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+.val-64 { background: var(--tile-64); box-shadow: 0 0 15px rgba(99, 102, 241, 0.5); }
+.val-128 { background: var(--tile-128); font-size: 1.8rem; box-shadow: 0 0 20px rgba(217, 70, 239, 0.6); }
+.val-256 { background: var(--tile-256); font-size: 1.8rem; box-shadow: 0 0 20px rgba(244, 63, 94, 0.6); }
+.val-512 { background: var(--tile-512); font-size: 1.8rem; box-shadow: 0 0 25px rgba(249, 115, 22, 0.7); }
+.val-1024 { background: var(--tile-1024); font-size: 1.5rem; box-shadow: 0 0 25px rgba(234, 179, 8, 0.7); }
+.val-2048 { background: var(--tile-2048); font-size: 1.5rem; box-shadow: 0 0 35px rgba(34, 197, 94, 0.8); border: 1px solid rgba(255,255,255,0.5); }
+
+/* --- 5. CONTROLS --- */
+button.restart-btn {
+  padding: 12px 35px;
+  font-size: 1rem;
+  font-family: var(--font-head);
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--primary-gradient);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+  margin-top: 10px;
+}
+
+button.restart-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
+}
+
+/* --- 6. POPUP --- */
+#popup {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  animation: fadeIn 0.3s ease;
+}
+
+#popupContent {
+  background: #18181b;
+  padding: 35px;
+  border-radius: var(--radius-lg);
+  width: 320px;
+  text-align: center;
+  box-shadow: 0 0 40px rgba(59, 130, 246, 0.2);
+  border: 1px solid var(--border-color);
+}
+
+#popupContent h2 {
+  font-family: var(--font-head);
+  font-size: 2rem;
+  margin-bottom: 15px;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+#popupMessage {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  margin-bottom: 25px;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* --- 7. FOOTER & SOCIALS --- */
+.social-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 30px 0 20px;
+}
+
+.social-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  border-radius: var(--radius-pill);
+  background: #1f1f22;
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.3s;
+  border: 1px solid rgba(255,255,255,0.05);
+  font-size: 0.9rem;
+}
+
+.social-btn:hover { background: #27272a; border-color: rgba(255,255,255,0.2); }
+.social-btn.insta:hover { color: #e1306c; }
+.social-btn.telegram:hover { color: #0088cc; }
+.social-logo { width: 18px; height: 18px; }
+
+footer {
+  border-top: 1px solid var(--border-color);
+  padding: 30px 20px;
+  text-align: center;
+  background: #020202;
+  margin-top: auto;
+  width: 100%;
+}
+
+.madeby {
+  font-weight: 600;
+  background: linear-gradient(90deg, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 360px) {
+  #game-container { width: 300px; height: 300px; }
+  .grid-cell, .tile { width: 60px; height: 60px; }
+  h1 { font-size: 2rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <a href="index.html">
+    <!-- Place holder for logo, ensures text fallback if image missing -->
+    <img src="logo.png" alt="BOOKStore" id="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+    <span style="display:none; font-weight:700; font-size:1.4rem; color:white; font-family:var(--font-head);">BOOKStore</span>
+  </a>
+  <div class="hamburger" id="hamburger">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</header>
+
+<!-- SIDE MENU -->
+<nav class="menu" id="menu">
+  <a href="index.html"><img src="home.svg" class="menu-icon" onerror="this.style.opacity=0"> Home</a>
+  <a href="edupie.html"><img src="edupie.png" class="menu-icon" onerror="this.style.opacity=0"> EduPie</a>
+  <a href="games.html" class="active"><img src="game.svg" class="menu-icon" onerror="this.style.opacity=0"> Games Zone</a>
+  <a href="play.html"><img src="play.svg" class="menu-icon" onerror="this.style.opacity=0"> Custom Player</a>
+  <a href="link.html"><img src="link.svg" class="menu-icon" onerror="this.style.opacity=0"> Link Processor</a>
+  <a href="shiva.html"><img src="shiva.jpg" class="menu-icon" onerror="this.style.opacity=0"> Shiva AI</a>
+  <a href="profile.html"><img src="profile.svg" class="menu-icon" onerror="this.style.opacity=0"> Profile</a>
+</nav>
+
+<!-- GAME SECTION -->
+<div class="game-header">
+  <h1>2048</h1>
+  <div class="score-board">
+    <div class="score-box">
+      <div class="score-title">Score</div>
+      <div class="score-val" id="score">0</div>
+    </div>
+    <div class="score-box">
+      <div class="score-title">Best</div>
+      <div class="score-val" id="best-score">0</div>
+    </div>
+  </div>
+</div>
+
+<!-- GAME GRID -->
+<div id="game-container">
+  <!-- Background Grid Cells (created by JS) -->
+  <div id="grid-background"></div>
+  <!-- Active Tiles Layer -->
+  <div id="tile-container"></div>
+</div>
+
+<button class="restart-btn" onclick="game.restart()">New Game</button>
+
+<!-- SOCIAL LINKS -->
+<div class="social-buttons">
+  <a href="https://www.instagram.com/syntaxbhavesh/" target="_blank" class="social-btn insta">
+    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="IG" class="social-logo"> Instagram
+  </a>
+  <a href="https://t.me/+oQOMU7yAIIE2OWVl" target="_blank" class="social-btn telegram">
+    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="TG" class="social-logo"> Telegram
+  </a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="madeby">Made by Bhavesh</div>
+</footer>
+
+<!-- POPUP MODAL -->
+<div id="popup">
+  <div id="popupContent">
+    <h2 id="popupTitle">Game Over!</h2>
+    <p id="popupMessage">You scored 2400 points.</p>
+    <button class="restart-btn" onclick="closePopup()">Try Again</button>
+  </div>
+</div>
+
+<script>
+// --- MENU LOGIC ---
+const hamburger = document.getElementById("hamburger");
+const menu = document.getElementById("menu");
+
+hamburger.addEventListener("click", (e) => {
+  e.stopPropagation();
+  hamburger.classList.toggle("active");
+  menu.classList.toggle("active");
+});
+
+document.addEventListener("click", (e) => {
+  if (!menu.contains(e.target) && !hamburger.contains(e.target)) {
+    menu.classList.remove("active");
+    hamburger.classList.remove("active");
+  }
+});
+
+// --- 2048 GAME ENGINE ---
+
+class Game2048 {
+  constructor() {
+    this.gridSize = 4;
+    this.grid = [];
+    this.score = 0;
+    this.bestScore = localStorage.getItem('bestScore2048') || 0;
+    this.container = document.getElementById('tile-container');
+    this.scoreDisplay = document.getElementById('score');
+    this.bestScoreDisplay = document.getElementById('best-score');
+    this.touchStartX = 0;
+    this.touchStartY = 0;
+    
+    this.initGridBackground();
+    this.restart();
+    this.setupInput();
+  }
+
+  initGridBackground() {
+    const bgContainer = document.getElementById('grid-background');
+    bgContainer.innerHTML = '';
+    const gap = 10; 
+    const size = 70;
+    
+    // Calculate positions based on CSS settings
+    for (let r = 0; r < this.gridSize; r++) {
+      for (let c = 0; c < this.gridSize; c++) {
+        const cell = document.createElement('div');
+        cell.className = 'grid-cell';
+        cell.style.top = `${gap + r * (size + gap)}px`;
+        cell.style.left = `${gap + c * (size + gap)}px`;
+        bgContainer.appendChild(cell);
+      }
+    }
+    
+    // Update Best Score UI
+    this.bestScoreDisplay.textContent = this.bestScore;
+  }
+
+  restart() {
+    this.grid = Array(this.gridSize).fill().map(() => Array(this.gridSize).fill(0));
+    this.score = 0;
+    this.updateScore(0);
+    this.container.innerHTML = ''; // Clear visual tiles
+    this.spawnTile();
+    this.spawnTile();
+    document.getElementById('popup').style.display = 'none';
+  }
+
+  spawnTile() {
+    const emptyCells = [];
+    for (let r = 0; r < this.gridSize; r++) {
+      for (let c = 0; c < this.gridSize; c++) {
+        if (this.grid[r][c] === 0) emptyCells.push({r, c});
+      }
+    }
+
+    if (emptyCells.length > 0) {
+      const {r, c} = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+      const val = Math.random() < 0.9 ? 2 : 4;
+      this.grid[r][c] = val;
+      this.addTileToDOM(r, c, val, 'new');
+    }
+  }
+
+  addTileToDOM(r, c, val, type = '') {
+    const tile = document.createElement('div');
+    tile.className = `tile val-${val} ${type === 'new' ? 'tile-new' : ''} ${type === 'merged' ? 'tile-merged' : ''}`;
+    tile.textContent = val;
+    tile.dataset.r = r;
+    tile.dataset.c = c;
+    
+    const gap = 10;
+    const size = 70;
+    tile.style.top = `${gap + r * (size + gap)}px`;
+    tile.style.left = `${gap + c * (size + gap)}px`;
+    
+    this.container.appendChild(tile);
+  }
+
+  updateView(movedTiles) {
+    // 1. Remove old tiles from DOM
+    this.container.innerHTML = '';
+    
+    // 2. Render current grid state
+    for (let r = 0; r < this.gridSize; r++) {
+      for (let c = 0; c < this.gridSize; c++) {
+        const val = this.grid[r][c];
+        if (val !== 0) {
+          // Check if this specific tile was just merged
+          const isMerged = movedTiles && movedTiles.some(t => t.r === r && t.c === c && t.merged);
+          this.addTileToDOM(r, c, val, isMerged ? 'merged' : '');
+        }
+      }
+    }
+  }
+
+  updateScore(add) {
+    this.score += add;
+    this.scoreDisplay.textContent = this.score;
+    if (this.score > this.bestScore) {
+      this.bestScore = this.score;
+      this.bestScoreDisplay.textContent = this.bestScore;
+      localStorage.setItem('bestScore2048', this.bestScore);
+    }
+  }
+
+  setupInput() {
+    // Keyboard
+    window.addEventListener('keydown', (e) => {
+      switch(e.key) {
+        case 'ArrowUp': this.move('up'); e.preventDefault(); break;
+        case 'ArrowDown': this.move('down'); e.preventDefault(); break;
+        case 'ArrowLeft': this.move('left'); e.preventDefault(); break;
+        case 'ArrowRight': this.move('right'); e.preventDefault(); break;
+      }
+    });
+
+    // Touch / Swipe
+    const gameContainer = document.getElementById('game-container');
+    gameContainer.addEventListener('touchstart', (e) => {
+      this.touchStartX = e.changedTouches[0].screenX;
+      this.touchStartY = e.changedTouches[0].screenY;
+    }, {passive: false});
+
+    gameContainer.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      let touchEndX = e.changedTouches[0].screenX;
+      let touchEndY = e.changedTouches[0].screenY;
+      this.handleSwipe(touchEndX, touchEndY);
+    }, {passive: false});
+  }
+
+  handleSwipe(endX, endY) {
+    const diffX = endX - this.touchStartX;
+    const diffY = endY - this.touchStartY;
+    const threshold = 30; // Min swipe distance
+
+    if (Math.abs(diffX) > Math.abs(diffY)) {
+      if (Math.abs(diffX) > threshold) {
+        if (diffX > 0) this.move('right');
+        else this.move('left');
+      }
+    } else {
+      if (Math.abs(diffY) > threshold) {
+        if (diffY > 0) this.move('down');
+        else this.move('up');
+      }
+    }
+  }
+
+  move(direction) {
+    let rotated = false;
+    
+    // Rotate grid to simplify logic (always move left)
+    if (direction === 'up') { this.grid = this.rotateLeft(this.grid); rotated = true; }
+    else if (direction === 'right') { this.grid = this.rotateLeft(this.grid); this.grid = this.rotateLeft(this.grid); rotated = true; }
+    else if (direction === 'down') { this.grid = this.rotateLeft(this.grid); this.grid = this.rotateLeft(this.grid); this.grid = this.rotateLeft(this.grid); rotated = true; }
+
+    // Logic for sliding left
+    let moved = false;
+    let scoreAdd = 0;
+    let mergedTilesInfo = [];
+
+    // Process each row
+    for (let r = 0; r < this.gridSize; r++) {
+      let row = this.grid[r].filter(val => val !== 0); // remove zeros
+      let mergedRow = [];
+      
+      // Merge
+      for (let i = 0; i < row.length; i++) {
+        if (i < row.length - 1 && row[i] === row[i+1]) {
+          const newVal = row[i] * 2;
+          mergedRow.push(newVal);
+          scoreAdd += newVal;
+          // Track merge for animation (coordinate mapping tricky with rotation, skipping exact anim coords for simplicity in this logic block, usually handled by checking diff)
+          i++; // skip next
+          moved = true; // merge counts as move
+        } else {
+          mergedRow.push(row[i]);
+        }
+      }
+      
+      // Pad with zeros
+      while (mergedRow.length < this.gridSize) {
+        mergedRow.push(0);
+      }
+
+      // Check if row changed
+      if (mergedRow.join(',') !== this.grid[r].join(',')) {
+        moved = true;
+      }
+      this.grid[r] = mergedRow;
+    }
+
+    // Rotate back
+    if (direction === 'up') { this.grid = this.rotateLeft(this.grid); this.grid = this.rotateLeft(this.grid); this.grid = this.rotateLeft(this.grid); }
+    else if (direction === 'right') { this.grid = this.rotateLeft(this.grid); this.grid = this.rotateLeft(this.grid); }
+    else if (direction === 'down') { this.grid = this.rotateLeft(this.grid); }
+
+    if (moved) {
+      this.updateScore(scoreAdd);
+      this.spawnTile();
+      this.updateView();
+      this.checkStatus();
+    }
+  }
+
+  // Utility to rotate matrix counter-clockwise
+  rotateLeft(matrix) {
+    const rows = matrix.length;
+    const cols = matrix[0].length;
+    let res = Array(rows).fill().map(() => Array(cols).fill(0));
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        res[r][c] = matrix[c][rows - 1 - r];
+      }
+    }
+    return res;
+  }
+
+  checkStatus() {
+    // Check for Win (2048)
+    for(let r=0; r<4; r++){
+        for(let c=0; c<4; c++){
+            if(this.grid[r][c] === 2048) {
+                // Check if we already showed win
+                // For simplicity, we just congratulate once. 
+                // To keep playing, we'd need a flag.
+                // this.showPopup("You Win!", "You reached 2048!");
+                // return; 
+            }
+        }
+    }
+
+    // Check for Game Over (Full and no moves)
+    let isFull = true;
+    for(let r=0; r<4; r++) {
+        if(this.grid[r].includes(0)) { isFull = false; break; }
+    }
+
+    if (isFull) {
+        let canMove = false;
+        // Check neighbors
+        for(let r=0; r<4; r++) {
+            for(let c=0; c<4; c++) {
+                const val = this.grid[r][c];
+                if (c < 3 && val === this.grid[r][c+1]) canMove = true;
+                if (r < 3 && val === this.grid[r+1][c]) canMove = true;
+            }
+        }
+        if (!canMove) {
+            setTimeout(() => this.showPopup("Game Over", `Final Score: ${this.score}`), 500);
+        }
+    }
+  }
+
+  showPopup(title, msg) {
+    document.getElementById('popupTitle').textContent = title;
+    document.getElementById('popupMessage').textContent = msg;
+    document.getElementById('popup').style.display = 'flex';
+  }
+}
+
+// Initialize Game
+const game = new Game2048();
+
+function closePopup() {
+    game.restart();
+}
+
+// Security Restrictions (from your prompt)
+document.addEventListener("contextmenu", e => e.preventDefault());
+document.addEventListener("keydown", e => {
+    if (
+        (e.ctrlKey && ["s","u","p"].includes(e.key.toLowerCase())) ||
+        (e.ctrlKey && e.shiftKey && ["i","j","c"].includes(e.key.toLowerCase())) ||
+        (e.key === "PrintScreen")
+    ) {
+        e.preventDefault();
+    }
+});
+</script>
+</body>
+</html>
