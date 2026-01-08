@@ -516,7 +516,11 @@
                     <p style="color:#a0aec0; margin-bottom:20px; font-size:0.9rem;">Challenge your brain with classic grids.</p>
                     <button id="create-new-btn" class="play-btn">Start Game</button>
                 </div>
-
+ <div class="game-card">
+                    <h2>2048</h2>
+                    <p style="color:#a0aec0; margin-bottom:20px; font-size:0.9rem;">Combine tiles to reach 2048.</p>
+                    <button id="create-2048-btn" class="play-btn">Start Game</button>
+                </div>
                 <div class="game-card">
                     <h2>100x Josh</h2>
                     <p style="color:#a0aec0; margin-bottom:20px; font-size:0.9rem;">High speed tapping challenge.</p>
@@ -672,7 +676,12 @@
         document.getElementById("create-new-btn").addEventListener("click", () => {
             window.location.href = "Sudoku.html";
         });
-
+const _2048Btn = document.getElementById("create-2048-btn");
+        if (_2048Btn) {
+            _2048Btn.addEventListener("click", () => {
+                window.location.href = "2048.html";
+            });
+        }
         const joshBtn = document.getElementById("create-josh-btn");
         if (joshBtn) {
             joshBtn.addEventListener("click", () => {
