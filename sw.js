@@ -1,20 +1,22 @@
-const CACHE_NAME = "bookstore-offline-v1";
-const OFFLINE_URL = "/offline.html";
+const CACHE_NAME = "bookstore-2048-v1";
+const FILES = [
+  "./",
+  "./index.html",
+  "./logo.png",
+  "./book.png",
+  "./icons/youtube.png",
+  "./icons/instagram.png",
+  "./icons/telegram.png"
+];
 
-self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.add(OFFLINE_URL);
-    })
+self.addEventListener("install", e => {
+  e.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(FILES))
   );
 });
 
-self.addEventListener("fetch", event => {
-  event.respondWith(
-    fetch(event.request).catch(() => {
-      if (event.request.mode === "navigate") {
-        return caches.match(OFFLINE_URL);
-      }
-    })
+self.addEventListener("fetch", e => {
+  e.respondWith(
+    caches.match(e.request).then(res => res || fetch(e.request))
   );
 });
