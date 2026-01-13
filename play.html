@@ -394,6 +394,50 @@
         .settings-menu { bottom: 60px; }
         .glass-popup { width: 95%; padding: 25px; }
     }
+    /* ===== History Remove Button ===== */
+.history-item {
+    position: relative;
+    overflow: hidden;
+}
+
+.history-remove {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    opacity: 0;
+    cursor: pointer;
+    transition: var(--transition);
+    filter: drop-shadow(0 0 6px rgba(0,0,0,0.4));
+}
+
+/* Hover reveal (desktop) */
+.history-item:hover .history-remove {
+    opacity: 0.85;
+}
+
+/* Always visible on mobile */
+@media (max-width: 768px) {
+    .history-remove {
+        opacity: 0.9;
+    }
+}
+
+.history-remove:hover {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.15);
+    filter: drop-shadow(0 0 10px var(--accent-glow));
+}
+
+/* Fade-out removal animation */
+.history-item.removing {
+    opacity: 0;
+    transform: translateX(10px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
 </style>
 </head>
 <body>
@@ -974,29 +1018,67 @@ video.addEventListener("pause", () => saveProgress());
 window.addEventListener("beforeunload", () => saveProgress());
 
 document.getElementById("historyBtn").onclick = () => {
-    historyList.innerHTML = "";
-    const history = getHistory();
-    if (history.length === 0) {
-        historyList.innerHTML = "<p style='text-align:center;opacity:0.5;margin-top:20px'>No history</p>";
-    } else {
-        history.forEach(item => {
-            const div = document.createElement("div");
-            div.className = "history-item";
-            div.innerHTML = `
-                <div class="history-top"><b class="history-title">${item.title}</b></div>
-                <small>Resume at ${formatTime(item.time)} • ${item.date}</small>`;
-            div.onclick = () => {
-                closePopup(historyOverlay);
-                currentVideoURL = item.url;
-                loadVideo(item.url);
-                video.currentTime = item.time;
-                video.play().catch(()=>{});
-            };
-            historyList.appendChild(div);
-        });
-    }
+    renderHistory();
     openPopup(historyOverlay);
 };
+function removeHistoryItem(url, el) {
+    el.classList.add("removing");
+
+    setTimeout(() => {
+        let history = getHistory().filter(h => h.url !== url);
+        saveHistory(history);
+
+        el.remove();
+
+        if (history.length === 0) {
+            historyList.innerHTML =
+                "<p style='text-align:center;opacity:0.5;margin-top:20px'>No history</p>";
+        }
+    }, 250);
+}
+
+function renderHistory() {
+    historyList.innerHTML = "";
+    const history = getHistory();
+
+    if (history.length === 0) {
+        historyList.innerHTML =
+            "<p style='text-align:center;opacity:0.5;margin-top:20px'>No history</p>";
+        return;
+    }
+
+    history.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "history-item";
+
+        div.innerHTML = `
+            <div class="history-top">
+                <b class="history-title">${item.title}</b>
+            </div>
+            <small>Resume at ${formatTime(item.time)} • ${item.date}</small>
+
+            <img src="trash.svg" class="history-remove" title="Remove from history">
+        `;
+
+        /* ▶ Click item = play */
+        div.addEventListener("click", () => {
+            closePopup(historyOverlay);
+            currentVideoURL = item.url;
+            loadVideo(item.url);
+            video.currentTime = item.time;
+            video.play().catch(()=>{});
+        });
+
+        /* 🗑 Remove icon logic */
+        div.querySelector(".history-remove").addEventListener("click", (e) => {
+            e.stopPropagation(); // ❌ must not play video
+            removeHistoryItem(item.url, div);
+        });
+
+        historyList.appendChild(div);
+    });
+}
+
 function updateFullscreenIcon() {
     if (document.fullscreenElement || document.webkitFullscreenElement) {
         fullscreenBtn.src = "exit.svg"; // your exit icon
