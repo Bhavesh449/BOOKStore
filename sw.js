@@ -1,22 +1,57 @@
 const CACHE_NAME = "bookstore-2048-v1";
-const FILES = [
-  "./",
-  "./index.html",
-  "./logo.png",
-  "./book.png",
-  "./icons/youtube.png",
-  "./icons/instagram.png",
-  "./icons/telegram.png"
+
+const ASSETS = [
+  "/2048",
+  "/2048/index.html",
+  "/book.png",
+  "/logo.png",
+
+  "/youtube.png",
+  "/instagram.png",
+  "/telegram.png",
+
+  "/home.svg",
+  "/game.svg",
+  "/profile.svg",
+  "/shiva.png",
+  "/play.svg",
+  "/link.svg",
+  "/edupielogo.png",
+
+  // add any other local images you use
 ];
 
-self.addEventListener("install", e => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(FILES))
+// Install: cache everything
+self.addEventListener("install", event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(ASSETS);
+    })
   );
+  self.skipWaiting();
 });
 
-self.addEventListener("fetch", e => {
-  e.respondWith(
-    caches.match(e.request).then(res => res || fetch(e.request))
+// Activate: clean old cache
+self.addEventListener("activate", event => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(
+        keys.map(key => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
+      )
+    )
+  );
+  self.clients.claim();
+});
+
+// Fetch: offline-first
+self.addEventListener("fetch", event => {
+  event.respondWith(
+    caches.match(event.request).then(response => {
+      return response || fetch(event.request);
+    })
   );
 });
