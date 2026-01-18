@@ -21,6 +21,7 @@
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="book.png">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
 
   <!-- Fonts: Inter & Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -869,6 +870,14 @@
   box-shadow: 0 0 14px rgba(255, 0, 0, 0.35);
 }
 
+.menu i {
+  font-size: 20px;
+  opacity: 0.85;
+}
+
+.menu a:hover i {
+  opacity: 1;
+}
 
   </style>
 </head>
@@ -913,29 +922,38 @@
   </header>
 
   <!-- SIDE MENU -->
-  <nav class="menu" id="menu">
-    <a href="index.html" class="active">
-      <img src="home.svg" class="menu-icon" alt=""> Home
-    </a>
-    <a href="edupie.html">
-      <img src="edupielogo.png" class="menu-logo" alt=""> EduPie
-    </a>
-    <a href="games.html">
-      <img src="game.svg" class="menu-icon" alt=""> Games Zone
-    </a>
-    <a href="play.html">
-      <img src="play.svg" class="menu-icon" alt=""> Custom Player
-    </a>
-    <a href="link.html">
-      <img src="link.svg" class="menu-icon" alt=""> Link Processor
-    </a>
-    <a href="shiva.html">
-      <img src="shiva.png" class="menu-icon" alt=""> Shiva AI
-    </a>
-     <a href="profile.html">
-      <img src="profile.svg" class="menu-icon" alt=""> Profile
-    </a>
-  </nav>
+ <nav class="menu" id="menu">
+
+  <a href="index.html" class="active">
+    <i class="ph ph-house"></i> Home
+  </a>
+
+  <a href="edupie.html">
+    <i class="ph ph-graduation-cap"></i> EduPie
+  </a>
+
+  <a href="games.html">
+    <i class="ph ph-game-controller"></i> Games Zone
+  </a>
+
+  <a href="play.html">
+    <i class="ph ph-play-circle"></i> Custom Player
+  </a>
+
+  <a href="link.html">
+    <i class="ph ph-link"></i> Link Processor
+  </a>
+
+  <a href="shiva.html">
+    <i class="ph ph-brain"></i> Shiva AI
+  </a>
+
+  <a href="profile.html">
+    <i class="ph ph-user"></i> Profile
+  </a>
+
+</nav>
+
 
   <!-- SEARCH -->
   <div id="searchBar">
@@ -1020,7 +1038,7 @@
     </div>
 
     <div class="book">
-      <img src="unbarbaad.jpg" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
+      <img src="https://m.media-amazon.com/images/I/81PXZDHS-KL._UF350,350_QL50_.jpg" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
       <h3>Unbarbaad</h3>
       <div class="book-meta">Class X</div>
       <div class="book-meta">Shobit Nirwan</div>
@@ -1066,7 +1084,7 @@
     
     <!-- CBSE -->
     <a href="cbse.html" class="collection-box">
-      <img src="cbse.png" class="collection-img" alt="CBSE" onerror="this.src='https://via.placeholder.com/100?text=CBSE'">
+      <img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/CBSE_new_logo.svg/512px-CBSE_new_logo.svg.png"" class="collection-img" alt="CBSE" onerror="this.src='https://via.placeholder.com/100?text=CBSE'">
       <div class="collection-title">CBSE Official</div>
       <div class="collection-desc">Syllabus & PYQs</div>
     </a>
