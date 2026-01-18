@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>BOOKStore Premium Player</title>
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <link rel="icon" type="image/png" href="book.png">
@@ -51,18 +53,6 @@
         width: 100%;
         height: 100%;
         object-fit: contain;
-    }
-
-    /* Book Logo - Watermark style */
-    .book-logo {
-        position: absolute;
-        top: 25px;
-        right: 30px;
-        width: 70px;
-        height: auto;
-        z-index: 50;
-        pointer-events: none;
-        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
     }
 
     /* =========================================
@@ -114,13 +104,19 @@
        4. ICONS & BUTTONS
        ========================================= */
     .ctrl-icon {
-        width: 24px;
-        height: 24px;
-        cursor: pointer;
-        opacity: 0.85;
-        transition: var(--transition);
-        filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
-    }
+    font-size: 21px;              /* BASE SIZE */
+    line-height: 1;
+    display: flex;                /* 🔑 */
+    align-items: center;          /* 🔑 */
+    justify-content: center;      /* 🔑 */
+    width: 32px;                  /* click area */
+    height: 32px;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: var(--transition);
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+}
+
 
     .ctrl-icon:hover {
         opacity: 1;
@@ -129,7 +125,10 @@
     }
 
     .ctrl-icon:active { transform: scale(0.95); }
-    #playPauseBtn { width: 28px; height: 28px; }
+    #playPauseBtn {
+    font-size: 21px;   /* bigger icon */
+}
+
 
     #timeDisplay {
         font-family: 'Inter', monospace;
@@ -437,13 +436,17 @@
     transform: translateX(10px);
     transition: opacity 0.25s ease, transform 0.25s ease;
 }
+.history-remove {
+  font-size: 18px;
+  color: #fff;
+}
 
 </style>
 </head>
 <body>
 
 <div class="player-container" id="playerContainer">
-    <img src="book.png" alt="BOOKStore" class="book-logo">
+    
     <video id="video" playsinline></video>
     <div class="bottom-progress" id="bottomProgress"></div>
 
@@ -454,20 +457,22 @@
 
         <div class="controls" id="controls">
             <div class="controls-left">
-                <img src="backward.svg" id="back5" class="ctrl-icon" title="-5s">
-                <img src="play.svg" id="playPauseBtn" class="ctrl-icon" title="Play/Pause">
-                <img src="forward.svg" id="forward5" class="ctrl-icon" title="+5s">
+                <i class="ph ph-skip-back ctrl-icon" id="back5" title="-5s"></i>
+<i class="ph ph-play ctrl-icon" id="playPauseBtn" title="Play/Pause"></i>
+<i class="ph ph-skip-forward ctrl-icon" id="forward5" title="+5s"></i>
+
                 <div class="volume-box" id="volumeBox">
-                    <img src="volume.svg" id="volumeBtn" class="ctrl-icon" title="Mute">
+                    <i class="ph ph-speaker-high ctrl-icon" id="volumeBtn" title="Mute"></i>
+
                     <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="1">
                 </div>
                 <span id="timeDisplay">00:00 / 00:00</span>
             </div>
 
             <div class="controls-right">
-                <img src="history.svg" id="historyBtn" class="ctrl-icon" title="History">
-                <img src="settings.svg" id="settingsBtn" class="ctrl-icon" title="Settings">
-                <img src="fullscreen.svg" id="fullscreenBtn" class="ctrl-icon" title="Fullscreen">
+                <i class="ph ph-clock-counter-clockwise ctrl-icon" id="historyBtn" title="History"></i>
+<i class="ph ph-gear ctrl-icon" id="settingsBtn" title="Settings"></i>
+                <i class="ph ph-arrows-out ctrl-icon" id="fullscreenBtn" title="Full Screen"></i>
                 
                 <div class="settings-menu" id="settingsMenu">
                     <div class="main-setting-btn" data-open="speedBox" id="speedLabel" data-current="Normal"><b>Speed</b></div>
@@ -586,15 +591,15 @@ function loadVideo(url) {
 }
 
 function togglePlay() {
-    if(video.paused || video.ended) {
-        video.play().catch(console.error);
-        playBtn.src = "pause.svg";
-    } else {
-        video.pause();
-        playBtn.src = "play.svg";
-    }
-    resetActivity();
+  if (video.paused) {
+    video.play();
+    playBtn.classList.replace("ph-play", "ph-pause");
+  } else {
+    video.pause();
+    playBtn.classList.replace("ph-pause", "ph-play");
+  }
 }
+
 
 function seek(delta) {
     if(!video.duration) return;
@@ -618,8 +623,10 @@ video.addEventListener('play', () => {
 // --- Play/Pause ---
 playBtn.addEventListener("click", (e) => { e.stopPropagation(); togglePlay(); });
 video.addEventListener("click", (e) => { e.stopPropagation(); togglePlay(); });
-video.addEventListener("play", () => { playBtn.src = "pause.svg"; resetActivity(); });
-video.addEventListener("pause", () => { playBtn.src = "play.svg"; resetActivity(); });
+video.addEventListener("play", () => {
+  playBtn.classList.replace("ph-play", "ph-pause"); resetActivity(); });
+video.addEventListener("pause", () => {
+  playBtn.classList.replace("ph-pause", "ph-play"); resetActivity(); });
 
 // --- Seek Buttons ---
 back5Btn.addEventListener("click", (e) => { e.stopPropagation(); seek(-5); });
@@ -685,7 +692,8 @@ function updateVolumeUI(vol) {
     volumeSlider.style.setProperty("--vol-pos", pct + "%");
     
     // Icon
-    volumeBtn.src = (video.volume === 0 || video.muted) ? "mute.svg" : "volume.svg";
+    volumeBtn.className =
+    "ph ctrl-icon " + (video.muted ? "ph-speaker-x" : "ph-speaker-high");
 }
 
 volumeSlider.addEventListener("input", (e) => {
@@ -968,7 +976,9 @@ function renderLibrary(codeName, videos) {
         const card = document.createElement("div");
         card.className = "library-card";
         card.innerHTML = `
-            <div class="play-icon-bg">▶</div>
+            <div class="play-icon-bg">
+  <i class="ph ph-play"></i>
+</div>
             <div class="card-info">
                 <div class="card-title">${vid.title}</div>
                 <div class="card-meta"><span class="card-tag">${vid.tag||'Chapter'}</span></div>
@@ -1057,7 +1067,8 @@ function renderHistory() {
             </div>
             <small>Resume at ${formatTime(item.time)} • ${item.date}</small>
 
-            <img src="trash.svg" class="history-remove" title="Remove from history">
+           <i class="ph ph-trash history-remove" title="Remove from history"></i>
+
         `;
 
         /* ▶ Click item = play */
@@ -1080,14 +1091,11 @@ function renderHistory() {
 }
 
 function updateFullscreenIcon() {
-    if (document.fullscreenElement || document.webkitFullscreenElement) {
-        fullscreenBtn.src = "exit.svg"; // your exit icon
-        fullscreenBtn.title = "Exit Fullscreen";
-    } else {
-        fullscreenBtn.src = "fullscreen.svg"; // your enter icon
-        fullscreenBtn.title = "Fullscreen";
-    }
+  fullscreenBtn.className =
+    "ph ctrl-icon " +
+    (document.fullscreenElement ? "ph-arrows-in" : "ph-arrows-out");
 }
+
 document.addEventListener("fullscreenchange", updateFullscreenIcon);
 document.addEventListener("webkitfullscreenchange", updateFullscreenIcon);
 
