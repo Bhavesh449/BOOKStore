@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>100x Josh | BOOKStore</title>
 <link rel="icon" type="image/png" href="book.png">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
 <!-- Fonts: Inter & Poppins -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -374,6 +375,19 @@ font-size: 1.8rem;
 width: 85%;
 }
 }
+.social-btn.youtube:hover {
+  color: #ff0000;
+  border-color: #ff0000;
+  box-shadow: 0 0 14px rgba(255, 0, 0, 0.35);
+}
+.menu i {
+  font-size: 20px;
+  opacity: 0.85;
+}
+
+.menu a:hover i {
+  opacity: 1;
+}
 </style>
 </head>
 <body>
@@ -390,27 +404,35 @@ width: 85%;
 </header>
 <!-- SIDE MENU -->
 <nav class="menu" id="menu">
-<a href="index.html">
-<img src="home.svg" class="menu-icon" alt=""> Home
-</a>
-<a href="edupie.html">
-<img src="edupielogo.png" class="menu-logo" alt=""> EduPie
-</a>
-<a href="games.html" class="active">
-<img src="game.svg" class="menu-icon" alt=""> Games Zone
-</a>
- <a href="play.html">
-      <img src="play.svg" class="menu-icon" alt=""> Custom Player
-    </a>
-    <a href="link.html">
-      <img src="link.svg" class="menu-icon" alt=""> Link Processor
-    </a>
-    <a href="shiva.html">
-      <img src="shiva.png" class="menu-icon" alt=""> Shiva AI
-    </a>
-     <a href="profile.html">
-      <img src="profile.svg" class="menu-icon" alt=""> Profile
-    </a>
+
+  <a href="index.html" class="active">
+    <i class="ph ph-house"></i> Home
+  </a>
+
+  <a href="edupie.html">
+    <i class="ph ph-graduation-cap"></i> EduPie
+  </a>
+
+  <a href="games.html">
+    <i class="ph ph-game-controller"></i> Games Zone
+  </a>
+
+  <a href="play.html">
+    <i class="ph ph-play-circle"></i> Custom Player
+  </a>
+
+  <a href="link.html">
+    <i class="ph ph-link"></i> Link Processor
+  </a>
+
+  <a href="shiva.html">
+    <i class="ph ph-brain"></i> Shiva AI
+  </a>
+
+  <a href="profile.html">
+    <i class="ph ph-user"></i> Profile
+  </a>
+
 </nav>
 <!-- GAME CONTENT -->
 <h1>100x Josh</h1>
@@ -421,7 +443,17 @@ width: 85%;
 </div>
 <!-- SOCIAL LINKS -->
 <div class="social-buttons">
-<a href="https://www.instagram.com/syntaxbhavesh/" target="_blank" class="social-btn insta">
+  <a href="https://www.youtube.com/@bookstoreofficial"
+     target="_blank"
+     class="social-btn youtube"
+     title="Subscribe on YouTube"
+     aria-label="Subscribe on YouTube">
+    <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png"
+         alt="YouTube"
+         class="social-logo">
+    YouTube
+  </a>
+<a href="https://www.instagram.com/bookstoreofficial_0/" target="_blank" class="social-btn insta">
 <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram" class="social-logo">
 Instagram
 </a>
