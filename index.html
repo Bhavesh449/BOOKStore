@@ -811,59 +811,7 @@
     grid-template-columns: 1fr; /* single column */
   }
 }
-/* ===== Shiva AI Floating Bubble ===== */
-/* ===== Shiva AI Floating Bubble (BOOKStore Style) ===== */
-.shiva-bubble {
-  position: fixed;
-  right: 22px;
-  bottom: 22px;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: #050505; /* same as site background */
-  border: 2px solid #ffffff; /* white outline */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  cursor: pointer;
 
-  box-shadow:
-    0 10px 25px rgba(0,0,0,0.7),
-    0 0 0 4px rgba(255,255,255,0.05);
-
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.shiva-bubble img {
-  width: 34px;
-  height: 34px;
-  object-fit: cover;
-  border-radius: 50%;
-  filter: brightness(1.1);
-}
-
-.shiva-bubble:hover {
-  transform: scale(1.12);
-  box-shadow:
-    0 0 0 2px #ffffff,
-    0 0 25px rgba(255,255,255,0.35);
-}
-
-/* Mobile tweak */
-@media (max-width: 600px) {
-  .shiva-bubble {
-    width: 56px;
-    height: 56px;
-    right: 16px;
-    bottom: 16px;
-  }
-
-  .shiva-bubble img {
-    width: 30px;
-    height: 30px;
-  }
-}
 .social-btn.youtube:hover {
   color: #ff0000;
   border-color: #ff0000;
@@ -943,11 +891,6 @@
   <a href="link.html">
     <i class="ph ph-link"></i> Link Processor
   </a>
-
-  <a href="shiva.html">
-    <i class="ph ph-brain"></i> Shiva AI
-  </a>
-
   <a href="profile.html">
     <i class="ph ph-user"></i> Profile
   </a>
@@ -1328,17 +1271,15 @@ auth.onAuthStateChanged(user => {
 
   if (!user) return;
 
-  const name = user.displayName || user.email.split("@")[0];
-
-  // Admin check
   const isAdmin = user.uid === ADMIN_UID;
 
-  // Read VIP from DATABASE
+  // Read data from database
   firebase.database()
     .ref("users/" + user.uid)
     .once("value")
     .then(snapshot => {
       const data = snapshot.val() || {};
+      const name = data.displayName || user.email.split("@")[0];
       const isVIP = data.vip === true;
 
       let tag = "";
@@ -1358,10 +1299,9 @@ auth.onAuthStateChanged(user => {
 
       greeting.innerHTML =
         `Welcome back, <span id="userNameDisplay">${name}</span>${tag}`;
-
-      setupNameEdit(user);
     });
 }
+
 
     // --- 6. CAROUSEL LOGIC ---
     let slideIndex = 0;
@@ -1420,10 +1360,5 @@ auth.onAuthStateChanged(user => {
     });
 
   </script>
-  <!-- Shiva Floating Bubble -->
-<a href="shiva.html" class="shiva-bubble" title="Ask Shiva AI">
-  <img src="shiva.png" alt="Shiva AI">
-</a>
-
 </body>
 </html>
