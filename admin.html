@@ -391,6 +391,15 @@ input.blocked:checked + .slider {
   background-color: var(--danger);
   box-shadow: 0 0 15px rgba(239,68,68,0.6);
 }
+.name-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--accent-color);
+  color: white;
+  font-size: 0.95rem;
+  width: 100%;
+  padding: 2px 0;
+}
 
   </style>
 </head>
@@ -565,47 +574,82 @@ input.blocked:checked + .slider {
     const card = document.createElement('div');
     card.className = 'user-card';
     card.innerHTML = `
-      <div class="card-header">
-        <div class="user-avatar">${initial}</div>
-        <span class="badge badge-${role}">${role}</span>
-      </div>
+  <div class="card-header">
+    <div class="user-avatar">${initial}</div>
+    <span class="badge badge-${role}">${role}</span>
+  </div>
 
-      <div class="info-group">
-        <div class="info-label">Email</div>
-        <div class="info-value text-muted">${user.email || 'No Email'}</div>
-      </div>
+  <div class="info-group">
+    <div class="info-label">Name</div>
+    <div class="info-value">
+      <span class="displayName" ondblclick="editName('${user.uid}', this)">
+        ${user.displayName || 'No Name'}
+      </span>
+    </div>
+  </div>
 
-      <div class="info-group">
-        <div class="info-label">UID</div>
-        <div class="uid-box">
-          <span>${user.uid.substring(0, 10)}...</span>
-          <span class="material-icons copy-btn" onclick="copyToClip('${user.uid}')">content_copy</span>
-        </div>
-      </div>
+  <div class="info-group">
+    <div class="info-label">Email</div>
+    <div class="info-value text-muted">${user.email || 'No Email'}</div>
+  </div>
 
-      <div class="vip-control">
-        <div class="vip-label">
-          <span class="material-icons">stars</span> VIP Access
-        </div>
-        <label class="switch">
-          <input type="checkbox" ${isVip ? 'checked' : ''} onchange="toggleVip('${user.uid}', this.checked)">
-          <span class="slider round"></span>
-        </label>
-      </div>
+  <div class="info-group">
+    <div class="info-label">UID</div>
+    <div class="uid-box">
+      <span>${user.uid.substring(0, 10)}...</span>
+      <span class="material-icons copy-btn" onclick="copyToClip('${user.uid}')">content_copy</span>
+    </div>
+  </div>
 
-      <div class="block-control">
-        <div class="block-label">
-          <span class="material-icons">block</span> Block User
-        </div>
-        <label class="switch">
-          <input type="checkbox" class="blocked" ${isBlocked ? 'checked' : ''} onchange="toggleBlock('${user.uid}', this.checked)">
-          <span class="slider round"></span>
-        </label>
-      </div>
-    `;
+  <div class="vip-control">
+    <div class="vip-label">
+      <span class="material-icons">stars</span> VIP Access
+    </div>
+    <label class="switch">
+      <input type="checkbox" ${isVip ? 'checked' : ''} onchange="toggleVip('${user.uid}', this.checked)">
+      <span class="slider round"></span>
+    </label>
+  </div>
+
+  <div class="block-control">
+    <div class="block-label">
+      <span class="material-icons">block</span> Block User
+    </div>
+    <label class="switch">
+      <input type="checkbox" class="blocked" ${isBlocked ? 'checked' : ''} onchange="toggleBlock('${user.uid}', this.checked)">
+      <span class="slider round"></span>
+    </label>
+  </div>
+`;
+
     usersContainer.appendChild(card);
   });
 }
+window.editName = function(uid, el) {
+  const currentName = el.innerText;
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = currentName;
+  input.className = 'name-input';
+  el.replaceWith(input);
+  input.focus();
+
+  // Save on blur or Enter
+  function saveName() {
+    const newName = input.value.trim() || 'No Name';
+    db.ref('users/' + uid).update({ displayName: newName })
+      .then(() => {
+        showToast('Display Name updated', 'success');
+        renderUsers(usersData); // Refresh to show updated name
+      })
+      .catch(() => showToast('Failed to update name', 'error'));
+  }
+
+  input.addEventListener('blur', saveName);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') input.blur();
+  });
+};
 
     // --- 5. INTERACTION LOGIC ---
 
